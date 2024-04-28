@@ -1,37 +1,39 @@
+"use client"
+
 import { useState } from "react";
-import { Input } from "@ui/input";
 import { Button } from "@ui/button";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@ui/card";
+import { runDebate } from "@/serverActions/runDebate";
+import { Textarea } from "@ui/textarea";
 
 export function TopicInput() {
 
   const [inputValue, setInputValue] = useState("");
   
   return (
-    <>
-      <Input
-        type="text"
-        className="border border-gray-300 dark:border-neutral-800"
-        value={inputValue}
-        onChange={(e) => setInputValue(e.target.value)}
-      />
-      <Button
-        className=""
-        onClick={() => {
-          fetch("/api/startDebate", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ input: inputValue }),
-          })
-            .then((res) => res.json())
-            .then((data) => {
-              console.log(data);
-            });
-        }}
-      >
-        Click me
-      </Button>
-    </>
+    <Card className="w-2/3">
+      <CardHeader>
+        <CardTitle>Enter a topic to debate</CardTitle>
+        <CardDescription>Provide a topic or question to start a debate.</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <Textarea
+          className="w-full border border-gray-300 dark:border-neutral-800 rounded-md p-2"
+          value={inputValue}
+          onChange={(e) => setInputValue(e.target.value)}
+          rows={5}
+        />
+      </CardContent>
+      <CardFooter>
+        <Button
+          className=""
+          onClick={() => {
+            runDebate(inputValue);
+          }}
+        >
+          Start Debate
+        </Button>
+      </CardFooter>
+    </Card>
   );
 }
