@@ -24,7 +24,7 @@ export async function createAgent({
   let prompt = await ChatPromptTemplate.fromMessages([
     [
       "system",
-      "You are a helpful AI assistant, collaborating with other assistants." +
+      "You are master debater, you seek to debate a topic given to you with another agent to bring out all the perspective and angles to the discussion." +
         " Use the provided tools to progress towards answering the question." +
         " If you are unable to fully answer, that's OK, another assistant with different tools " +
         " will help where you left off. Execute what you can to make progress." +

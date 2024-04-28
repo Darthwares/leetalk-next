@@ -1,10 +1,9 @@
 "use server";
 
-import { ChatOpenAI } from "@langchain/openai";
 import { HumanMessage, BaseMessage } from "@langchain/core/messages";
 import { END, StateGraph } from "@langchain/langgraph";
 import { createAgent, router, runAgentNode } from "@/lib/createAgent";
-import { claude_sonnet, openAI_GPT35 } from "@/lib/llm";
+import { claude_sonnet, openAI_GPT35, openAI_GPT4 } from "@/lib/llm";
 import { tavilyTool } from "@/lib/tavilySearchTool";
 import { agentState } from "@/lib/agentState";
 import { toolNode } from "@/lib/toolNode";
@@ -99,7 +98,7 @@ export async function runDebate(topic: string) {
         }),
       ],
     },
-    { recursionLimit: 150 });
+    { recursionLimit: 100 });
 
     console.log(res);
   } catch (error: any) {
