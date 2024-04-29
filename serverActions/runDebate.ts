@@ -3,7 +3,7 @@
 import { HumanMessage, BaseMessage } from "@langchain/core/messages";
 import { END, StateGraph } from "@langchain/langgraph";
 import { createAgent, router, runAgentNode } from "@/lib/createAgent";
-import { claude_sonnet, openAI_GPT35, openAI_GPT4 } from "@/lib/llm";
+import { claude_sonnet, openAI_GPT4_Turbo } from "@/lib/llm";
 import { tavilyTool } from "@/lib/tavilySearchTool";
 import { agentState } from "@/lib/agentState";
 import { toolNode } from "@/lib/toolNode";
@@ -15,8 +15,9 @@ export async function runDebate(topic: string) {
     });
 
     const openAIDebateAgent = await createAgent({
-      llm: openAI_GPT35,
+      llm: openAI_GPT4_Turbo,
       tools: [tavilyTool],
+      agentName: "Claude",
       systemMessage:
         "You are OpenAI, You debate about a point given a topic. You can use the tools to research and provide evidence. Build an argument and counter-argument as there wil be another AI to debate with you.",
     });
@@ -24,6 +25,7 @@ export async function runDebate(topic: string) {
     const sonnetDebateAgent = await createAgent({
       llm: claude_sonnet,
       tools: [],
+      agentName: "OpenAI",
       systemMessage:
         "You are Claude, You debate about a point given a topic. You can use the tools to research and provide evidence. Build an argument and counter-argument as there wil be another AI to debate with you.",
     });
@@ -35,9 +37,6 @@ export async function runDebate(topic: string) {
         name: "openAIDebater",
       });
     }
-
-    // test
-    // const debater = await openAIDebaterNode([new HumanMessage(topic)]);
 
     const claudeDebaterNode = async (state: BaseMessage[]) => {
       return runAgentNode({
@@ -98,9 +97,11 @@ export async function runDebate(topic: string) {
         }),
       ],
     },
-    { recursionLimit: 100 });
+    { recursionLimit: 50 });
 
     console.log(res);
+
+    return res;
   } catch (error: any) {
     console.error(error);
   }

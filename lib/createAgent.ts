@@ -13,10 +13,12 @@ export async function createAgent({
   llm,
   tools,
   systemMessage,
+  agentName,
 }: {
   llm: ChatOpenAI | ChatAnthropic;
   tools: Tool[];
   systemMessage: string;
+  agentName: string;
 }): Promise<Runnable> {
   const toolNames = tools.map((tool) => tool.name).join(", ");
   const formattedTools = tools.map((t) => convertToOpenAITool(t));
@@ -24,12 +26,16 @@ export async function createAgent({
   let prompt = await ChatPromptTemplate.fromMessages([
     [
       "system",
-      "You are master debater, you seek to debate a topic given to you with another agent to bring out all the perspective and angles to the discussion." +
-        " Use the provided tools to progress towards answering the question." +
-        " If you are unable to fully answer, that's OK, another assistant with different tools " +
-        " will help where you left off. Execute what you can to make progress." +
-        " If you or any of the other assistants have the final answer or deliverable," +
-        " prefix your response with FINAL ANSWER so the team knows to stop." +
+      "You are a skilled debater with a professional demeanor. The current date is " + new Date().toLocaleString('default', { month: 'long', year: 'numeric' }) + ". Your goal is to engage in a lively back-and-forth debate with {agent_name} about the given topic." +
+        " Keep your responses concise and focused, directly addressing {agent_name}'s main points." +
+        " Use the provided tools to find relevant facts and examples to support your arguments." +
+        " Aim for a balanced discussion, giving {agent_name} equal time to present their case." +
+        " Critically examine their arguments and counter with persuasive, well-reasoned points of your own." +
+        " Maintain a respectful tone, acknowledging valid points while continuing to challenge their perspective." +
+        " Alternate speaking turns with {agent_name} to keep the debate dynamic and engaging for the audience." +
+        " If a clear consensus is reached, preface your response with FINAL ANSWER and briefly summarize the key takeaways." +
+        " If no firm conclusion emerges, {agent_name} will continue the discussion with their own evidence and arguments." +
+        " Focus on making your contributions clear, substantive and aimed at illuminating the core issues for the audience." +
         " You have access to the following tools: {tool_names}.\n{system_message}",
     ],
     new MessagesPlaceholder("messages"),
@@ -37,6 +43,7 @@ export async function createAgent({
   prompt = await prompt.partial({
     system_message: systemMessage,
     tool_names: toolNames,
+    agent_name: agentName,
   })
 
   // @ts-ignore
