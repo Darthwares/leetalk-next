@@ -11,37 +11,15 @@ import {
 } from '@ui/card';
 import { runDebate } from '@/serverActions/runDebate';
 import { Textarea } from '@ui/textarea';
-import ReactMarkdown from 'react-markdown';
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import ShowChats from '../showChats';
+import { PlaneIcon } from './svg';
 
-interface HumanMessage {
-  lc: number;
-  type: string;
-  id: string[];
-  kwargs: {
-    content: Content[];
-    additional_kwargs: any;
-    response_metadata: any;
-  };
-}
-
-interface Content {
-  type: string;
-  text: string;
-}
-
-interface Result {
-  messages: HumanMessage[];
-  sender: string;
-}
-
-export function TopicInput() {
+export function InputDebate() {
   const [inputValue, setInputValue] = useState('');
+  const [error, setError] = useState("");
   // const [result, setResult] = useState('');
 
   return (
-    <Card className="w-full lg:w-2/3">
+    <Card className="w-full">
       <CardHeader>
         <CardTitle>Enter a topic to debate</CardTitle>
         <CardDescription>
@@ -55,21 +33,24 @@ export function TopicInput() {
           onChange={(e) => setInputValue(e.target.value)}
           rows={5}
         />
-        <div className="mt-4">
-        </div>
+              {error && <span className='text-red-500 text-sm'>{error}</span>}
       </CardContent>
       <CardFooter>
         <Button
-          className=""
+          className="ml-2 whitespace-nowrap"
           onClick={async () => {
+            if (!inputValue) {
+              setError("Please enter debate topic!");
+              return;
+            }
             const result = await runDebate(inputValue);
             // setResult(result);
           }}
         >
           Start Debate
+          <PlaneIcon className="ml-2 h-4 w-4" />
         </Button>
       </CardFooter>
-      <ShowChats />
     </Card>
   );
 }
