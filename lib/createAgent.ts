@@ -52,7 +52,7 @@ export async function createAgent({
 
 const isToolMessage = (message: BaseMessage) => !!message?.additional_kwargs?.tool_calls;
 
-export type RunAgentNodeParams = { state: BaseMessage[], agent: Runnable, name: string };
+export type RunAgentNodeParams = { state: BaseMessage[], agent: Runnable, name: string, topic: string };
 
 export async function runAgentNode({ state, agent, name }: RunAgentNodeParams) {
   let result = await agent.invoke(state);
@@ -61,7 +61,7 @@ export async function runAgentNode({ state, agent, name }: RunAgentNodeParams) {
   if (!isToolMessage(result)) {
     // If the agent is NOT calling a tool, we want it to
     // look like a human message.
-    result = new HumanMessage({ ...result, name: name });
+    result = new HumanMessage({ ...result, name: name });  
   }
   return {
     messages: [result],
