@@ -1,6 +1,7 @@
-'use client';
-import { useState } from 'react';
-import { Button } from '@ui/button';
+"use client";
+
+import { useState } from "react";
+import { Button } from "@ui/button";
 import {
   Card,
   CardHeader,
@@ -8,15 +9,25 @@ import {
   CardDescription,
   CardContent,
   CardFooter,
-} from '@ui/card';
-import { runDebate } from '@/serverActions/runDebate';
-import { Textarea } from '@ui/textarea';
-import { PlaneIcon } from './svg';
+} from "@ui/card";
+import { runDebate } from "@/serverActions/runDebate";
+import { Textarea } from "@ui/textarea";
+import { PlaneIcon } from "./svg";
+import { supabase } from "@/lib/supabase";
+import { guid } from "@/constants/default";
+import { useRecoilState, useSetRecoilState } from "recoil";
+import { conversationIdState, loaderState, showDebateInputBoxState, waitingMessageState } from "@/state/state";
 
 export function InputDebate() {
-  const [inputValue, setInputValue] = useState('');
+  const [inputValue, setInputValue] = useState("");
+  const [id, setId] = useRecoilState(conversationIdState);
+  const setWaitingMessage = useSetRecoilState(waitingMessageState);
+  const setShowDebateInputBox = useSetRecoilState(showDebateInputBoxState);
   const [error, setError] = useState("");
+  const [loader, setLoader] = useRecoilState(loaderState);
   // const [result, setResult] = useState('');
+
+  console.log("id", id);
 
   return (
     <Card className="w-full">
@@ -33,7 +44,7 @@ export function InputDebate() {
           onChange={(e) => setInputValue(e.target.value)}
           rows={5}
         />
-              {error && <span className='text-red-500 text-sm'>{error}</span>}
+        {error && <span className="text-red-500 text-sm">{error}</span>}
       </CardContent>
       <CardFooter>
         <Button
@@ -43,8 +54,33 @@ export function InputDebate() {
               setError("Please enter debate topic!");
               return;
             }
-            const result = await runDebate(inputValue);
-            // setResult(result);
+            const id = guid();
+            setId(id);
+
+            const { data: conversationData, error: conversationError } =
+              await supabase
+                .from("conversations")
+                .insert({ conversation_id: id, topic: inputValue });
+
+            if (conversationError) {
+              alert(conversationError.message);
+              return;
+            }
+
+            if (conversationData) {
+              console.log("conversationData", conversationData);
+            }
+
+            if (inputValue) {
+              setWaitingMessage("Wait for the debate to start");
+              setLoader(true);
+              setShowDebateInputBox(false);
+            }
+
+            const result = await runDebate(inputValue.trim(), id);
+            if (result) {
+              setLoader(false);
+            }
           }}
         >
           Start Debate
