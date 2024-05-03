@@ -1,60 +1,27 @@
-import { useEffect, useState } from 'react';
-import Link from 'next/link';
-import { useWindowDimensions } from '@/lib/helper/useWindowDimensions';
-import { Input } from './ui/input';
-import { Separator } from './ui/separator';
+import { Dispatch, SetStateAction, useMemo, useState } from "react";
+import Link from "next/link";
+import { useWindowDimensions } from "@/lib/helper/useWindowDimensions";
+import { Input } from "./ui/input";
+import useDebateTopics from "@/lib/helper/useDebateTopics";
 
-interface Topic {
-  query: string;
+interface TopicListProps {
+  setSidebarOpen?: Dispatch<SetStateAction<boolean>>;
 }
-
-const dataList = [
-  { query: 'hello redis' },
-  { query: 'hello nodejs' },
-  { query: 'Climate change is the greatest threat facing humanity today.' },
-  { query: 'welcome to coding' },
-  { query: 'welcome to coding' },
-  { query: 'welcome to coding' },
-  { query: 'welcome to coding' },
-  { query: 'welcome to coding' },
-  { query: 'welcome to coding' },
-  { query: 'welcome to coding' },
-  { query: 'welcome to coding' },
-  { query: 'welcome to coding' },
-  { query: 'welcome to coding' },
-  { query: 'welcome to coding' },
-  { query: 'welcome to coding' },
-  { query: 'welcome to coding' },
-  { query: 'welcome to coding' },
-  { query: 'welcome to coding' },
-  { query: 'welcome to coding' },
-  { query: 'welcome to coding' },
-  { query: 'welcome to coding' },
-  { query: 'welcome to coding' },
-  { query: 'welcome to coding' },
-  { query: 'welcome to coding' },
-  { query: 'welcome to coding' },
-  { query: 'welcome to coding' },
-  { query: 'welcome to coding' },
-  { query: 'welcome to coding' },
-];
-
-const TopicList = () => {
+const TopicList = ({ setSidebarOpen }: TopicListProps) => {
   const { height, width } = useWindowDimensions();
-  const [topics, setTopics] = useState<Topic[]>(dataList);
   const [searchTerm, setSearchTerm] = useState('');
+  const { topics } = useDebateTopics();
 
-  useEffect(() => {
-    const filteredTopics = dataList.filter((topic) =>
-      topic.query.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredTopics = useMemo(() => {
+    return topics?.filter((topic) =>
+      topic?.topic?.toLowerCase()?.includes(searchTerm?.toLowerCase())
     );
-    setTopics(filteredTopics);
-  }, [searchTerm]);
+  }, [searchTerm, topics]);
 
   return (
     <div
       className="flex flex-col w-full pb-10 h-full space-y-3 bg-white p-2 rounded-lg"
-    //   style={{ maxHeight: `calc(${height}px - 250px)`, overflowY: 'scroll' }}
+      //   style={{ maxHeight: `calc(${height}px - 250px)`, overflowY: 'scroll' }}
     >
       <h2 className="bg-gray-800 text-white text-center rounded-md p-2">
         Topic Suggestions
@@ -70,14 +37,17 @@ const TopicList = () => {
         // style={{ maxHeight: `calc(${height}px - 250px)`, overflowY: 'scroll' }}
         className=""
       >
-        {topics.length > 0 ? (
+        {filteredTopics!?.length > 0 ? (
           <div className="space-y-2">
-            {topics.map((topic, index) => (
+            {filteredTopics?.map((item, index) => (
               <div key={index} className="p-3 bg-gray-100 rounded-lg">
-                <Link href="#" className='line-clamp-1 hover:line-clamp-none'>{topic.query}</Link>
-                {/* <div className="">
-                  <Separator />
-                </div> */}
+                <Link
+                  href={`/chat/${item.conversation_id}`}
+                  className="line-clamp-2 hover:line-clamp-none delay-200 translate-x-0 duration-150"
+                  onClick={() => setSidebarOpen && setSidebarOpen(false)}
+                >
+                  {item.topic}
+                </Link>
               </div>
             ))}
           </div>

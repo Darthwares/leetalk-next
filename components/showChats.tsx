@@ -1,104 +1,89 @@
-import { AvatarImage, AvatarFallback, Avatar } from '@/components/ui/avatar';
-import { useWindowDimensions } from '@/lib/helper/useWindowDimensions';
-import { ClaudeIcon, OpenAiIcon } from './svg';
+import ShowMarkdown from './showMarkdown';
+import { processMessages } from '@/constants/default';
+import useDebateMessages from '@/lib/helper/useDebateMessages';
+import MessageCard from './debates/debateMessageCard';
+import {
+  loaderState,
+  messagesState,
+  showDebateInputBoxState,
+  waitingMessageState,
+} from '@/state/state';
+import { useRecoilState, useSetRecoilState } from 'recoil';
+import { useEffect, useRef } from 'react';
+import { Button } from './ui/button';
 
 export default function ShowChats() {
-  const { height, width } = useWindowDimensions();
-  const messages = [
-    {
-      id: 1,
-      text: 'Thank you for laying out a compelling case against mandating national public service. I agree that forcing all citizens into such service roles could infringe on personal freedoms and devalue the many other important ways people contribute to society. The logistical challenges of managing a universal service program on that scale are also daunting to consider.However, I would argue that there is still potential merit to exploring voluntary national service initiatives that maintain citizen choice. By making it an optional opportunity rather than a requirement, we could cultivate civic engagement and unity without trampling on individual liberties. Voluntary programs have been successful in many countries - for example, AmeriCorps in the United States engages over 75,000 Americans annually in intensive community service work. When pursued by choice, these experiences can instill tremendous pride, skills, and perspectives that pay dividends for decades.',
-      avatarAlt: 'Elizabeth Nelson',
-      avatarSrc: 'https://github.com/shadcn.png',
-      avatarFallback: 'EN',
-      name: 'OpenAI',
-      isUser: false,
-    },
-    {
-      id: 2,
-      text: 'Thank you for laying out a compelling case against mandating national public service. I agree that forcing all citizens into such service roles could infringe on personal freedoms and devalue the many other important ways people contribute to society. The logistical challenges of managing a universal service program on that scale are also daunting to consider.However, I would argue that there is still potential merit to exploring voluntary national service initiatives that maintain citizen choice.',
-      avatarAlt: 'User',
-      avatarSrc: 'https://github.com/shadcn.png',
-      avatarFallback: 'U',
-      isUser: true,
-      name: 'Claude',
-    },
-    {
-      id: 3,
-      text: 'Thank you for laying out a compelling case against mandating national public service. I agree that forcing all citizens into such service roles could infringe on personal freedoms and devalue the many other important ways people contribute to society. The logistical challenges of managing a universal service program on that scale are also daunting to consider.However, I would argue that there is still potential merit to exploring voluntary national service initiatives that maintain citizen choice. By making it an optional opportunity rather than a requirement, we could cultivate civic engagement and unity without trampling on individual liberties. Voluntary programs have been successful in many countries - for example, AmeriCorps in the United States engages over 75,000 Americans annually in intensive community service work. When pursued by choice, these experiences can instill tremendous pride, skills, and perspectives that pay dividends for decades.',
-      avatarAlt: 'Elizabeth Nelson',
-      avatarSrc: 'https://github.com/shadcn.png',
-      avatarFallback: 'EN',
-      isUser: false,
-      name: 'OpenAI',
-    },
-    {
-      id: 4,
-      text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut',
-      avatarAlt: 'User',
-      avatarSrc: 'https://github.com/shadcn.png',
-      avatarFallback: 'U',
-      isUser: true,
-      name: 'Claude',
-    },
-  ];
+  const { messages } = useDebateMessages();
+  const messageList = processMessages(messages);
+  const [loader] = useRecoilState(loaderState);
+  const messageRef = useRef<HTMLDivElement | null>(null);
+  const [waitingMessage] = useRecoilState(waitingMessageState);
+  const setShowDebateInputBox = useSetRecoilState(showDebateInputBoxState);
+  const setMessagesList = useSetRecoilState(messagesState);
+
+  useEffect(() => {
+    if (messageRef.current) {
+      messageRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [messages, messageList]);
 
   return (
-    <div className="bg-gray-100 flex flex-col py-10 rounded-lg">
-      <div className="flex-grow overflow-y-auto p-4 space-y-8">
-        {messages.map((message) => (
-          <div
-            className={`lg:flex items-start gap-1 space-y-2 lg:space-y-0 lg:space-x-2 ${
-              message.isUser ? 'justify-end' : ''
-            }`}
-            key={message.id}
+    <div
+      className={`${
+        messages.length > 0 && 'bg-gray-100'
+      } bg-white flex flex-col py-10 rounded-lg`}
+    >
+      {messages.length > 0 && (
+        <div className="flex justify-end">
+          <Button
+            className="max-w-fit flex gap-2 py-3"
+            onClick={() => {
+              setMessagesList([]);
+              setShowDebateInputBox(true);
+            }}
           >
-            <div className="flex gap-2 max-w-fit items-center">
-              {message.name === 'OpenAI' && <OpenAiIcon />}
-              <h3
-                className={`flex items-start font-bold lg:hidden space-x-2 ${
-                  message.name === 'Claude' ? 'justify-end' : ''
-                }`}
-              >
-                {message.name === 'OpenAI' && message.name}
-              </h3>
-            </div>
-            <div>
-              <div
-                className={`${
-                  message.name === 'Claude' ? 'justify-end pb-2' : ''
-                } flex gap-2 justify-end`}
-              >
-                {message.name === 'Claude' && <ClaudeIcon />}
-                <h3
-                  className={` flex items-start pb-2 font-bold space-x-2 ${
-                    message.name === 'Claude' ? 'justify-end' : ''
-                  }`}
-                >
-                  {message.name === 'Claude' && message.name}
-                </h3>
-              </div>
-              {!message.isUser && (
-                <h3 className="lg:block -mt-2 pb-2.5 hidden font-bold">
-                  {message.name}
-                </h3>
-              )}
+            Start new debate
+          </Button>
+        </div>
+      )}
 
-              <div
-                className={`rounded-lg p-4 lg:mt-1.5 shadow w-full max-w-full lg:max-w-[40rem] ${
-                  message.name === 'Claude'
-                    ? 'bg-gray-800 text-white'
-                    : 'bg-white'
-                }`}
-              >
-                <p>{message.text} </p>
+      {messages.length > 0 ? (
+        <div className="flex-grow overflow-y-auto p-4 space-y-8">
+          {messageList.remainingMessages?.map((message, id) => {
+            return (
+              <MessageCard
+                key={id}
+                message={message}
+                senderType={message.sender}
+              />
+            );
+          })}
+          <div ref={messageRef} />
+          {loader && (
+            <p className="text-3xl text-gray-900 font-extrabold">
+              AI is thinking
+            </p>
+          )}
+
+          {messageList.conclusion && (
+            <div className="bg-green-100">
+              <div className="p-4 space-y-2">
+                <h3 className="text-xl font-bold">Conclusion:</h3>
+                <ShowMarkdown content={messageList.conclusion} />
               </div>
             </div>
-
-            {/* {message.isUser && <ClaudeIcon />} */}
-          </div>
-        ))}
-      </div>
+          )}
+        </div>
+      ) : (
+        <div className="flex flex-col max-w-lg mx-auto w-full justify-center items-center">
+          <h1 className="text-2xl sm:text-3xl font-bold">{waitingMessage}</h1>
+          <img
+            className="h-full sm:h-[19.5rem] w-full"
+            src="/debate.png"
+            alt="debate-image"
+          />
+        </div>
+      )}
     </div>
   );
 }

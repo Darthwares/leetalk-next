@@ -9,7 +9,7 @@ import { agentState } from '@/lib/agentState';
 import { toolNode } from '@/lib/toolNode';
 import { supabase } from '@/lib/supabase';
 
-export async function runDebate(topic: string) {
+export async function runDebate(topic: string, id: string) {
   try {
     const graph = new StateGraph({
       channels: agentState,
@@ -21,14 +21,6 @@ export async function runDebate(topic: string) {
       agentName: 'Claude',
       systemMessage:
         "You are an AI assistant named OpenAI. Your role is to engage in a debate with another AI assistant named Claude. Analyze the given topic and provide your perspective, while also considering and responding to Claude's arguments. The debate should continue until a satisfactory conclusion is reached. As an engineer, aim to provide technical insights and logical reasoning to support your position.",
-    });
-
-    const criticDAgent = await createAgent({
-      llm: openAI_GPT35,
-      tools: [tavilyTool],
-      agentName: 'Critic',
-      systemMessage:
-        "You are the Critic agent. Your role is to closely follow the debate between the AI assistants Claude and OpenAI. Analyze their arguments and the overall flow of the debate. After each agent's statement, pose a challenging counter-question to further probe their reasoning. This will help elucidate deeper insights and test the robustness of their arguments. Once you determine that a satisfactory conclusion has been reached, summarize the key points made by both Claude and GPT, and provide your own conclusion on the topic based on the debate. Your conclusion should take into account the strengths and weaknesses of the arguments presented by both agents. The questioning session will last for 2 rounds",
     });
 
     const sonnetDebateAgent = await createAgent({
@@ -44,16 +36,8 @@ export async function runDebate(topic: string) {
         state: state,
         agent: openAIDebateAgent,
         name: 'openAIDebater',
-        topic: topic
-      });
-    };
-
-    const criticDebaterNode = async (state: BaseMessage[]) => {
-      return runAgentNode({
-        state: state,
-        agent: criticDAgent,
-        name: 'criticDebater',
-        topic: topic
+        topic: topic,
+        id: id,
       });
     };
 
@@ -62,23 +46,16 @@ export async function runDebate(topic: string) {
         state: state,
         agent: sonnetDebateAgent,
         name: 'claudeDebater',
-        topic: topic
+        topic: topic,
+        id: id,
       });
     };
 
     graph.addNode('claudeDebater', claudeDebaterNode);
     graph.addNode('openAIDebater', openAIDebaterNode);
-    graph.addNode('criticDebater', criticDebaterNode);
     graph.addNode('call_tool', toolNode);
 
     graph.addConditionalEdges('claudeDebater', router, {
-      // We will transition to the other agent
-      continue: 'openAIDebater',
-      call_tool: 'call_tool',
-      end: END,
-    });
-
-    graph.addConditionalEdges('criticDebater', router, {
       // We will transition to the other agent
       continue: 'openAIDebater',
       call_tool: 'call_tool',
@@ -101,7 +78,6 @@ export async function runDebate(topic: string) {
       (x: any) => x.sender,
       {
         claudeDebater: 'claudeDebater',
-        criticDebater: 'criticDebater',
         openAIDebater: 'openAIDebater',
       }
     );
@@ -125,12 +101,9 @@ export async function runDebate(topic: string) {
     console.log(res);
 
     // Insert the topic into the 'conversations' table
-    const { data: conversationData, error: conversationError } = await supabase
-        .from('agentsConvo')
-        .insert({ topic: topic, conversation: res })
 
     return res;
   } catch (error: any) {
-    console.error(error);
+    console.error("run debate error",error.message);
   }
 }

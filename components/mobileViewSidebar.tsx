@@ -15,11 +15,8 @@ import Image from 'next/image';
 import TopicList from './topicList';
 
 const navigation = [
-  { name: 'Projects', href: '#', icon: FolderIcon, current: false },
-  { name: 'Deployments', href: '#', icon: ServerIcon, current: true },
-  { name: 'Activity', href: '#', icon: SignalIcon, current: false },
-  { name: 'Domains', href: '#', icon: GlobeAltIcon, current: false },
   { name: 'Usage', href: '#', icon: ChartBarSquareIcon, current: false },
+  { name: 'Activity', href: '#', icon: SignalIcon, current: true },
   { name: 'Settings', href: '#', icon: Cog6ToothIcon, current: false },
 ];
 const teams = [
@@ -136,7 +133,7 @@ const MobileViewSidebar = ({
                       </ul>
                     </li>
                     <li className="-mx-2">
-                      <TopicList />
+                      <TopicList setSidebarOpen={setSidebarOpen} />
                     </li>
                   </ul>
                 </nav>

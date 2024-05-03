@@ -8,37 +8,36 @@ import {
   SignalIcon,
 } from '@heroicons/react/24/outline';
 import React from 'react';
-import { Separator } from './ui/separator';
 import Image from 'next/image';
 import TopicList from './topicList';
+import Link from 'next/link';
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ');
 }
 
 const navigation = [
-  { name: 'Projects', href: '#', icon: FolderIcon, current: false },
-  { name: 'Deployments', href: '#', icon: ServerIcon, current: true },
-  { name: 'Activity', href: '#', icon: SignalIcon, current: false },
-  { name: 'Domains', href: '#', icon: GlobeAltIcon, current: false },
   { name: 'Usage', href: '#', icon: ChartBarSquareIcon, current: false },
+  { name: 'Activity', href: '#', icon: SignalIcon, current: true },
   { name: 'Settings', href: '#', icon: Cog6ToothIcon, current: false },
 ];
 
 const DesktopSidebar = () => {
+
   return (
     <div className="hidden xl:fixed xl:inset-y-0 xl:z-50 xl:flex xl:w-72 xl:flex-col">
-        <div className="flex h-16 pb-2 sticky top-0 z-20 -pr-5 bg-white/50 shrink-0 items-center">
+      <div className="flex h-16 pb-2 sticky top-0 z-20 -pr-5 bg-white/50 shrink-0 items-center">
+        <Link href="/">
           <Image
             width={80}
             height={36}
             className="h-[3.5rem] w-20"
             src="/logo1.png"
-            alt="Your Company" 
+            alt="Your Company"
           />
-        </div>
+        </Link>
+      </div>
       <div className="flex grow pt-5 flex-col gap-y-5 overflow-y-auto bg-gray-100 px-4 ring-1 ring-white/5">
-
         <nav className="flex flex-1 flex-col">
           <ul role="list" className="flex flex-1 flex-col gap-y-7">
             <li>
