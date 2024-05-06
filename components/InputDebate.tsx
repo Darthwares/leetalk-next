@@ -16,7 +16,13 @@ import { PlaneIcon } from "./svg";
 import { supabase } from "@/lib/supabase";
 import { guid } from "@/constants/default";
 import { useRecoilState, useSetRecoilState } from "recoil";
-import { conversationIdState, loaderState, showDebateInputBoxState, waitingMessageState } from "@/state/state";
+import {
+  conversationIdState,
+  loaderState,
+  showDebateInputBoxState,
+  waitingMessageState,
+} from "@/state/state";
+import useSupabase from "@/lib/helper/useSupabase";
 
 export function InputDebate() {
   const [inputValue, setInputValue] = useState("");
@@ -25,9 +31,13 @@ export function InputDebate() {
   const setShowDebateInputBox = useSetRecoilState(showDebateInputBoxState);
   const [error, setError] = useState("");
   const [loader, setLoader] = useRecoilState(loaderState);
+  const { user } = useSupabase();
+
   // const [result, setResult] = useState('');
 
   console.log("id", id);
+
+  console.log('user', user)
 
   return (
     <Card className="w-full">
@@ -60,7 +70,11 @@ export function InputDebate() {
             const { data: conversationData, error: conversationError } =
               await supabase
                 .from("conversations")
-                .insert({ conversation_id: id, topic: inputValue });
+                .insert({
+                  conversation_id: id,
+                  topic: inputValue,
+                  user_id: user?.provider_id,
+                });
 
             if (conversationError) {
               alert(conversationError.message);
