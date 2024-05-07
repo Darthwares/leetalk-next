@@ -1,22 +1,47 @@
-import { Dispatch, SetStateAction, useMemo, useState } from "react";
+"use client";
+
+import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useWindowDimensions } from "@/lib/helper/useWindowDimensions";
 import { Input } from "./ui/input";
 import useDebateTopics from "@/lib/helper/useDebateTopics";
+import getList from "@/lib/helper/edgedb/dbClient";
 
 interface TopicListProps {
   setSidebarOpen?: Dispatch<SetStateAction<boolean>>;
 }
 const TopicList = ({ setSidebarOpen }: TopicListProps) => {
   const { height, width } = useWindowDimensions();
-  const [searchTerm, setSearchTerm] = useState('');
-  const { topics } = useDebateTopics();
+  const [searchTerm, setSearchTerm] = useState("");
+  // const { topics } = useDebateTopics();
+  const [topics, setTopics] = useState<any[]>([]);
+
+  // const filteredTopics = useMemo(() => {
+  //   return topics?.filter((topic) =>
+  //     topic?.topic?.toLowerCase()?.includes(searchTerm?.toLowerCase())
+  //   );
+  // }, [searchTerm, topics]);
+
+  useEffect(() => {
+    async function getBlogList() {
+      const data = await getList(); // Assuming getList fetches your topics
+      setTopics(data); // Set topics here
+    }
+    getBlogList();
+  }, []); // Dependencies can be added if needed
 
   const filteredTopics = useMemo(() => {
-    return topics?.filter((topic) =>
+    return topics?.filter((topic: any) =>
       topic?.topic?.toLowerCase()?.includes(searchTerm?.toLowerCase())
     );
   }, [searchTerm, topics]);
+
+  // useEffect(() => {
+  //   (async function getBlogList() {
+  //     const data = await getList();
+  //     console.log("data", data);
+  //   })();
+  // }, []);
 
   return (
     <div
