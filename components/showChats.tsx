@@ -1,39 +1,54 @@
-import ShowMarkdown from './showMarkdown';
-import { processMessages } from '@/constants/default';
-import useDebateMessages from '@/lib/helper/useDebateMessages';
-import MessageCard from './debates/debateMessageCard';
+import ShowMarkdown from "./showMarkdown";
+import { processMessages } from "@/constants/default";
+import useDebateMessages from "@/lib/helper/useDebateMessages";
+import MessageCard from "./debates/debateMessageCard";
 import {
   loaderState,
   messagesState,
   showDebateInputBoxState,
   waitingMessageState,
-} from '@/state/state';
-import { useRecoilState, useSetRecoilState } from 'recoil';
-import { useEffect, useRef } from 'react';
-import { Button } from './ui/button';
+} from "@/state/state"; 
+import { useRecoilState, useSetRecoilState } from "recoil";
+import { useEffect, useRef } from "react";
+import { Button } from "./ui/button";
+import { io } from "socket.io-client";
+
+const socket = io("https://leetalk-next.vercel.app:5555");
 
 export default function ShowChats() {
-  const { messages } = useDebateMessages();
-  const messageList = processMessages(messages);
+  // const { messages } = useDebateMessages();
   const [loader] = useRecoilState(loaderState);
   const messageRef = useRef<HTMLDivElement | null>(null);
   const [waitingMessage] = useRecoilState(waitingMessageState);
   const setShowDebateInputBox = useSetRecoilState(showDebateInputBoxState);
-  const setMessagesList = useSetRecoilState(messagesState);
+  const [messages, setMessagesList] = useRecoilState(messagesState);
+  const messageList = processMessages(messages);
+
 
   useEffect(() => {
     if (messageRef.current) {
-      messageRef.current.scrollIntoView({ behavior: 'smooth' });
+      messageRef.current.scrollIntoView({ behavior: "smooth" });
     }
-  }, [messages, messageList]);
+  }, [messageList]);
+
+  useEffect(() => {
+    socket.on("message", (messageData) => {
+      console.log("Received message:", messageData);
+      setMessagesList((prevMessages) => [...prevMessages, messageData]);
+    });
+
+    return () => {
+      socket.off("message");
+    };
+  }, []);
 
   return (
     <div
       className={`${
-        messages.length > 0 && 'bg-gray-100'
+        messages?.length > 0 && "bg-gray-100"
       } bg-white flex flex-col py-10 rounded-lg`}
     >
-      {messages.length > 0 && (
+      {messages?.length > 0 && (
         <div className="flex justify-end">
           <Button
             className="max-w-fit flex gap-2 py-3"
@@ -73,6 +88,18 @@ export default function ShowChats() {
               </div>
             </div>
           )}
+
+          <div className="flex justify-end w-full">
+            <Button
+              className="max-w-fit flex gap-2 py-3"
+              onClick={() => {
+                setMessagesList([]);
+                setShowDebateInputBox(true);
+              }}
+            >
+              Continue debate
+            </Button>
+          </div>
         </div>
       ) : (
         <div className="flex flex-col max-w-lg mx-auto w-full justify-center items-center">

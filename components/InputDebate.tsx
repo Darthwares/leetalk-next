@@ -16,7 +16,13 @@ import { PlaneIcon } from "./svg";
 import { supabase } from "@/lib/supabase";
 import { guid } from "@/constants/default";
 import { useRecoilState, useSetRecoilState } from "recoil";
-import { conversationIdState, loaderState, showDebateInputBoxState, waitingMessageState } from "@/state/state";
+import {
+  conversationIdState,
+  loaderState,
+  showDebateInputBoxState,
+  waitingMessageState,
+} from "@/state/state";
+import { setConversations } from "@/lib/helper/edgedb/setConversations";
 
 export function InputDebate() {
   const [inputValue, setInputValue] = useState("");
@@ -57,25 +63,30 @@ export function InputDebate() {
             const id = guid();
             setId(id);
 
-            const { data: conversationData, error: conversationError } =
-              await supabase
-                .from("conversations")
-                .insert({ conversation_id: id, topic: inputValue });
+            // const { data: conversationData, error: conversationError } =
+            //   await supabase
+            //     .from("conversations")
+            //     .insert({ conversation_id: id, topic: inputValue });
 
-            if (conversationError) {
-              alert(conversationError.message);
-              return;
-            }
+            // if (conversationError) {
+            //   alert(conversationError.message);
+            //   return;
+            // }
 
-            if (conversationData) {
-              console.log("conversationData", conversationData);
-            }
+            // if (conversationData) {
+            //   console.log("conversationData", conversationData);
+            // }
 
-            if (inputValue) {
-              setWaitingMessage("Wait for the debate to start");
-              setLoader(true);
-              setShowDebateInputBox(false);
-            }
+            // if (inputValue) {
+            //   setWaitingMessage("Wait for the debate to start");
+            //   setLoader(true);
+            //   setShowDebateInputBox(false);
+            // }
+
+            await setConversations({
+              conversationId: id,
+              topic: inputValue.trim(),
+            });
 
             const result = await runDebate(inputValue.trim(), id);
             if (result) {

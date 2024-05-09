@@ -3,12 +3,8 @@ export interface Message {
   message_id: string;
   conversation_id: string;
   message_text: string;
-  avatarAlt: string;
-  avatarSrc: string;
-  avatarFallback: string;
   sender: string;
-  timestamp: string;
-  isUser: boolean;
+  created_at: string;
 }
 
 export interface Dimensions {

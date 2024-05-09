@@ -1,5 +1,4 @@
-
-import ChatLayout from '@/components/chatLayout';
+import ChatLayout from "@/components/chatLayout";
 
 export default async function Home() {
   return (
