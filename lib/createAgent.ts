@@ -90,7 +90,7 @@ export async function runAgentNode({
 
     await setMessages(message);
 
-    const socket = io("https://leetalk-next.vercel.app:5555");
+    const socket = io("http://localhost:5555");
     const time = getFormattedDate()
     socket.emit("message", result.content, name, id, message.messageId, time);
     console.log('process.env.CLIENT_PORT', process.env.CLIENT_PORT)

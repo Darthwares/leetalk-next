@@ -3,7 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "concurrently \"next dev\" \"nodemon socket/server.js\"",
+    "dev": "next dev",
+    "init": "nodemon socket/server.js",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
@@ -37,6 +38,7 @@
     "langsmith": "^0.1.20",
     "lucide-react": "^0.376.0",
     "next": "14.2.3",
+    "next-auth": "^4.24.7",
     "nodemon": "^3.1.0",
     "react": "^18",
     "react-dom": "^18",

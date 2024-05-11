@@ -1,5 +1,18 @@
 import { Conversations, Message } from '@/types/types';
 import { atom } from 'recoil';
+import { atomFamily } from 'recoil';
+// state/likesState.js
+ const messageLikesState = atomFamily({
+  key: 'messageLikesState',
+  default: 0,  // Default likes count is 0
+});
+
+// state/emojiState.js
+ const messageEmojiState = atomFamily({
+  key: 'messageEmojiState',
+  default: [],  // Default is an empty array of emojis
+});
+
 
 const conversationIdState = atom<string>({
   key: 'conversationIdState',
@@ -38,4 +51,6 @@ export {
   singleTopicState,
   waitingMessageState,
   showDebateInputBoxState,
+  messageLikesState,
+  messageEmojiState
 };

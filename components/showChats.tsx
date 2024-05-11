@@ -1,3 +1,5 @@
+"use client";
+
 import ShowMarkdown from "./showMarkdown";
 import { processMessages } from "@/constants/default";
 import useDebateMessages from "@/lib/helper/useDebateMessages";
@@ -7,13 +9,14 @@ import {
   messagesState,
   showDebateInputBoxState,
   waitingMessageState,
-} from "@/state/state"; 
+} from "@/state/state";
 import { useRecoilState, useSetRecoilState } from "recoil";
 import { useEffect, useRef } from "react";
 import { Button } from "./ui/button";
 import { io } from "socket.io-client";
+import { Message } from "@/types/types";
 
-const socket = io("https://leetalk-next.vercel.app:5555");
+const socket = io("http://localhost:5555");
 
 export default function ShowChats() {
   // const { messages } = useDebateMessages();
@@ -24,6 +27,7 @@ export default function ShowChats() {
   const [messages, setMessagesList] = useRecoilState(messagesState);
   const messageList = processMessages(messages);
 
+  console.log("messages", messages);
 
   useEffect(() => {
     if (messageRef.current) {
@@ -32,15 +36,17 @@ export default function ShowChats() {
   }, [messageList]);
 
   useEffect(() => {
-    socket.on("message", (messageData) => {
+    const handleMessage = (messageData: Message) => {
       console.log("Received message:", messageData);
-      setMessagesList((prevMessages) => [...prevMessages, messageData]);
-    });
-
-    return () => {
-      socket.off("message");
+      setMessagesList(prevMessages => [...prevMessages, messageData]);
     };
-  }, []);
+  
+    socket.on("message", handleMessage);
+  
+    return () => {
+      socket.off("message", handleMessage);
+    };
+  }, []);  
 
   return (
     <div
