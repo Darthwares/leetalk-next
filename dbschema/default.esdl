@@ -30,4 +30,24 @@ module default {
         default := datetime_current();
     }
   }
+
+  type Comments {
+    required comment_id: str;
+    required message_id: str;  
+    required user_id: str;     
+    required comment_text: str;
+    property created_at -> datetime {
+        default := datetime_current();
+    }
+  }
+
+  type Likes {
+      required like_id: str;
+      required message_id: str; 
+      required user_id: str;    
+      property created_at -> datetime {
+          default := datetime_current();
+      }
+  }
+
 }
