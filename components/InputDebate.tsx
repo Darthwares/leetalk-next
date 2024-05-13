@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { Button } from "@ui/button";
+import { useEffect, useState } from 'react';
+import { Button } from '@ui/button';
 import {
   Card,
   CardHeader,
@@ -9,47 +9,47 @@ import {
   CardDescription,
   CardContent,
   CardFooter,
-} from "@ui/card";
-import { runDebate } from "@/serverActions/runDebate";
-import { Textarea } from "@ui/textarea";
-import { PlaneIcon } from "./svg";
-import { supabase } from "@/lib/supabase";
-import { guid } from "@/constants/default";
-import { useRecoilState, useSetRecoilState } from "recoil";
+} from '@ui/card';
+import { runDebate } from '@/serverActions/runDebate';
+import { Textarea } from '@ui/textarea';
+import { PlaneIcon } from './svg';
+import { supabase } from '@/lib/supabase';
+import { guid } from '@/constants/default';
+import { useRecoilState, useSetRecoilState } from 'recoil';
 import {
   conversationIdState,
   loaderState,
   showDebateInputBoxState,
   waitingMessageState,
-} from "@/state/state";
-import { setConversations } from "@/lib/helper/edgedb/setConversations";
-import { useSession } from "next-auth/react";
-import Loading from "./loading";
-import { useRouter } from "next/navigation";
+} from '@/state/state';
+import { setConversations } from '@/lib/helper/edgedb/setConversations';
+import { useSession } from 'next-auth/react';
+import Loading from './loading';
+import { useRouter } from 'next/navigation';
 
 export function InputDebate() {
-  const { status } = useSession();
-
-  const [inputValue, setInputValue] = useState("");
+  const { data: session, status } = useSession();
+  const [inputValue, setInputValue] = useState('');
   const [id, setId] = useRecoilState(conversationIdState);
   const setWaitingMessage = useSetRecoilState(waitingMessageState);
   const setShowDebateInputBox = useSetRecoilState(showDebateInputBoxState);
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
   const [loader, setLoader] = useRecoilState(loaderState);
   const router = useRouter();
 
-  if (status === "unauthenticated") {
+  if (status === 'unauthenticated') {
     setTimeout(() => {
-      router.push("/");
-    }, 3000);
-    return null;
+      return router.push('/');
+    }, 1000);
   }
 
-  // console.log("id", id);
+  if (status === 'loading') {
+    return <Loading />;
+  }
 
   return (
     <>
-      {status === "authenticated" && (
+      {status === 'authenticated' && (
         <Card className="w-full">
           <CardHeader>
             <CardTitle>Enter a topic to debate</CardTitle>
@@ -71,35 +71,15 @@ export function InputDebate() {
               className="ml-2 whitespace-nowrap"
               onClick={async () => {
                 if (!inputValue) {
-                  setError("Please enter debate topic!");
+                  setError('Please enter debate topic!');
                   return;
                 }
                 const id = guid();
                 setId(id);
-
-                // const { data: conversationData, error: conversationError } =
-                //   await supabase
-                //     .from("conversations")
-                //     .insert({ conversation_id: id, topic: inputValue });
-
-                // if (conversationError) {
-                //   alert(conversationError.message);
-                //   return;
-                // }
-
-                // if (conversationData) {
-                //   console.log("conversationData", conversationData);
-                // }
-
-                // if (inputValue) {
-                //   setWaitingMessage("Wait for the debate to start");
-                //   setLoader(true);
-                //   setShowDebateInputBox(false);
-                // }
-
                 await setConversations({
                   conversationId: id,
                   topic: inputValue.trim(),
+                  userId: session?.user?.id ?? '',
                 });
 
                 const result = await runDebate(inputValue.trim(), id);
