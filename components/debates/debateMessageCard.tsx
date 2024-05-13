@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { formatDate, timeAgo } from '@/constants/default';
 import ShowMarkdown from '../showMarkdown';
 import {
@@ -20,9 +20,13 @@ import {
   DialogContent,
   Dialog,
 } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '../ui/textarea';
+import {
+  getPostLikeStatus,
+  setPostLikes,
+} from '@/lib/helper/edgedb/postLikeManager';
+import { signIn, useSession } from 'next-auth/react';
 
 const comments = [
   // Mock data for comments
@@ -61,21 +65,56 @@ const comments = [
 
 interface MessageProps {
   message: {
-    message_text: string;
+    conversation_id: string;
+    message_id: string;
     sender: string;
+    message_text: string;
     created_at: string;
   };
   senderType: string;
 }
 
-const MessageCard: React.FC<MessageProps> = ({ message, senderType }) => {
-  const [loader] = useRecoilState(loaderState);
+const MessageCard = ({ message, senderType }: MessageProps) => {
+  const { data: session, status } = useSession();
   const [liked, setLiked] = useState(false);
-  const [likeCount, setLikeCount] = useState(155);
+  const [likeCount, setLikeCount] = useState(0);
 
-  const toggleLike = () => {
-    setLiked(!liked);
-    setLikeCount(liked ? likeCount - 1 : likeCount + 1); // Increment or decrement based on whether it was previously liked
+  let userId = session?.user.id;
+  let conversation_id = message.conversation_id;
+
+  useEffect(() => {
+    const fetchLikeStatus = async () => {
+      const likeStatus = await getPostLikeStatus({
+        messageId: message.message_id,
+      });
+      setLiked(likeStatus.liked);
+      setLikeCount(likeStatus.count);
+    };
+
+    if (message?.message_id) {
+      fetchLikeStatus();
+    }
+  }, [message.message_id, userId]);
+
+  const toggleLike = async () => {
+    if (status === 'unauthenticated') {
+      return signIn('google', { callbackUrl: `/chat/${conversation_id}` });
+    }
+
+    const likeProps = {
+      messageId: message.message_id,
+      userId: userId!,
+      conversationId: conversation_id,
+    };
+
+    const response = await setPostLikes(likeProps);
+    if (response && response.liked) {
+      setLiked(true);
+      setLikeCount(response.count);
+    } else {
+      setLiked(false);
+      setLikeCount(response.count);
+    }
   };
 
   return (
@@ -146,7 +185,7 @@ const MessageCard: React.FC<MessageProps> = ({ message, senderType }) => {
                 </div>
               </DialogTrigger>
               <DialogContent>
-                <DialogHeader className='space-y-4'>
+                <DialogHeader className="space-y-4">
                   <DialogTitle className="flex text-left justify-start">
                     Comments
                   </DialogTitle>
@@ -157,7 +196,7 @@ const MessageCard: React.FC<MessageProps> = ({ message, senderType }) => {
                 </DialogHeader>
 
                 <div className="w-full">
-                  <div className="mt-2 h-[300px] md:h-[400px] overflow-y-auto space-y-4">
+                  <div className="mt-2 h-[300px] overflow-y-auto space-y-4">
                     {comments.map((comment) => (
                       <div
                         key={comment.id}
@@ -195,12 +234,6 @@ const MessageCard: React.FC<MessageProps> = ({ message, senderType }) => {
                 </div>
               </DialogContent>
             </Dialog>
-            <div className="flex items-center cursor-pointer space-x-1">
-              <EyeIcon className="h-5 w-5 text-gray-400" />
-              <span className="text-sm flex gap-1">
-                1.2k <span className="md:block hidden">views</span>
-              </span>
-            </div>
           </div>
         </div>
         <p className="text-sm text-gray-800 pt-2 flex justify-end">

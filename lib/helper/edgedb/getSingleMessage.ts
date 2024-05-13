@@ -18,7 +18,5 @@ export default async function getSingleMessages(conversationId: string) {
 
   const message = await client.query(query, { conversationId });
 
-  console.log('Filtered conversations', message);
-
   return message;
 }

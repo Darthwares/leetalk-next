@@ -6,12 +6,14 @@ import { Disclosure, Menu, Transition } from '@headlessui/react';
 import { signOut, useSession } from 'next-auth/react';
 import { classNames } from '@/app/layout';
 import Loading from './loading';
+import { useRouter } from 'next/navigation';
 
 interface HeaderProps {
   setSidebarOpen: Dispatch<SetStateAction<boolean>>;
 }
 const Header = ({ setSidebarOpen }: HeaderProps) => {
     const { data: session, status } = useSession();
+    const router = useRouter();
 
     if (status === 'loading') {
       return <Loading /> 
@@ -97,7 +99,7 @@ const Header = ({ setSidebarOpen }: HeaderProps) => {
                                   'block px-4 py-2 text-sm text-gray-700'
                                 )}
                                 onClick={() => {
-                                  return signOut();
+                                signOut({ redirect: false }).then(() => router.push('/'));
                                 }}
                               >
                                 Sign out

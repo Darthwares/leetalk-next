@@ -1,22 +1,25 @@
-'use client';
+"use client";
 
-import { useEffect } from 'react';
-import ShowMarkdown from '@/components/showMarkdown';
-import MessageCard from '@/components/debates/debateMessageCard';
-import { Button } from '@/components/ui/button';
-import { PlayIcon } from '@/components/svg';
-import Link from 'next/link';
-import Loading from '@/components/loading';
-import { useRecoilState } from 'recoil';
-import { messagesState, singleTopicState } from '@/state/state';
-import getSingleMessage from '@/lib/helper/edgedb/getSingleMessage';
-import { processMessages } from '@/constants/default';
-import getSingleTopic from '@/lib/helper/edgedb/getSingleTopic';
-import { Conversations, Message } from '@/types/types';
+import { useEffect } from "react";
+import ShowMarkdown from "@/components/showMarkdown";
+import MessageCard from "@/components/debates/debateMessageCard";
+import { Button } from "@/components/ui/button";
+import { PlayIcon } from "@/components/svg";
+import Link from "next/link";
+import Loading from "@/components/loading";
+import { useRecoilState } from "recoil";
+import { loaderState, messagesState, singleTopicState } from "@/state/state";
+import getSingleMessage from "@/lib/helper/edgedb/getSingleMessage";
+import { processMessages } from "@/constants/default";
+import getSingleTopic from "@/lib/helper/edgedb/getSingleTopic";
+import { Conversations, Message } from "@/types/types";
+import { ShareIcon } from "@heroicons/react/24/outline";
+import { EyeIcon } from "lucide-react";
 
 const ShowSingleChats = ({ params }: { params: { id: string } }) => {
   const [messages, setMessages] = useRecoilState(messagesState);
   const [topic, setTopic] = useRecoilState<any>(singleTopicState);
+  const [loader] = useRecoilState<any>(loaderState);
 
   useEffect(() => {
     async function fetchData() {
@@ -24,7 +27,7 @@ const ShowSingleChats = ({ params }: { params: { id: string } }) => {
         getSingleMessage(params.id),
         getSingleTopic(params.id),
       ]);
-      setMessages((messageData as Message[]));
+      setMessages(messageData as Message[]);
       setTopic((topicData as Conversations) || {});
     }
 
@@ -32,13 +35,30 @@ const ShowSingleChats = ({ params }: { params: { id: string } }) => {
 
     return () => {
       setMessages([]);
-      setTopic({ topic: '', created_at: '', conversation_id: '' });
+      setTopic({ topic: "", created_at: "", conversation_id: "" });
     };
   }, [params.id, setMessages, setTopic]);
 
   const processedMessages = processMessages(messages);
 
-  if (messages.length ===0) return <Loading />;
+  if (messages.length === 0 && !loader) return <Loading />;
+
+  const handleShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: "Check this out!",
+          text: "I found this interesting:",
+          url: document.location.href,
+        });
+        console.log("Content shared successfully");
+      } catch (error) {
+        console.error("Error sharing content:", error);
+      }
+    } else {
+      console.log("Share not supported on this platform");
+    }
+  };
 
   return (
     <>
@@ -48,7 +68,28 @@ const ShowSingleChats = ({ params }: { params: { id: string } }) => {
             {topic?.topic && (
               <div className="mx-auto w-full py-5">
                 <h2 className="font-extrabold text-4xl">Debate Topic</h2>
-                <h3 className="text-2xl py-5 font-bold">{topic.topic}</h3>
+                <div>
+                  <h3 className="text-2xl py-5 font-bold">{topic.topic}</h3>
+
+                  <div className="flex gap-2">
+                    <div
+                      className="flex items-center cursor-pointer space-x-1"
+                      onClick={handleShare}
+                    >
+                      <ShareIcon className="h-5 w-5 text-gray-400" />
+
+                      <span className="text-sm flex gap-1">
+                        <span className="md:block hidden">Share</span>
+                      </span>
+                    </div>
+                    <div className="flex items-center cursor-pointer space-x-1">
+                      <EyeIcon className="h-5 w-5 text-gray-400" />
+                      <span className="text-sm flex gap-1">
+                        1.2k <span className="md:block hidden">views</span>
+                      </span>
+                    </div>
+                  </div>
+                </div>
               </div>
             )}
             <div className="flex justify-end">
@@ -59,7 +100,11 @@ const ShowSingleChats = ({ params }: { params: { id: string } }) => {
               </Link>
             </div>
           </div>
-          <div className="bg-gray-100 flex flex-col py-10 rounded-lg">
+          <div
+            className={`${
+              loader && "bg-gray-100"
+            }  flex flex-col py-10 rounded-lg`}
+          >
             <div className="flex-grow overflow-y-auto p-4 space-y-8">
               {processedMessages.remainingMessages.map((message, index) => (
                 <MessageCard
@@ -76,12 +121,14 @@ const ShowSingleChats = ({ params }: { params: { id: string } }) => {
               )}
             </div>
           </div>
-          <div className="flex items-center justify-between mt-4">
-            <Button className="w-full flex gap-2 py-3">
-              <span className="text-lg">Listen </span>
-              <PlayIcon />
-            </Button>
-          </div>
+          {loader && (
+            <div className="flex items-center justify-between mt-4">
+              <Button className="w-full flex gap-2 py-3">
+                <span className="text-lg">Listen </span>
+                <PlayIcon />
+              </Button>
+            </div>
+          )}
         </div>
       )}
     </>
@@ -89,6 +136,3 @@ const ShowSingleChats = ({ params }: { params: { id: string } }) => {
 };
 
 export default ShowSingleChats;
-
-
-
