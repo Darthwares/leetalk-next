@@ -1,7 +1,9 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { Fragment } from 'react';
+import { Disclosure, Menu, Transition } from '@headlessui/react';
 import {
   Card,
   CardHeader,
@@ -9,7 +11,7 @@ import {
   CardDescription,
   CardContent,
   CardFooter,
-} from "@ui/card";
+} from '@ui/card';
 import {
   Sheet,
   SheetContent,
@@ -17,38 +19,122 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from "@/components/ui/sheet";
-import { Button } from "./ui/button";
-import { signIn, signOut, useSession } from "next-auth/react";
+} from '@/components/ui/sheet';
+import { Button } from './ui/button';
+import { signIn, signOut, useSession } from 'next-auth/react';
+import { classNames } from '@/app/layout';
+import Image from 'next/image';
+import Loading from './loading';
 
 export default function Landing() {
   const { data: session, status } = useSession();
   const router = useRouter();
 
   const handleSignIn = () => {
-    signIn("google", { callbackUrl: "/debate" });
+    signIn('google', { callbackUrl: '/debate' });
   };
 
-  console.log("session", session);
+  if (status === 'loading') {
+    return <Loading />;
+  }
   return (
-    <div className="max-w-7xl mx-auto">
-      <header className="flex h-20 w-full shrink-0 items-center justify-between px-4 md:px-6">
+    <div className="w-full mx-auto">
+      <header className="flex h-20 sticky top-0 z-40 border-b bg-white border-gray-300 w-full shrink-0 items-center justify-between px-4 md:px-6">
         <Link className="flex items-center gap-2 font-semibold" href="#">
           <SpeechIcon className="h-6 w-6" />
           <span>Debate Anything</span>
         </Link>
         <nav className="ml-auto hidden gap-4 sm:gap-6 sm:flex">
-          <button
-            className="inline-flex h-9 items-center justify-center rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-gray-50 shadow transition-colors hover:bg-gray-900/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-950 disabled:pointer-events-none disabled:opacity-50 dark:bg-gray-50 dark:text-gray-900 dark:hover:bg-gray-50/90 dark:focus-visible:ring-gray-300"
-            onClick={() => {
-              if (!session?.user.id) {
-                return handleSignIn();
-              }
-              signOut();
-            }}
-          >
-            {!session?.user.id ? "Get Stated" : "Log out"}
-          </button>
+          {!session?.user.id ? (
+            <button
+              className="inline-flex h-9 items-center justify-center rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-gray-50 shadow transition-colors hover:bg-gray-900/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-950 disabled:pointer-events-none disabled:opacity-50 dark:bg-gray-50 dark:text-gray-900 dark:hover:bg-gray-50/90 dark:focus-visible:ring-gray-300"
+              onClick={() => {
+                if (!session?.user.id) {
+                  return handleSignIn();
+                }
+              }}
+            >
+              Get Started
+            </button>
+          ) : (
+            <>
+              {session?.user.id && (
+                <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
+                  <Menu as="div" className="relative ml-3">
+                    <div>
+                      <Menu.Button className="relative flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
+                        <span className="absolute -inset-1.5" />
+                        <span className="sr-only">Open user menu</span>
+                        <Image
+                          className="h-8 w-8 rounded-full"
+                          src={
+                            session?.user?.image ?? ''
+                          }
+                            height={20}
+                            width={20}
+                          alt=""
+                        />
+                      </Menu.Button>
+                    </div>
+                    <Transition
+                      as={Fragment}
+                      enter="transition ease-out duration-100"
+                      enterFrom="transform opacity-0 scale-95"
+                      enterTo="transform opacity-100 scale-100"
+                      leave="transition ease-in duration-75"
+                      leaveFrom="transform opacity-100 scale-100"
+                      leaveTo="transform opacity-0 scale-95"
+                    >
+                      <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                        <Menu.Item>
+                          {({ active }) => (
+                            <a
+                              href="#"
+                              className={classNames(
+                                active ? 'bg-gray-100' : '',
+                                'block px-4 py-2 text-sm text-gray-700'
+                              )}
+                            >
+                              Your Profile
+                            </a>
+                          )}
+                        </Menu.Item>
+                        <Menu.Item>
+                          {({ active }) => (
+                            <a
+                              href="#"
+                              className={classNames(
+                                active ? 'bg-gray-100' : '',
+                                'block px-4 py-2 text-sm text-gray-700'
+                              )}
+                            >
+                              Settings
+                            </a>
+                          )}
+                        </Menu.Item>
+                        <Menu.Item>
+                          {({ active }) => (
+                            <a
+                              href="#"
+                              className={classNames(
+                                active ? 'bg-gray-100' : '',
+                                'block px-4 py-2 text-sm text-gray-700'
+                              )}
+                              onClick={() => {
+                                return signOut();
+                              }}
+                            >
+                              Sign out
+                            </a>
+                          )}
+                        </Menu.Item>
+                      </Menu.Items>
+                    </Transition>
+                  </Menu>
+                </div>
+              )}
+            </>
+          )}
         </nav>
         <Sheet>
           <SheetTrigger asChild>
@@ -104,9 +190,9 @@ export default function Landing() {
               <div className="flex flex-col gap-2 min-[400px]:flex-row">
                 <a
                   href={
-                    status === "unauthenticated"
+                    status === 'unauthenticated'
                       ? `/api/auth/signin?callbackUrl=/debate`
-                      : "/debate"
+                      : '/debate'
                   }
                   className="inline-flex h-10 items-center justify-center rounded-md bg-gray-900 px-8 text-sm font-medium text-gray-50 shadow transition-colors hover:bg-gray-900/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-950 disabled:pointer-events-none disabled:opacity-50 dark:bg-gray-50 dark:text-gray-900 dark:hover:bg-gray-50/90 dark:focus-visible:ring-gray-300"
                 >
@@ -135,7 +221,7 @@ export default function Landing() {
             </p>
           </div>
           <div className="grid grid-cols-1 gap-6 mt-8 md:grid-cols-2 lg:grid-cols-3">
-            <Card className="bg-gray-100">
+            <Card className="bg-gray-400">
               <CardHeader>
                 <CardTitle>Climate Change</CardTitle>
                 <CardDescription>
@@ -151,7 +237,7 @@ export default function Landing() {
                 </Link>
               </CardContent>
             </Card>
-            <Card className="bg-gray-100">
+            <Card className="bg-gray-400">
               <CardHeader>
                 <CardTitle>Artificial Intelligence</CardTitle>
                 <CardDescription>
@@ -167,7 +253,7 @@ export default function Landing() {
                 </Link>
               </CardContent>
             </Card>
-            <Card className="bg-gray-100">
+            <Card className="bg-gray-400">
               <CardHeader>
                 <CardTitle>Universal Basic Income</CardTitle>
                 <CardDescription>
@@ -202,7 +288,7 @@ export default function Landing() {
               <CardContent>
                 <blockquote className="text-lg font-semibold leading-snug lg:text-xl lg:leading-normal xl:text-2xl">
                   {
-                    "Debating on this platform has been an eye-opening experience It challenged my beliefs and made me a better critical thinker."
+                    'Debating on this platform has been an eye-opening experience It challenged my beliefs and made me a better critical thinker.'
                   }
                 </blockquote>
                 <div className="mt-4">
@@ -217,7 +303,7 @@ export default function Landing() {
               <CardContent>
                 <blockquote className="text-lg font-semibold leading-snug lg:text-xl lg:leading-normal xl:text-2xl">
                   {
-                    "The debates here are always engaging and thought-provoking. I have learned so much from the diverse perspectives shared."
+                    'The debates here are always engaging and thought-provoking. I have learned so much from the diverse perspectives shared.'
                   }
                 </blockquote>
                 <div className="mt-4">
@@ -232,7 +318,7 @@ export default function Landing() {
               <CardContent>
                 <blockquote className="text-lg font-semibold leading-snug lg:text-xl lg:leading-normal xl:text-2xl">
                   {
-                    "This platform has been a game-changer for me. The debates have helped me become a more articulate and persuasive communicator."
+                    'This platform has been a game-changer for me. The debates have helped me become a more articulate and persuasive communicator.'
                   }
                 </blockquote>
                 <div className="mt-4">

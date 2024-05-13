@@ -52,7 +52,7 @@ const ShowSingleChats = ({ params }: { params: { id: string } }) => {
               </div>
             )}
             <div className="flex justify-end">
-              <Link href="/">
+              <Link href="/debate">
                 <Button className="max-w-fit flex gap-2 py-3">
                   Start new debate
                 </Button>
@@ -89,3 +89,6 @@ const ShowSingleChats = ({ params }: { params: { id: string } }) => {
 };
 
 export default ShowSingleChats;
+
+
+

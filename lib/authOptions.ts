@@ -12,6 +12,7 @@ export const authOptions: NextAuthOptions = {
       clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
     }),
   ],
+  secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
     async signIn({ user, account }) {
       //   call database here and save the details
@@ -35,10 +36,10 @@ export const authOptions: NextAuthOptions = {
 
       try {
         await client.querySingle(query, params);
-        console.log("User inserted successfully.");
+        console.log('User inserted successfully.');
         return true;
       } catch (error) {
-        console.error("Error inserting user:", error);
+        console.error('Error inserting user:', error);
         return false;
       }
 
@@ -58,6 +59,6 @@ export const authOptions: NextAuthOptions = {
     },
   },
   session: {
-    strategy: "jwt",
+    strategy: 'jwt',
   },
 };
