@@ -17,6 +17,7 @@ import { io } from "socket.io-client";
 import { Message } from "@/types/types";
 
 const socket = io("http://localhost:5555");
+const socketProd = io("leettalk-server.vercel.app");
 
 export default function ShowChats() {
   // const { messages } = useDebateMessages();
@@ -41,10 +42,10 @@ export default function ShowChats() {
       setMessagesList(prevMessages => [...prevMessages, messageData]);
     };
   
-    socket.on("message", handleMessage);
+    socketProd.on("message", handleMessage);
   
     return () => {
-      socket.off("message", handleMessage);
+      socketProd.off("message", handleMessage);
     };
   }, []);  
 
