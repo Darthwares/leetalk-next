@@ -91,10 +91,23 @@ export async function runAgentNode({
     await setMessages(message);
 
     const socket = io("http://localhost:5555");
-    const socketProd = io("leettalk-server.vercel.app");
+    const socketProd = io("leettalk-server.vercel.app", {
+      transports: ["websocket"],
+      path: "/socket.io",
+      secure: true,
+      reconnection: true,
+      reconnectionAttempts: 5,
+    });
 
     const time = getFormattedDate();
-    socketProd.emit("message", result.content, name, id, message.messageId, time);
+    socketProd.emit(
+      "message",
+      result.content,
+      name,
+      id,
+      message.messageId,
+      time
+    );
     console.log("process.env.CLIENT_PORT", process.env.CLIENT_PORT);
   }
   return {

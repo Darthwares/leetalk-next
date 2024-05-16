@@ -17,7 +17,13 @@ import { io } from "socket.io-client";
 import { Message } from "@/types/types";
 
 const socket = io("http://localhost:5555");
-const socketProd = io("leettalk-server.vercel.app");
+const socketProd = io("leettalk-server.vercel.app", {
+  transports: ["websocket"],
+  path: "/socket.io",
+  secure: true,
+  reconnection: true,
+  reconnectionAttempts: 5,
+});
 
 export default function ShowChats() {
   // const { messages } = useDebateMessages();
@@ -39,15 +45,15 @@ export default function ShowChats() {
   useEffect(() => {
     const handleMessage = (messageData: Message) => {
       console.log("Received message:", messageData);
-      setMessagesList(prevMessages => [...prevMessages, messageData]);
+      setMessagesList((prevMessages) => [...prevMessages, messageData]);
     };
-  
+
     socketProd.on("message", handleMessage);
-  
+
     return () => {
       socketProd.off("message", handleMessage);
     };
-  }, []);  
+  }, []);
 
   return (
     <div
