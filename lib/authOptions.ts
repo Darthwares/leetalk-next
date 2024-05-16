@@ -1,9 +1,6 @@
 import { NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
-
-import { createClient } from "edgedb";
-
-const client = createClient();
+import client from "./helper/edgedb/edgedb";
 
 export const authOptions: NextAuthOptions = {
   providers: [

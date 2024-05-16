@@ -1,8 +1,7 @@
 'use server';
 
-import { createClient } from 'edgedb';
+import client from './edgedb';
 
-const client = createClient();
 
 export default async function getSingleMessages(conversationId: string) {
   const query = `

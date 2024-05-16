@@ -1,8 +1,6 @@
 "use server";
 
-import { createClient, createHttpClient } from "edgedb";
-
-const client = createClient();
+import client from "./edgedb";
 
 export default async function getList() {
   const conversations = await client.query(`\

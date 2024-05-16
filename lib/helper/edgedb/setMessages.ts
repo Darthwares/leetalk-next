@@ -1,7 +1,5 @@
 'use server';
-import { createClient } from 'edgedb';
-
-const client = createClient();
+import client from './edgedb';
 
 interface MessageProps {
   messageId: string;
