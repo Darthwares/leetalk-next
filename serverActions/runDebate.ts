@@ -105,5 +105,6 @@ export async function runDebate(topic: string, id: string) {
     return res;
   } catch (error: any) {
     console.error("run debate error",error.message);
+    throw error; 
   }
 }
