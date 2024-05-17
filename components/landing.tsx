@@ -3,13 +3,6 @@
 import Link from "next/link";
 import { Fragment } from "react";
 import { Menu, Transition } from "@headlessui/react";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from "@ui/card";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "./ui/button";
 import { signIn, signOut, useSession } from "next-auth/react";
@@ -164,7 +157,7 @@ export default function Landing() {
           </SheetContent>
         </Sheet>
       </header>
-      <section className="w-full py-12 md:pt-24">
+      <section className="w-full py-12 md:pt-16">
         <div className="container px-4 md:px-6">
           <div className="grid gap-6 lg:grid-cols-[1fr_400px] lg:gap-12 xl:grid-cols-[1fr_600px]">
             <div className="flex flex-col max-w-lg justify-center space-y-4">
@@ -201,7 +194,7 @@ export default function Landing() {
           </div>
         </div>
       </section>
-      <section className="w-full py-12 md:py-24 bg-white dark:bg-gray-800">
+      <section className="w-full py-12 bg-white dark:bg-gray-800">
         <ListenDebate />
       </section>
       <div className="w-full flex flex-col items-center justify-center">

@@ -3,28 +3,11 @@ import Carousel from 'react-multi-carousel';
 import 'react-multi-carousel/lib/styles.css';
 import { PauseIcon, PlayIcon } from './svg';
 import { Button } from './ui/button';
+import { responsive } from '@/constants/default';
 
 interface CarouselProps {
   items: any;
 }
-
-const responsive = {
-  desktop: {
-    breakpoint: { max: 3000, min: 1024 },
-    items: 3,
-    slidesToSlide: 3, 
-  },
-  tablet: {
-    breakpoint: { max: 1024, min: 664 },
-    items: 2,
-    slidesToSlide: 2,
-  },
-  mobile: {
-    breakpoint: { max: 664, min: 0 },
-    items: 1,
-    slidesToSlide: 1,
-  },
-};
 
 export function CarouselDemo({ items }: CarouselProps) {
   return (
@@ -38,20 +21,20 @@ export function CarouselDemo({ items }: CarouselProps) {
         </p>
       </div>
       <Carousel responsive={responsive} className="space-x-4" itemClass="px-2">
-        {items.map((item:any, idx:number) => (
+        {items.map((item: any, idx: number) => (
           <div
             key={idx}
             className={` min-h-80 w-full items-start p-8 rounded-lg`}
             style={{
-              background: 'linear-gradient(45deg, #2B4162, #000000)',
-              backgroundSize: '400% 400%',
+              background: "linear-gradient(45deg, #2B4162, #000000)",
+              backgroundSize: "400% 400%",
             }}
           >
             <h2 className="text-2xl h-[60px] text-white line-clamp-2 font-bold">
               {item.title}
             </h2>
             <div className="flex items-center w-full pb-2 overflow-x-auto space-x-2 mt-4">
-              {item.tags.map((tag:any, id:number) => (
+              {item.tags.map((tag: any, id: number) => (
                 <span
                   key={id}
                   className="bg-black text-white whitespace-nowrap rounded-xl px-3 py-1 text-lg"

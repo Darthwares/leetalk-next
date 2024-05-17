@@ -1,17 +1,14 @@
-import React, { useEffect, useState } from 'react';
-import { formatDate, timeAgo } from '@/constants/default';
-import ShowMarkdown from '../showMarkdown';
+import React, { useEffect, useState } from "react";
+import { timeAgo } from "@/constants/default";
+import ShowMarkdown from "../showMarkdown";
 import {
   ClaudeIcon,
-  EyeIcon,
   HeartIcon,
   MessageCircleIcon,
   OpenAiIcon,
-} from '../svg';
-import { loaderState } from '@/state/state';
-import { useRecoilState } from 'recoil';
-import { Separator } from '@radix-ui/react-separator';
-import { AvatarImage, AvatarFallback, Avatar } from '@/components/ui/avatar';
+} from "../svg";
+import { Separator } from "@radix-ui/react-separator";
+import { AvatarImage, AvatarFallback, Avatar } from "@/components/ui/avatar";
 import {
   DialogTrigger,
   DialogTitle,
@@ -19,47 +16,47 @@ import {
   DialogFooter,
   DialogContent,
   Dialog,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Textarea } from '../ui/textarea';
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "../ui/textarea";
 import {
   getPostLikeStatus,
   setPostLikes,
-} from '@/lib/helper/edgedb/postLikeManager';
-import { signIn, useSession } from 'next-auth/react';
+} from "@/lib/helper/edgedb/postLikeManager";
+import { signIn, useSession } from "next-auth/react";
+import TextToSpeechButton from "../textToSpeech";
 
 const comments = [
-  // Mock data for comments
-  { id: 1, user: 'User 1', comment: 'Great point!', time: '2 hours ago' },
+  { id: 1, user: "User 1", comment: "Great point!", time: "2 hours ago" },
   {
     id: 2,
-    user: 'User 2',
-    comment: 'I disagree with this.',
-    time: '1 day ago',
+    user: "User 2",
+    comment: "I disagree with this.",
+    time: "1 day ago",
   },
   {
     id: 3,
-    user: 'User 3',
-    comment: 'Could you provide more details?',
-    time: '3 days ago',
+    user: "User 3",
+    comment: "Could you provide more details?",
+    time: "3 days ago",
   },
   {
     id: 3,
-    user: 'User 3',
-    comment: 'Could you provide more details?',
-    time: '3 days ago',
+    user: "User 3",
+    comment: "Could you provide more details?",
+    time: "3 days ago",
   },
   {
     id: 3,
-    user: 'User 3',
-    comment: 'Could you provide more details?',
-    time: '3 days ago',
+    user: "User 3",
+    comment: "Could you provide more details?",
+    time: "3 days ago",
   },
   {
     id: 3,
-    user: 'User 3',
-    comment: 'Could you provide more details?',
-    time: '3 days ago',
+    user: "User 3",
+    comment: "Could you provide more details?",
+    time: "3 days ago",
   },
 ];
 
@@ -97,8 +94,8 @@ const MessageCard = ({ message, senderType }: MessageProps) => {
   }, [message.message_id, userId]);
 
   const toggleLike = async () => {
-    if (status === 'unauthenticated') {
-      return signIn('google', { callbackUrl: `/chat/${conversation_id}` });
+    if (status === "unauthenticated") {
+      return signIn("google", { callbackUrl: `/chat/${conversation_id}` });
     }
 
     const likeProps = {
@@ -120,46 +117,47 @@ const MessageCard = ({ message, senderType }: MessageProps) => {
   return (
     <div
       className={`lg:flex items-start max-w-7xl mx-auto gap-1 space-y-2 lg:space-y-0 lg:space-x-2 ${
-        senderType === 'claudeDebater' ? 'justify-end' : ''
+        senderType === "claudeDebater" ? "justify-end" : ""
       }`}
     >
       <div className="flex gap-2 max-w-fit items-center">
-        {senderType === 'openAIDebater' && <OpenAiIcon />}
+        {senderType === "openAIDebater" && <OpenAiIcon />}
         <h3
           className={`flex items-start font-bold capitalize lg:hidden space-x-2 ${
-            senderType === 'claudeDebater' ? 'justify-end' : ''
+            senderType === "claudeDebater" ? "justify-end" : ""
           }`}
         >
-          {senderType === 'openAIDebater' && senderType}
+          {senderType === "openAIDebater" && senderType}
         </h3>
       </div>
       <div>
         <div
           className={`${
-            senderType === 'claudeDebater' ? 'justify-end pb-2' : ''
+            senderType === "claudeDebater" ? "justify-end pb-2" : ""
           } flex gap-2 justify-end`}
         >
-          {senderType === 'claudeDebater' && <ClaudeIcon />}
+          {senderType === "claudeDebater" && <ClaudeIcon />}
           <h3
             className={`flex items-start capitalize pb-2 font-bold space-x-2 ${
-              senderType === 'claudeDebater' ? 'justify-end' : ''
+              senderType === "claudeDebater" ? "justify-end" : ""
             }`}
           >
-            {senderType === 'claudeDebater' && senderType}
+            {senderType === "claudeDebater" && senderType}
           </h3>
         </div>
-        {senderType === 'openAIDebater' && (
+        {senderType === "openAIDebater" && (
           <h3 className="lg:block -mt-2 capitalize pb-2.5 hidden font-bold">
             {senderType}
           </h3>
         )}
         <div
           className={`rounded-lg p-4 lg:mt-1.5 shadow w-full max-w-full lg:max-w-[40rem] ${
-            senderType === 'claudeDebater'
-              ? 'bg-gray-800 text-white'
-              : 'bg-white'
+            senderType === "claudeDebater"
+              ? "bg-gray-800 text-white"
+              : "bg-white"
           }`}
         >
+          <TextToSpeechButton content={message.message_text} senderType={senderType} />
           <ShowMarkdown content={message.message_text} />
           <Separator className="text-gray-500" />
           <div className="border-t border-gray-300 mt-4 pt-4 flex items-center gap-x-3 md:space-x-2 dark:border-gray-600">
@@ -169,7 +167,7 @@ const MessageCard = ({ message, senderType }: MessageProps) => {
             >
               <HeartIcon
                 className="h-5 w-5 text-gray-400"
-                fillColor={liked ? 'red' : 'gray'}
+                fillColor={liked ? "red" : "gray"}
               />
               <span className="text-sm flex gap-1">
                 {likeCount} <span className="md:block hidden">likes</span>
