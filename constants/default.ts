@@ -4,6 +4,23 @@ import {
   NewspaperIcon,
   ChartBarIcon,
 } from "@heroicons/react/24/outline";
+import {
+  Code,
+  Leaf,
+  Globe,
+  Book,
+  Heart,
+  Microscope,
+  Gamepad2,
+  DollarSign,
+  Film,
+  Shield,
+  Newspaper,
+  Gavel,
+  Users,
+  Clock,
+  AlertCircle,
+} from "lucide-react";
 
 export function guid() {
   return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
@@ -236,4 +253,78 @@ export const testimonials = [
     feedback:
       "Participating in LLM debates has significantly broadened my horizons. The models' ability to argue from multiple perspectives is fascinating and educational.",
   },
+];
+
+export const responsive = {
+  desktop: {
+    breakpoint: { max: 3000, min: 1024 },
+    items: 3,
+    slidesToSlide: 3, 
+  },
+  tablet: {
+    breakpoint: { max: 1024, min: 664 },
+    items: 2,
+    slidesToSlide: 2,
+  },
+  mobile: {
+    breakpoint: { max: 664, min: 0 },
+    items: 1,
+    slidesToSlide: 1,
+  },
+};
+
+export const topDebates = [
+  {
+    title: "The Impact of AI on Society",
+    dateAdded: "2024-05-01",
+    id: guid(),
+    time: "10:00 AM",
+    imageUrl: "https://source.unsplash.com/featured/?ai", // AI related image
+  },
+  {
+    title: "Climate Change and Its Effects",
+    dateAdded: "2024-05-02",
+    id: guid(),
+    time: "2:00 PM",
+    imageUrl: "https://source.unsplash.com/featured/?climate", // Climate change related image
+  },
+  {
+    title: "The Future of Education",
+    dateAdded: "2024-05-03",
+    id: guid(),
+    time: "11:00 AM",
+    imageUrl: "https://source.unsplash.com/featured/?education", // Education related image
+  },
+  {
+    title: "Healthcare Reform",
+    dateAdded: "2024-05-04",
+    id: guid(),
+    time: "3:00 PM",
+    imageUrl: "https://source.unsplash.com/featured/?healthcare", // Healthcare related image
+  },
+  {
+    title: "Economic Policies and Growth",
+    dateAdded: "2024-05-05",
+    id: guid(),
+    time: "1:00 PM",
+    imageUrl: "https://source.unsplash.com/featured/?economics", // Economics related image
+  },
+];
+
+export const categoryPage = [
+  { name: "Technology", href: "#", current: true, icon: Code },
+  { name: "Environment", href: "#", current: false, icon: Leaf },
+  { name: "Politics", href: "#", current: false, icon: Globe },
+  { name: "Education", href: "#", current: false, icon: Book },
+  { name: "Health", href: "#", current: false, icon: Heart },
+  { name: "Science", href: "#", current: false, icon: Microscope },
+  { name: "Sports", href: "#", current: false, icon: Gamepad2 },
+  { name: "Economics", href: "#", current: false, icon: DollarSign },
+  { name: "Culture", href: "#", current: false, icon: Film },
+  { name: "Ethics", href: "#", current: false, icon: Shield },
+  { name: "Media", href: "#", current: false, icon: Newspaper },
+  { name: "Law", href: "#", current: false, icon: Gavel },
+  { name: "Philosophy", href: "#", current: false, icon: Users },
+  { name: "History", href: "#", current: false, icon: Clock },
+  { name: "Social Issues", href: "#", current: false, icon: AlertCircle },
 ];

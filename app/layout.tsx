@@ -6,14 +6,10 @@ import { cn } from "@/lib/utils";
 import DesktopSidebar from "@/components/desktopSidebar";
 import { useState } from "react";
 import MobileViewSidebar from "@/components/mobileViewSidebar";
-import { Bars3Icon } from "@heroicons/react/24/outline";
 import SessionWrapper from "@/components/SessionWrapper";
 import Landing from "@/components/landing";
 import { usePathname } from "next/navigation";
 import Container from "@/components/container";
-import { Fragment } from 'react';
-import { Disclosure, Menu, Transition } from '@headlessui/react';
-import { BellIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import Header from "@/components/header";
 
 const fontSans = FontSans({
