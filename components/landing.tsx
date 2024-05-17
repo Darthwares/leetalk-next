@@ -10,17 +10,15 @@ import {
   CardDescription,
   CardContent,
 } from "@ui/card";
-import {
-  Sheet,
-  SheetContent,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "./ui/button";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { classNames } from "@/app/layout";
 import Image from "next/image";
 import Loading from "./loading";
-import CategoryList from "./landing/catergories/categoryList";
+import CategoryList from "./landing/categories/categoryList";
+import TestimonialCard from "./landing/testimonial/card";
+import ListenDebate from "./listenDebate";
 
 export default function Landing() {
   const { data: session, status } = useSession();
@@ -204,130 +202,13 @@ export default function Landing() {
         </div>
       </section>
       <section className="w-full py-12 md:py-24 bg-white dark:bg-gray-800">
-        <div className="container px-4 md:px-6">
-          <div className="space-y-3 text-center">
-            <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
-              Featured Debates
-            </h2>
-            <p className="mx-auto max-w-[700px] text-gray-500 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed dark:text-gray-400">
-              Explore the hottest debates and join the conversation.
-            </p>
-          </div>
-          <div className="grid grid-cols-1 gap-6 mt-8 md:grid-cols-2 lg:grid-cols-3">
-            <Card className="bg-gray-400">
-              <CardHeader>
-                <CardTitle>Climate Change</CardTitle>
-                <CardDescription>
-                  Is climate change a real threat or a hoax?
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Link
-                  className="inline-flex h-9 items-center justify-center rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-gray-50 shadow transition-colors hover:bg-gray-900/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-950 disabled:pointer-events-none disabled:opacity-50 dark:bg-gray-50 dark:text-gray-900 dark:hover:bg-gray-50/90 dark:focus-visible:ring-gray-300"
-                  href="#"
-                >
-                  Start Debate
-                </Link>
-              </CardContent>
-            </Card>
-            <Card className="bg-gray-400">
-              <CardHeader>
-                <CardTitle>Artificial Intelligence</CardTitle>
-                <CardDescription>
-                  Will AI be a boon or a curse for humanity?
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Link
-                  className="inline-flex h-9 items-center justify-center rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-gray-50 shadow transition-colors hover:bg-gray-900/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-950 disabled:pointer-events-none disabled:opacity-50 dark:bg-gray-50 dark:text-gray-900 dark:hover:bg-gray-50/90 dark:focus-visible:ring-gray-300"
-                  href="#"
-                >
-                  Start Debate
-                </Link>
-              </CardContent>
-            </Card>
-            <Card className="bg-gray-400">
-              <CardHeader>
-                <CardTitle>Universal Basic Income</CardTitle>
-                <CardDescription>
-                  Should governments provide a basic income to all citizens?
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Link
-                  className="inline-flex h-9 items-center justify-center rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-gray-50 shadow transition-colors hover:bg-gray-900/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-950 disabled:pointer-events-none disabled:opacity-50 dark:bg-gray-50 dark:text-gray-900 dark:hover:bg-gray-50/90 dark:focus-visible:ring-gray-300"
-                  href="#"
-                >
-                  Start Debate
-                </Link>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
+        <ListenDebate />
       </section>
       <div className="w-full flex flex-col items-center justify-center">
         <CategoryList />
       </div>
-      <section className="w-full py-12 md:py-24 lg:py-32">
-        <div className="container px-4 md:px-6">
-          <div className="space-y-3 text-center">
-            <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
-              What Our Participants Say
-            </h2>
-            <p className="mx-auto max-w-[700px] text-gray-500 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed dark:text-gray-400">
-              Hear from those who have experienced the thrill of debating on our
-              platform.
-            </p>
-          </div>
-          <div className="grid grid-cols-1 gap-6 mt-8 md:grid-cols-2 lg:grid-cols-3">
-            <Card>
-              <CardContent>
-                <blockquote className="text-lg font-semibold leading-snug lg:text-xl lg:leading-normal xl:text-2xl">
-                  {
-                    "Debating on this platform has been an eye-opening experience It challenged my beliefs and made me a better critical thinker."
-                  }
-                </blockquote>
-                <div className="mt-4">
-                  <div className="font-semibold">John Doe</div>
-                  <div className="text-sm text-gray-500 dark:text-gray-400">
-                    Software Engineer
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent>
-                <blockquote className="text-lg font-semibold leading-snug lg:text-xl lg:leading-normal xl:text-2xl">
-                  {
-                    "The debates here are always engaging and thought-provoking. I have learned so much from the diverse perspectives shared."
-                  }
-                </blockquote>
-                <div className="mt-4">
-                  <div className="font-semibold">Jane Smith</div>
-                  <div className="text-sm text-gray-500 dark:text-gray-400">
-                    Marketing Manager
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent>
-                <blockquote className="text-lg font-semibold leading-snug lg:text-xl lg:leading-normal xl:text-2xl">
-                  {
-                    "This platform has been a game-changer for me. The debates have helped me become a more articulate and persuasive communicator."
-                  }
-                </blockquote>
-                <div className="mt-4">
-                  <div className="font-semibold">Michael Johnson</div>
-                  <div className="text-sm text-gray-500 dark:text-gray-400">
-                    Student
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </section>
+      <TestimonialCard />
+
       <footer className="flex flex-col gap-2 sm:flex-row py-6 w-full shrink-0 items-center px-4 md:px-6 border-t">
         <p className="text-sm text-gray-500 dark:text-gray-400">
           © 2024 Debate Anything. All rights reserved.
