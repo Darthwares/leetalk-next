@@ -1,40 +1,35 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { Fragment } from 'react';
-import { Disclosure, Menu, Transition } from '@headlessui/react';
+import Link from "next/link";
+import { Fragment } from "react";
+import { Menu, Transition } from "@headlessui/react";
 import {
   Card,
   CardHeader,
   CardTitle,
   CardDescription,
   CardContent,
-  CardFooter,
-} from '@ui/card';
+} from "@ui/card";
 import {
   Sheet,
   SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
   SheetTrigger,
-} from '@/components/ui/sheet';
-import { Button } from './ui/button';
-import { signIn, signOut, useSession } from 'next-auth/react';
-import { classNames } from '@/app/layout';
-import Image from 'next/image';
-import Loading from './loading';
+} from "@/components/ui/sheet";
+import { Button } from "./ui/button";
+import { signIn, signOut, useSession } from "next-auth/react";
+import { classNames } from "@/app/layout";
+import Image from "next/image";
+import Loading from "./loading";
+import CategoryList from "./landing/catergories/categoryList";
 
 export default function Landing() {
   const { data: session, status } = useSession();
-  const router = useRouter();
 
   const handleSignIn = () => {
-    signIn('google', { callbackUrl: '/debate' });
+    signIn("google", { callbackUrl: "/debate" });
   };
 
-  if (status === 'loading') {
+  if (status === "loading") {
     return <Loading />;
   }
   return (
@@ -67,11 +62,9 @@ export default function Landing() {
                         <span className="sr-only">Open user menu</span>
                         <Image
                           className="h-8 w-8 rounded-full"
-                          src={
-                            session?.user?.image ?? ''
-                          }
-                            height={20}
-                            width={20}
+                          src={session?.user?.image ?? ""}
+                          height={20}
+                          width={20}
                           alt=""
                         />
                       </Menu.Button>
@@ -91,8 +84,8 @@ export default function Landing() {
                             <a
                               href="#"
                               className={classNames(
-                                active ? 'bg-gray-100' : '',
-                                'block px-4 py-2 text-sm text-gray-700'
+                                active ? "bg-gray-100" : "",
+                                "block px-4 py-2 text-sm text-gray-700"
                               )}
                             >
                               Your Profile
@@ -104,8 +97,8 @@ export default function Landing() {
                             <a
                               href="#"
                               className={classNames(
-                                active ? 'bg-gray-100' : '',
-                                'block px-4 py-2 text-sm text-gray-700'
+                                active ? "bg-gray-100" : "",
+                                "block px-4 py-2 text-sm text-gray-700"
                               )}
                             >
                               Settings
@@ -117,8 +110,8 @@ export default function Landing() {
                             <a
                               href="#"
                               className={classNames(
-                                active ? 'bg-gray-100' : '',
-                                'block px-4 py-2 text-sm text-gray-700'
+                                active ? "bg-gray-100" : "",
+                                "block px-4 py-2 text-sm text-gray-700"
                               )}
                               onClick={() => {
                                 return signOut();
@@ -190,9 +183,9 @@ export default function Landing() {
               <div className="flex flex-col gap-2 min-[400px]:flex-row">
                 <a
                   href={
-                    status === 'unauthenticated'
+                    status === "unauthenticated"
                       ? `/api/auth/signin?callbackUrl=/debate`
-                      : '/debate'
+                      : "/debate"
                   }
                   className="inline-flex h-10 items-center justify-center rounded-md bg-gray-900 px-8 text-sm font-medium text-gray-50 shadow transition-colors hover:bg-gray-900/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-950 disabled:pointer-events-none disabled:opacity-50 dark:bg-gray-50 dark:text-gray-900 dark:hover:bg-gray-50/90 dark:focus-visible:ring-gray-300"
                 >
@@ -272,6 +265,9 @@ export default function Landing() {
           </div>
         </div>
       </section>
+      <div className="w-full flex flex-col items-center justify-center">
+        <CategoryList />
+      </div>
       <section className="w-full py-12 md:py-24 lg:py-32">
         <div className="container px-4 md:px-6">
           <div className="space-y-3 text-center">
@@ -288,7 +284,7 @@ export default function Landing() {
               <CardContent>
                 <blockquote className="text-lg font-semibold leading-snug lg:text-xl lg:leading-normal xl:text-2xl">
                   {
-                    'Debating on this platform has been an eye-opening experience It challenged my beliefs and made me a better critical thinker.'
+                    "Debating on this platform has been an eye-opening experience It challenged my beliefs and made me a better critical thinker."
                   }
                 </blockquote>
                 <div className="mt-4">
@@ -303,7 +299,7 @@ export default function Landing() {
               <CardContent>
                 <blockquote className="text-lg font-semibold leading-snug lg:text-xl lg:leading-normal xl:text-2xl">
                   {
-                    'The debates here are always engaging and thought-provoking. I have learned so much from the diverse perspectives shared.'
+                    "The debates here are always engaging and thought-provoking. I have learned so much from the diverse perspectives shared."
                   }
                 </blockquote>
                 <div className="mt-4">
@@ -318,7 +314,7 @@ export default function Landing() {
               <CardContent>
                 <blockquote className="text-lg font-semibold leading-snug lg:text-xl lg:leading-normal xl:text-2xl">
                   {
-                    'This platform has been a game-changer for me. The debates have helped me become a more articulate and persuasive communicator.'
+                    "This platform has been a game-changer for me. The debates have helped me become a more articulate and persuasive communicator."
                   }
                 </blockquote>
                 <div className="mt-4">

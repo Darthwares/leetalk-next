@@ -18,3 +18,18 @@ export interface Conversations{
   created_at: string;
   updated_at: string;
 }
+
+export type Category = {
+  name: string;
+  icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
+};
+
+export type Card = {
+  imgUrl: string;
+  title: string;
+};
+
+export type Cards = {
+  [key: string]: Card[];
+};
+

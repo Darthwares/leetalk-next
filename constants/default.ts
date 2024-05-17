@@ -1,4 +1,9 @@
-import { Message } from "@/types/types";
+import { Cards, Category, Message } from "@/types/types";
+import {
+  UserGroupIcon,
+  NewspaperIcon,
+  ChartBarIcon,
+} from "@heroicons/react/24/outline";
 
 export function guid() {
   return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
@@ -83,3 +88,125 @@ export function getFormattedDate() {
   // Combine all parts
   return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${milliseconds}${timezoneSign}${offsetHours}:${offsetMinutes}`;
 }
+
+
+export const cards: Cards = {
+  "Personal Finance": [
+    {
+      imgUrl:
+        "https://images.pexels.com/photos/210600/pexels-photo-210600.jpeg?auto=compress&cs=tinysrgb&w=600",
+      title: "Finance 1",
+    },
+    {
+      imgUrl:
+        "https://images.pexels.com/photos/290275/pexels-photo-290275.jpeg?auto=compress&cs=tinysrgb&w=600",
+      title: "Finance 2",
+    },
+    {
+      imgUrl:
+        "https://images.pexels.com/photos/731164/pexels-photo-731164.jpeg?auto=compress&cs=tinysrgb&w=600",
+      title: "Finance 3",
+    },
+    {
+      imgUrl:
+        "https://images.pexels.com/photos/4452375/pexels-photo-4452375.jpeg?auto=compress&cs=tinysrgb&w=600",
+      title: "Finance 4",
+    },
+    {
+      imgUrl:
+        "https://images.pexels.com/photos/3808249/pexels-photo-3808249.jpeg?auto=compress&cs=tinysrgb&w=400",
+      title: "Finance 5",
+    },
+    {
+      imgUrl:
+        "https://images.pexels.com/photos/4515793/pexels-photo-4515793.jpeg?auto=compress&cs=tinysrgb&w=400",
+      title: "Finance 6",
+    },
+    {
+      imgUrl:
+        "https://images.pexels.com/photos/4607597/pexels-photo-4607597.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+      title: "Finance 7",
+    },
+  ],
+  Historical: [
+    {
+      imgUrl:
+        "https://images.pexels.com/photos/3652801/pexels-photo-3652801.jpeg?auto=compress&cs=tinysrgb&w=400",
+      title: "Historical 1",
+    },
+    {
+      imgUrl:
+        "https://images.pexels.com/photos/3018992/pexels-photo-3018992.jpeg?auto=compress&cs=tinysrgb&w=400",
+      title: "Historical 2",
+    },
+    {
+      imgUrl:
+        "https://images.pexels.com/photos/2761152/pexels-photo-2761152.jpeg?auto=compress&cs=tinysrgb&w=400",
+      title: "Historical 3",
+    },
+    {
+      imgUrl:
+        "https://images.pexels.com/photos/1576001/pexels-photo-1576001.jpeg?auto=compress&cs=tinysrgb&w=400",
+      title: "Historical 4",
+    },
+    {
+      imgUrl:
+        "https://images.pexels.com/photos/8832092/pexels-photo-8832092.jpeg?auto=compress&cs=tinysrgb&w=400",
+      title: "Historical 5",
+    },
+    {
+      imgUrl:
+        "https://images.pexels.com/photos/10906342/pexels-photo-10906342.jpeg?auto=compress&cs=tinysrgb&w=400",
+      title: "Historical 6",
+    },
+    {
+      imgUrl:
+        "https://images.pexels.com/photos/14310463/pexels-photo-14310463.jpeg?auto=compress&cs=tinysrgb&w=400",
+      title: "Historical 7",
+    },
+  ],
+  Information: [
+    {
+      imgUrl:
+        "https://images.pexels.com/photos/4170628/pexels-photo-4170628.jpeg?auto=compress&cs=tinysrgb&w=400",
+      title: "Information 1",
+    },
+    {
+      imgUrl:
+        "https://images.pexels.com/photos/2002217/pexels-photo-2002217.jpeg?auto=compress&cs=tinysrgb&w=400",
+      title: "Information 2",
+    },
+    {
+      imgUrl:
+        "https://images.pexels.com/photos/57749/pexels-photo-57749.jpeg?auto=compress&cs=tinysrgb&w=400",
+      title: "Information 3",
+    },
+    {
+      imgUrl:
+        "https://images.pexels.com/photos/4059426/pexels-photo-4059426.jpeg?auto=compress&cs=tinysrgb&w=400",
+      title: "Information 4",
+    },
+    {
+      imgUrl:
+        "https://images.pexels.com/photos/4307849/pexels-photo-4307849.jpeg?auto=compress&cs=tinysrgb&w=400",
+      title: "Information 5",
+    },
+    {
+      imgUrl:
+        "https://images.pexels.com/photos/2168293/pexels-photo-2168293.jpeg?auto=compress&cs=tinysrgb&w=600",
+      title: "Information 6",
+    },
+    {
+      imgUrl:
+        "https://images.pexels.com/photos/15139464/pexels-photo-15139464/free-photo-of-piles-of-different-newspapers.jpeg?auto=compress&cs=tinysrgb&w=400",
+      title: "Information 7",
+    },
+  ],
+};
+
+
+export const categories: Category[] = [
+  { name: "Personal Finance", icon: UserGroupIcon },
+  { name: "Historical", icon: NewspaperIcon },
+  { name: "Information", icon: ChartBarIcon },
+];
