@@ -73,6 +73,10 @@
   body {
     @apply bg-background text-foreground;
   }
+  
+}
+.toastClass {
+  @apply fixed right-0 top-4 md:right-4 sm:max-w-fit bg-green-200 text-gray-900 flex;
 }
 
 ::-webkit-scrollbar {

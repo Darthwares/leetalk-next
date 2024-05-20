@@ -4,23 +4,21 @@ import { Quicksand as FontSans } from "next/font/google";
 import { RecoilRoot } from "recoil";
 import { cn } from "@/lib/utils";
 import DesktopSidebar from "@/components/desktopSidebar";
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import MobileViewSidebar from "@/components/mobileViewSidebar";
 import SessionWrapper from "@/components/SessionWrapper";
 import Landing from "@/components/landing";
 import { usePathname } from "next/navigation";
 import Container from "@/components/container";
 import Header from "@/components/header";
+import Loading from "@/components/loading";
+import { Toaster } from "@/components/ui/toaster";
 
 const fontSans = FontSans({
   subsets: ["latin"],
   variable: "--font-sans",
 });
 
-
-export function classNames(...classes:string[]) {
-  return classes.filter(Boolean).join(' ');
-}
 export default function RootLayout({ children, params }: any) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const pathname = usePathname();
@@ -39,7 +37,7 @@ export default function RootLayout({ children, params }: any) {
             <Container>
               <div className="w-full max-w-7xl xl:max-w-[90rem] mx-auto">
                 {pathname !== '/' && (
-                  <>
+                  <Suspense fallback={<Loading />}>
                     <MobileViewSidebar
                       sidebarOpen={sidebarOpen}
                       setSidebarOpen={setSidebarOpen}
@@ -49,10 +47,11 @@ export default function RootLayout({ children, params }: any) {
                       <Header setSidebarOpen={setSidebarOpen} />
                       {children}
                     </div>
-                  </>
+                  </Suspense>
                 )}
                 {pathname === '/' && <Landing />}
               </div>
+              <Toaster />
             </Container>
           </RecoilRoot>
         </SessionWrapper>

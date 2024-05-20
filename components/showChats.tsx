@@ -1,44 +1,37 @@
-"use client";
-
-import ShowMarkdown from "./showMarkdown";
-import { processMessages } from "@/constants/default";
-import useDebateMessages from "@/lib/helper/useDebateMessages";
-import MessageCard from "./debates/debateMessageCard";
+'use client';
+import ShowMarkdown from './showMarkdown';
+import { processMessages } from '@/constants/default';
+import MessageCard from './debates/debateMessageCard';
 import {
   conversationIdState,
   loaderState,
   messagesState,
   showDebateInputBoxState,
   waitingMessageState,
-} from "@/state/state";
-import { useRecoilState, useSetRecoilState } from "recoil";
-import { useEffect, useRef } from "react";
-import { Button } from "./ui/button";
-import { publishConversation } from "@/lib/helper/edgedb/getCategoryList";
-
-
+} from '@/state/state';
+import { useRecoilState, useSetRecoilState } from 'recoil';
+import { useEffect, useRef } from 'react';
+import { Button } from './ui/button';
+import { publishConversation } from '@/lib/helper/edgedb/getCategoryList';
+import Link from 'next/link';
 export default function ShowChats() {
-  const [loader] = useRecoilState(loaderState);
   const messageRef = useRef<HTMLDivElement | null>(null);
   const [waitingMessage] = useRecoilState(waitingMessageState);
+  const [loader] = useRecoilState(loaderState);
   const setShowDebateInputBox = useSetRecoilState(showDebateInputBoxState);
   const [messages, setMessagesList] = useRecoilState(messagesState);
   const messageList = processMessages(messages);
   const [id] = useRecoilState(conversationIdState);
-
-  console.log("messages", id, messages);
-
+  console.log('messages', id, messages);
   useEffect(() => {
     if (messageRef.current) {
-      messageRef.current.scrollIntoView({ behavior: "smooth" });
+      messageRef.current.scrollIntoView({ behavior: 'smooth' });
     }
   }, [messageList]);
-
-
   return (
     <div
       className={`${
-        messages?.length > 0 && "bg-gray-100"
+        messages?.length > 0 && 'bg-gray-100'
       } bg-white flex flex-col py-10 rounded-lg`}
     >
       {messages?.length > 0 && (
@@ -54,9 +47,18 @@ export default function ShowChats() {
           </Button>
         </div>
       )}
-
-      {messages.length > 0 ? (
-        <div className="flex-grow overflow-y-auto p-4 space-y-8">
+      {/* add a lottie and refine UI*/}
+      {loader && <>AI is Debating for you!</>}
+      {/* refine UI */}
+      {!loader && messages.length > 0 && (
+        <Button>
+          <a href={`/chat/${id}`}>Click to view your debate</a>
+        </Button>
+      )}
+      {/* if !loader then show a lottie and message */}
+      {/* not required  */}
+      {/* {messages.length > 0 ? (
+        <div className="flex-grow overflow-y-auto py-4 space-y-8">
           {messageList.remainingMessages?.map((message, id) => {
             return (
               <MessageCard
@@ -67,12 +69,6 @@ export default function ShowChats() {
             );
           })}
           <div ref={messageRef} />
-          {loader && (
-            <p className="text-3xl text-gray-900 font-extrabold">
-              AI is thinking
-            </p>
-          )}
-
           {messageList.conclusion && (
             <div className="bg-green-100">
               <div className="p-4 space-y-2">
@@ -81,18 +77,18 @@ export default function ShowChats() {
               </div>
             </div>
           )}
-
           <div className="flex justify-end w-full">
-            <Button
+            <Link
+              href={"/my-debates"}
               className="max-w-fit flex gap-2 py-3"
-              onClick={() => {
-                setMessagesList([]);
-                setShowDebateInputBox(true);
-                publishConversation(id);
+              onClick={async () => {
+                // setMessagesList([]);
+                // setShowDebateInputBox(true);
+                await publishConversation(id);
               }}
             >
-              Publish Debate
-            </Button>
+              <Button>Publish Debate</Button>
+            </Link>
           </div>
         </div>
       ) : (
@@ -104,7 +100,7 @@ export default function ShowChats() {
             alt="debate-image"
           />
         </div>
-      )}
+      )} */}
     </div>
   );
 }

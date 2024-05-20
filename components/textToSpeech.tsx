@@ -1,63 +1,144 @@
-'use client';
-import { SpeakerWaveIcon, PauseIcon } from '@heroicons/react/24/outline';
-import React, { useState } from 'react';
+"use client";
+
+import { PauseIcon } from "@heroicons/react/24/outline";
+import React, { useState, useRef, useEffect } from "react";
+import WaveSurfer from "wavesurfer.js";
+import { PlayIcon } from "./svg";
+
 const TextToSpeechButton = ({
   content,
   senderType,
 }: {
   content: string;
-  senderType: string;
+  senderType?: string;
 }) => {
-  const [audioInstance, setAudioInstance] = useState<HTMLAudioElement | null>(
-    null
-  );
+  const waveSurferRef = useRef<WaveSurfer | null>(null);
+  const waveformRef = useRef<HTMLDivElement | null>(null);
+  const [audioUrl, setAudioUrl] = useState<string | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
-  function playAudio(url: any, startTime: number = 0) {
-    return new Promise((resolve) => {
-      const audio = new Audio(url);
-      audio.currentTime = startTime;
-      audio.onended = () => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+
+  useEffect(() => {
+    if (waveformRef.current && !waveSurferRef.current) {
+      waveSurferRef.current = WaveSurfer.create({
+        container: waveformRef.current,
+        waveColor: "#ddd",
+        progressColor: "#1255C8",
+        height: 40,
+      });
+
+      waveSurferRef.current.on("ready", () => {
+        setDuration(waveSurferRef.current?.getDuration() || 0);
+      });
+
+      waveSurferRef.current.on("audioprocess", () => {
+        setCurrentTime(waveSurferRef.current?.getCurrentTime() || 0);
+      });
+
+      waveSurferRef.current.on("finish", () => {
         setIsPlaying(false);
-        resolve(null);
-      };
-      setAudioInstance(audio);
-      audio.play();
-      setIsPlaying(true);
-    });
-  }
-  const handleClick = async () => {
-    if (isPlaying && audioInstance) {
-      audioInstance.pause();
-      setIsPlaying(false);
-      return;
+        setCurrentTime(0);
+      });
     }
-    if (audioInstance) {
-      audioInstance.play();
-      setIsPlaying(true);
-      return;
-    }
-    const response = await fetch('/api/texttospeech', {
-      method: 'POST',
+  }, []);
+
+  const handleFetchAudio = async () => {
+    setIsLoading(true);
+    const response = await fetch("/api/texttospeech", {
+      method: "POST",
       body: JSON.stringify({
         text: content,
-        senderType: senderType === 'openAIDebater' ? 'alloy' : 'nova',
+        senderType: senderType === "openAIDebater" ? "alloy" : "nova",
       }),
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
     });
     const blob = await response.blob();
     const url = URL.createObjectURL(blob);
-    await playAudio(url);
+    setAudioUrl(url);
+    if (waveSurferRef.current) {
+      waveSurferRef.current.load(url);
+    }
+    setIsLoading(false);
   };
+
+  const handleClick = async () => {
+    if (isPlaying) {
+      waveSurferRef?.current?.pause();
+      setIsPlaying(false);
+      return;
+    }
+    if (!audioUrl) {
+      await handleFetchAudio();
+    }
+    waveSurferRef?.current?.play();
+    setIsPlaying(true);
+  };
+
+  const formatTime = (seconds: number) => {
+    const minutes = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${minutes}:${secs < 10 ? "0" : ""}${secs}`;
+  };
+
   return (
-    <button onClick={handleClick}>
-      {isPlaying ? (
-        <PauseIcon className="w-5 h-5" />
-      ) : (
-        <SpeakerWaveIcon className="w-5 h-5" />
+    <div className="flex w-full gap-2 items-center">
+      <div className="flex w-full py-2 items-center gap-3">
+        <button
+          onClick={handleClick}
+          className={`${
+            senderType === "openAIDebater"
+              ? "bg-black text-white"
+              : "bg-white text-black"
+          } rounded-full p-2`}
+          disabled={isLoading}
+        >
+          {isPlaying ? (
+            <PauseIcon className="w-6 h-6" />
+          ) : (
+            <PlayIcon className="w-6 h-6" />
+          )}
+        </button>
+        {!isLoading && isPlaying && (
+          <span className="invert font-bold">{formatTime(currentTime)}</span>
+        )}
+
+        {isLoading ? (
+          <div className="flex gap-2 items-center justify-center">
+            <span>
+              <svg
+                aria-hidden="true"
+                className="inline w-5 h-5 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"
+                viewBox="0 0 100 101"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                  fill="currentColor"
+                />
+                <path
+                  d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                  fill="currentFill"
+                />
+              </svg>
+            </span>
+            <span className="invert font-bold">Wait, audio is loading...</span>
+          </div>
+        ) : (
+          <div ref={waveformRef} className="w-full"></div>
+        )}
+      </div>
+      {!isLoading && isPlaying && (
+        <div className="flex justify-end items-center invert font-bold">
+          <span>{formatTime(duration)}</span>
+        </div>
       )}
-    </button>
+    </div>
   );
 };
+
 export default TextToSpeechButton;

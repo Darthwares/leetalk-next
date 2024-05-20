@@ -25,5 +25,5 @@
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "app/realtime/[id]"],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules"],
 }

@@ -1,25 +1,86 @@
-"use client";
+'use client';
 
-import { useEffect } from "react";
-import ShowMarkdown from "@/components/showMarkdown";
-import MessageCard from "@/components/debates/debateMessageCard";
-import { Button } from "@/components/ui/button";
-import { PlayIcon } from "@/components/svg";
-import Link from "next/link";
-import Loading from "@/components/loading";
-import { useRecoilState } from "recoil";
-import { loaderState, messagesState, singleTopicState } from "@/state/state";
-import getSingleMessage from "@/lib/helper/edgedb/getSingleMessage";
-import { processMessages } from "@/constants/default";
-import getSingleTopic from "@/lib/helper/edgedb/getSingleTopic";
-import { Conversations, Message } from "@/types/types";
-import { ShareIcon } from "@heroicons/react/24/outline";
-import { EyeIcon } from "lucide-react";
+import { useEffect, useState } from 'react';
+import ShowMarkdown from '@/components/showMarkdown';
+import MessageCard from '@/components/debates/debateMessageCard';
+import { Button } from '@/components/ui/button';
+import { ArrowPathIcon, SpinnerIcon } from '@/components/svg';
+import Link from 'next/link';
+import { useRecoilState } from 'recoil';
+import {
+  loaderState,
+  messagesState,
+  singleTopicState,
+} from '@/state/state';
+import getSingleMessage from '@/lib/helper/edgedb/getSingleMessage';
+import { processMessages } from '@/constants/default';
+import getSingleTopic from '@/lib/helper/edgedb/getSingleTopic';
+import { Conversations, Message } from '@/types/types';
+import { ShareIcon } from '@heroicons/react/24/outline';
+import { ArrowUp, EyeIcon } from 'lucide-react';
+import TextToSpeechButton from '@/components/textToSpeech';
+import SuccessToast from '@/components/successToast';
+import { useSession } from 'next-auth/react';
+import { useToast } from '@/components/ui/use-toast';
+import { publishConversation } from '@/lib/helper/edgedb/getCategoryList';
 
 const ShowSingleChats = ({ params }: { params: { id: string } }) => {
   const [messages, setMessages] = useRecoilState(messagesState);
   const [topic, setTopic] = useRecoilState<any>(singleTopicState);
   const [loader] = useRecoilState<any>(loaderState);
+  
+  const { data: session } = useSession();
+  const [debates, setDebates] = useState<any>();
+  const [loading, setLoading] = useState(false);
+  const { toast } = useToast();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (session?.user?.id) {
+        const data = await getSingleTopic(params.id);
+        if (data) {
+          setDebates(data as Conversations);
+        }
+      }
+    };
+    fetchData();
+  }, [session, params.id]);
+
+  const handlePublish = async (id: string) => {
+    try {
+      setLoading(true);
+      const updatedDebate = await publishConversation(id);
+      if (updatedDebate) {
+        setLoading(false);
+        toast({
+          className: 'toastClass',
+          action: (
+            <div className="px-5">
+              <SuccessToast
+                title="Successfully published!"
+                description="Your debate is now visible to other users."
+                className="text-green-800 border-green-300 bg-green-100"
+              />
+            </div>
+          ),
+        });
+      }
+    } catch (error) {
+      setLoading(false);
+      toast({
+        className: 'toastClass',
+        action: (
+          <div className="px-5">
+            <SuccessToast
+              title="Failed publish!"
+              description="There was an error publishing your debate. Please try again."
+              className="text-green-800 border-green-300 bg-green-100"
+            />
+          </div>
+        ),
+      });
+    }
+  };
 
   useEffect(() => {
     async function fetchData() {
@@ -35,28 +96,28 @@ const ShowSingleChats = ({ params }: { params: { id: string } }) => {
 
     return () => {
       setMessages([]);
-      setTopic({ topic: "", created_at: "", conversation_id: "" });
+      setTopic({ topic: '', created_at: '', conversation_id: '' });
     };
   }, [params.id, setMessages, setTopic]);
 
   const processedMessages = processMessages(messages);
 
-  if (messages.length === 0 && !loader) return <Loading />;
+  // if (messages.length === 0 && !loader) return <Loading />;
 
   const handleShare = async () => {
     if (navigator.share) {
       try {
         await navigator.share({
-          title: "Check this out!",
-          text: "I found this interesting:",
+          title: 'Check this out!',
+          text: 'I found this interesting:',
           url: document.location.href,
         });
-        console.log("Content shared successfully");
+        console.log('Content shared successfully');
       } catch (error) {
-        console.error("Error sharing content:", error);
+        console.error('Error sharing content:', error);
       }
     } else {
-      console.log("Share not supported on this platform");
+      console.log('Share not supported on this platform');
     }
   };
 
@@ -82,14 +143,9 @@ const ShowSingleChats = ({ params }: { params: { id: string } }) => {
                         <span className="md:block hidden">Share</span>
                       </span>
                     </div>
-                    <div className="flex items-center cursor-pointer space-x-1">
-                      <EyeIcon className="h-5 w-5 text-gray-400" />
-                      <span className="text-sm flex gap-1">
-                        1.2k <span className="md:block hidden">views</span>
-                      </span>
-                    </div>
                   </div>
                 </div>
+                {/* we can also publish direcly after clicking here, we can show a modal and then publish directly */}
               </div>
             )}
             <div className="flex justify-end">
@@ -102,10 +158,10 @@ const ShowSingleChats = ({ params }: { params: { id: string } }) => {
           </div>
           <div
             className={`${
-              loader && "bg-gray-100"
+              loader && 'bg-gray-100'
             }  flex flex-col py-10 rounded-lg`}
           >
-            <div className="flex-grow overflow-y-auto p-4 space-y-8">
+            <div className="flex-grow overflow-y-auto py-4 space-y-8">
               {processedMessages.remainingMessages.map((message, index) => (
                 <MessageCard
                   key={index}
@@ -116,19 +172,50 @@ const ShowSingleChats = ({ params }: { params: { id: string } }) => {
               {processedMessages.conclusion && (
                 <div className="bg-green-100 p-4 space-y-2">
                   <h3 className="text-xl font-bold">Conclusion:</h3>
+                  <TextToSpeechButton
+                    content={processedMessages.conclusion}
+                    senderType={''}
+                  />
                   <ShowMarkdown content={processedMessages.conclusion} />
+                </div>
+              )}
+              {session?.user.id === debates?.user_id && (
+                <div className="fixed bottom-0 gap-5 left-0 w-full bg-white shadow-lg p-4 flex justify-end">
+                  <Button className="flex items-center cursor-pointer space-x-1">
+                    <ArrowPathIcon className="h-5 w-5 text-white" />
+                    <span className="flex gap-1">
+                      <span className="text-sm">Try again</span>
+                    </span>
+                  </Button>
+                  {!debates?.published && (
+                    <Button
+                      onClick={() => handlePublish(params.id)}
+                      disabled={loading}
+                      className="flex items-center cursor-pointer space-x-1"
+                    >
+                      <Link href={'/my-debates'}>
+                        <span className="flex gap-1">
+                          <span className="text-sm">
+                            {loading ? (
+                              <span className="flex items-center space-x-1">
+                                <SpinnerIcon className="inline w-4 h-4 me-3 text-gray-200 animate-spin dark:text-gray-600" />
+                                Wait...
+                              </span>
+                            ) : (
+                              <span className="flex gap-1 items-center space-x-1">
+                                <EyeIcon className="h-5 w-5 text-white" />
+                                Publish debate
+                              </span>
+                            )}
+                          </span>
+                        </span>
+                      </Link>
+                    </Button>
+                  )}
                 </div>
               )}
             </div>
           </div>
-          {loader && (
-            <div className="flex items-center justify-between mt-4">
-              <Button className="w-full flex gap-2 py-3">
-                <span className="text-lg">Listen </span>
-                <PlayIcon />
-              </Button>
-            </div>
-          )}
         </div>
       )}
     </>

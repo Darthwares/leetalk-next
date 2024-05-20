@@ -187,10 +187,6 @@ const MessageCard = ({ message, senderType }: MessageProps) => {
                   <DialogTitle className="flex text-left justify-start">
                     Comments
                   </DialogTitle>
-                  <div className="flex mt-4 gap-2">
-                    <Button>Latest</Button>
-                    <Button>Old</Button>
-                  </div>
                 </DialogHeader>
 
                 <div className="w-full">

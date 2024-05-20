@@ -1,5 +1,6 @@
 "use server";
 
+import { Conversations } from "@/types/types";
 import client from "./edgedb";
 
 export default async function getCategoryList(category: string) {
@@ -18,7 +19,6 @@ export default async function getCategoryList(category: string) {
   return await client.query(query, { category });
 }
 
-
 export async function publishConversation(id: string) {
   const query = `
     UPDATE Conversations
@@ -30,12 +30,29 @@ export async function publishConversation(id: string) {
 
   try {
     const result = await client.query(query, { id });
+    console.log("Conversation updated successfully:", result);
+    return result as Conversations[];
+  } catch (error) {
+    console.error("Error updating conversation:", error);
+    throw error;
+  }
+}
+
+export async function unPublishConversation(id: string) {
+  const query = `
+    UPDATE Conversations
+    FILTER .conversation_id = <str>$id
+    SET {
+      published := false
+    };
+  `;
+
+  try {
+    const result = await client.query(query, { id });
     console.log('Conversation updated successfully:', result);
-    return result;
+    return result as Conversations[];
   } catch (error) {
     console.error('Error updating conversation:', error);
     throw error;
   }
 }
-
-

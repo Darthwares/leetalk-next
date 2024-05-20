@@ -1,20 +1,21 @@
 'use client';
+
 import React, { Dispatch, SetStateAction } from 'react';
 import { Bars3Icon } from '@heroicons/react/24/outline';
 import { Fragment } from 'react';
 import { Disclosure, Menu, Transition } from '@headlessui/react';
 import { signOut, useSession } from 'next-auth/react';
-import { classNames } from '@/app/layout';
+
 import Loading from './loading';
 import { useRouter } from 'next/navigation';
-
+import { classNames } from '@/lib/utils';
 interface HeaderProps {
   setSidebarOpen: Dispatch<SetStateAction<boolean>>;
 }
+
 const Header = ({ setSidebarOpen }: HeaderProps) => {
     const { data: session, status } = useSession();
     const router = useRouter();
-
     if (status === 'loading') {
       return <Loading /> 
     }
@@ -46,10 +47,8 @@ const Header = ({ setSidebarOpen }: HeaderProps) => {
                           <span className="absolute -inset-1.5" />
                           <span className="sr-only">Open user menu</span>
                           <img
-                            className="h-8 w-8 rounded-full"
-                            src={
-                              session?.user?.image ?? ''
-                            }
+                            className="h-8 w-8 bg-gray-300 rounded-full"
+                            src={session?.user?.image ?? ''}
                             alt=""
                           />
                         </Menu.Button>
@@ -67,43 +66,44 @@ const Header = ({ setSidebarOpen }: HeaderProps) => {
                           <Menu.Item>
                             {({ active }) => (
                               <a
-                                href="#"
+                                href="/my-debates"
                                 className={classNames(
                                   active ? 'bg-gray-100' : '',
                                   'block px-4 py-2 text-sm text-gray-700'
                                 )}
                               >
-                                Your Profile
+                                My Debates
                               </a>
                             )}
                           </Menu.Item>
                           <Menu.Item>
                             {({ active }) => (
                               <a
-                                href="#"
+                                href="/categories"
                                 className={classNames(
                                   active ? 'bg-gray-100' : '',
                                   'block px-4 py-2 text-sm text-gray-700'
                                 )}
                               >
-                                Settings
+                                Categories
                               </a>
                             )}
                           </Menu.Item>
                           <Menu.Item>
                             {({ active }) => (
-                              <a
-                                href="#"
+                              <button
                                 className={classNames(
                                   active ? 'bg-gray-100' : '',
                                   'block px-4 py-2 text-sm text-gray-700'
                                 )}
                                 onClick={() => {
-                                signOut({ redirect: false }).then(() => router.push('/'));
+                                  signOut({ redirect: false }).then(() =>
+                                    router.push('/')
+                                  );
                                 }}
                               >
                                 Sign out
-                              </a>
+                              </button>
                             )}
                           </Menu.Item>
                         </Menu.Items>
@@ -118,5 +118,4 @@ const Header = ({ setSidebarOpen }: HeaderProps) => {
       </>
     );
 };
-
 export default Header;

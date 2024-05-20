@@ -6,15 +6,17 @@ import { Menu, Transition } from "@headlessui/react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "./ui/button";
 import { signIn, signOut, useSession } from "next-auth/react";
-import { classNames } from "@/app/layout";
 import Image from "next/image";
 import Loading from "./loading";
 import CategoryList from "./landing/categories/categoryList";
 import TestimonialCard from "./landing/testimonial/card";
 import ListenDebate from "./listenDebate";
+import { classNames } from "@/lib/utils";
+import { useRouter } from "next/navigation";
 
 export default function Landing() {
   const { data: session, status } = useSession();
+  const router = useRouter()
 
   const handleSignIn = () => {
     signIn("google", { callbackUrl: "/debate" });
@@ -53,7 +55,7 @@ export default function Landing() {
                         <span className="sr-only">Open user menu</span>
                         <Image
                           className="h-8 w-8 rounded-full"
-                          src={session?.user?.image ?? ""}
+                          src={session?.user?.image ?? ''}
                           height={20}
                           width={20}
                           alt=""
@@ -73,43 +75,42 @@ export default function Landing() {
                         <Menu.Item>
                           {({ active }) => (
                             <a
-                              href="#"
+                              href="/my-debates"
                               className={classNames(
-                                active ? "bg-gray-100" : "",
-                                "block px-4 py-2 text-sm text-gray-700"
+                                active ? 'bg-gray-100' : '',
+                                'block px-4 py-2 text-sm text-gray-700'
                               )}
                             >
-                              Your Profile
+                              My Debates
                             </a>
                           )}
                         </Menu.Item>
                         <Menu.Item>
                           {({ active }) => (
                             <a
-                              href="#"
+                              href="/categories"
                               className={classNames(
-                                active ? "bg-gray-100" : "",
-                                "block px-4 py-2 text-sm text-gray-700"
+                                active ? 'bg-gray-100' : '',
+                                'block px-4 py-2 text-sm text-gray-700'
                               )}
                             >
-                              Settings
+                              Categories
                             </a>
                           )}
                         </Menu.Item>
                         <Menu.Item>
                           {({ active }) => (
-                            <a
-                              href="#"
+                            <button
                               className={classNames(
-                                active ? "bg-gray-100" : "",
-                                "block px-4 py-2 text-sm text-gray-700"
+                                active ? 'bg-gray-100' : '',
+                                'block px-4 py-2 text-sm text-gray-700'
                               )}
                               onClick={() => {
                                 return signOut();
                               }}
                             >
                               Sign out
-                            </a>
+                            </button>
                           )}
                         </Menu.Item>
                       </Menu.Items>
@@ -131,28 +132,34 @@ export default function Landing() {
             <div className="grid gap-2 py-6">
               <Link
                 className="flex w-full items-center py-2 text-lg font-semibold"
-                href="#"
+                href="/debate"
               >
-                Debates
+                Start Debate
               </Link>
               <Link
                 className="flex w-full items-center py-2 text-lg font-semibold"
-                href="#"
+                href="/my-debates"
               >
-                Join
+                My Debates
               </Link>
+
               <Link
                 className="flex w-full items-center py-2 text-lg font-semibold"
-                href="#"
+                href="/categories"
               >
-                About
+                Categories
               </Link>
-              <Link
+              <Button
                 className="flex w-full items-center py-2 text-lg font-semibold"
-                href="#"
+                onClick={() => {
+                  if (!session?.user.id) {
+                    return handleSignIn();
+                  }
+                  return signOut();
+                }}
               >
-                Contact
-              </Link>
+                {session?.user.id ? 'Logout' : 'Login'}
+              </Button>
             </div>
           </SheetContent>
         </Sheet>
@@ -172,16 +179,17 @@ export default function Landing() {
                 </p>
               </div>
               <div className="flex flex-col gap-2 min-[400px]:flex-row">
-                <a
-                  href={
-                    status === "unauthenticated"
-                      ? `/api/auth/signin?callbackUrl=/debate`
-                      : "/debate"
-                  }
+                <button
+                  onClick={() => {
+                    if (!session?.user.id) {
+                      return handleSignIn();
+                    }
+                    return router.push('/debate');
+                  }}
                   className="inline-flex h-10 items-center justify-center rounded-md bg-gray-900 px-8 text-sm font-medium text-gray-50 shadow transition-colors hover:bg-gray-900/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-950 disabled:pointer-events-none disabled:opacity-50 dark:bg-gray-50 dark:text-gray-900 dark:hover:bg-gray-50/90 dark:focus-visible:ring-gray-300"
                 >
                   Start Debate
-                </a>
+                </button>
               </div>
             </div>
             <img

@@ -6,6 +6,9 @@ import { useWindowDimensions } from "@/lib/helper/useWindowDimensions";
 import { Input } from "./ui/input";
 import useDebateTopics from "@/lib/helper/useDebateTopics";
 import getList from "@/lib/helper/edgedb/dbClient";
+import { useRecoilState } from "recoil";
+import { topicListState } from "@/state/state";
+import { Conversations } from "@/types/types";
 
 interface TopicListProps {
   setSidebarOpen?: Dispatch<SetStateAction<boolean>>;
@@ -14,18 +17,12 @@ const TopicList = ({ setSidebarOpen }: TopicListProps) => {
   const { height, width } = useWindowDimensions();
   const [searchTerm, setSearchTerm] = useState("");
   // const { topics } = useDebateTopics();
-  const [topics, setTopics] = useState<any[]>([]);
-
-  // const filteredTopics = useMemo(() => {
-  //   return topics?.filter((topic) =>
-  //     topic?.topic?.toLowerCase()?.includes(searchTerm?.toLowerCase())
-  //   );
-  // }, [searchTerm, topics]);
+  const [topics, setTopics] = useRecoilState(topicListState);
 
   useEffect(() => {
     async function getBlogList() {
       const data = await getList(); // Assuming getList fetches your topics
-      setTopics(data); // Set topics here
+      setTopics(data as Conversations[]); // Set topics here
     }
     getBlogList();
   }, []); // Dependencies can be added if needed

@@ -28,6 +28,9 @@ const singleTopicState = atom<Conversations>({
     created_at: "",
     updated_at: "",
     conversation_id: "",
+    user_id: "",
+    category: "",
+    published: false,
   },
 });
 const loaderState = atom<boolean>({
@@ -50,6 +53,10 @@ const debateCategoryState = atom<string | null>({
   key: "debateCategoryState",
   default: "",
 });
+const topicListState = atom<Conversations[]>({
+  key: 'topicListState',
+  default: [],
+});
 
 export {
   conversationIdState,
@@ -62,4 +69,5 @@ export {
   messageEmojiState,
   debateListState,
   debateCategoryState,
+  topicListState,
 };
