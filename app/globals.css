@@ -75,6 +75,25 @@
   }
 }
 
+::-webkit-scrollbar {
+  width: 2px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: black; /* Color of the scrollbar thumb */
+  border-radius: 20px; /* Optional: round the corners */
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1; /* Background color of the scrollbar track */
+}
+
+/* For Firefox */
+html {
+  scrollbar-width: thin; /* Make the scrollbar thin */
+  scrollbar-color: black #f1f1f1; /* Color of the scrollbar thumb and track */
+}
+
 .react-multiple-carousel__arrow::before {
   color: black !important;
 }
@@ -98,4 +117,8 @@
   .react-multiple-carousel__arrow--left {
     left: calc(0% + 1px) !important;
   }
+}
+
+*{
+  /* border:1px solid red !important */
 }

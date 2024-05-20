@@ -158,7 +158,7 @@ export default function Landing() {
         </Sheet>
       </header>
       <section className="w-full py-12 md:pt-16">
-        <div className="container px-4 md:px-6">
+        <div className="container px-2 sm:px-8">
           <div className="grid gap-6 lg:grid-cols-[1fr_400px] lg:gap-12 xl:grid-cols-[1fr_600px]">
             <div className="flex flex-col max-w-lg justify-center space-y-4">
               <div className="space-y-2">
@@ -194,7 +194,7 @@ export default function Landing() {
           </div>
         </div>
       </section>
-      <section className="w-full py-12 bg-white dark:bg-gray-800">
+      <section className="w-full bg-white dark:bg-gray-800">
         <ListenDebate />
       </section>
       <div className="w-full flex flex-col items-center justify-center">
