@@ -13,6 +13,13 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async signIn({ user, account }) {
       //   call database here and save the details
+      const checkUserQuery = `
+      SELECT Users {
+        id
+      }
+      FILTER .email = <str>$email
+      LIMIT 1
+    `;
 
       const query = `
       INSERT Users {
@@ -32,11 +39,18 @@ export const authOptions: NextAuthOptions = {
       };
 
       try {
-        await client.querySingle(query, params);
-        console.log('User inserted successfully.');
+        const existingUser = await client.querySingle(checkUserQuery, {
+          email: user.email,
+        });
+
+        if (!existingUser) {
+          await client.querySingle(query, params);
+          console.log("User inserted successfully.");
+        }
+
         return true;
       } catch (error) {
-        console.error('Error inserting user:', error);
+        console.error("Error inserting user:", error);
         return false;
       }
 
@@ -56,6 +70,6 @@ export const authOptions: NextAuthOptions = {
     },
   },
   session: {
-    strategy: 'jwt',
+    strategy: "jwt",
   },
 };

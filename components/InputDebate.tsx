@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { Button } from '@ui/button';
+import { useEffect, useState } from "react";
+import { Button } from "@ui/button";
 import {
   Card,
   CardHeader,
@@ -9,91 +9,153 @@ import {
   CardDescription,
   CardContent,
   CardFooter,
-} from '@ui/card';
-import { runDebate } from '@/serverActions/runDebate';
-import { Textarea } from '@ui/textarea';
-import { PlaneIcon } from './svg';
-import { supabase } from '@/lib/supabase';
-import { guid } from '@/constants/default';
-import { useRecoilState, useSetRecoilState } from 'recoil';
+} from "@ui/card";
+import { runDebate } from "@/serverActions/runDebate";
+import { Textarea } from "@ui/textarea";
+import { PlaneIcon } from "./svg";
+import { guid } from "@/constants/default";
+import { useRecoilState, useSetRecoilState } from "recoil";
 import {
   conversationIdState,
+  debateCategoryState,
   loaderState,
-  showDebateInputBoxState,
-  waitingMessageState,
-} from '@/state/state';
-import { setConversations } from '@/lib/helper/edgedb/setConversations';
-import { useSession } from 'next-auth/react';
-import Loading from './loading';
-import { useRouter } from 'next/navigation';
+  messagesState,
+} from "@/state/state";
+import { setConversations } from "@/lib/helper/edgedb/setConversations";
+import { useSession } from "next-auth/react";
+import Loading from "./loading";
+import { useRouter } from "next/navigation";
+import { AnimatePresence, motion } from "framer-motion";
+import { categoryPage } from "@/constants/default";
 
 export function InputDebate() {
   const { data: session, status } = useSession();
-  const [inputValue, setInputValue] = useState('');
-  const [id, setId] = useRecoilState(conversationIdState);
-  const setWaitingMessage = useSetRecoilState(waitingMessageState);
-  const setShowDebateInputBox = useSetRecoilState(showDebateInputBoxState);
-  const [error, setError] = useState('');
-  const [loader, setLoader] = useRecoilState(loaderState);
+  const [selectedCategory, setSelectedCategory] =
+    useRecoilState(debateCategoryState);
+  const [inputValue, setInputValue] = useState("");
+  const setId = useSetRecoilState(conversationIdState);
+  const setMessagesList = useSetRecoilState(messagesState);
+  const setLoader = useSetRecoilState(loaderState);
+  const [error, setError] = useState("");
   const router = useRouter();
 
-  if (status === 'unauthenticated') {
+  if (status === "unauthenticated") {
     setTimeout(() => {
-      return router.push('/');
+      return router.push("/");
     }, 1000);
   }
 
-  if (status === 'loading') {
+  if (status === "loading") {
     return <Loading />;
   }
 
+  const handleStartDebate = async () => {
+    if (!inputValue) {
+      setError("Please enter debate topic!");
+      return;
+    }
+    const id = guid();
+    setId(id);
+    await setConversations({
+      conversationId: id,
+      topic: inputValue.trim(),
+      userId: session?.user?.id ?? '',
+      category: selectedCategory!,
+      publisher: false,
+    });
+
+    const result = await runDebate(inputValue.trim(), id);
+    try {
+      console.log("result", result);
+      if (result) {
+        setMessagesList(result.messages);
+        setLoader(false);
+      }
+    } catch (error) {
+      console.log("first", error);
+    }
+  };
+
   return (
     <>
-      {status === 'authenticated' && (
-        <Card className="w-full">
-          <CardHeader>
-            <CardTitle>Enter a topic to debate</CardTitle>
-            <CardDescription>
-              Provide a topic or question to start a debate.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Textarea
-              className="w-full border border-gray-300 dark:border-neutral-800 rounded-md p-2"
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              rows={5}
-            />
-            {error && <span className="text-red-500 text-sm">{error}</span>}
-          </CardContent>
-          <CardFooter>
-            <Button
-              className="ml-2 whitespace-nowrap"
-              onClick={async () => {
-                if (!inputValue) {
-                  setError('Please enter debate topic!');
-                  return;
-                }
-                const id = guid();
-                setId(id);
-                await setConversations({
-                  conversationId: id,
-                  topic: inputValue.trim(),
-                  userId: session?.user?.id ?? '',
-                });
-
-                const result = await runDebate(inputValue.trim(), id);
-                if (result) {
-                  setLoader(false);
-                }
-              }}
-            >
-              Start Debate
-              <PlaneIcon className="ml-2 h-4 w-4" />
-            </Button>
-          </CardFooter>
-        </Card>
-      )}
+      <AnimatePresence>
+        {status === "authenticated" && !selectedCategory && (
+          <motion.div
+            key="category-selection"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            transition={{ duration: 0.3 }}
+          >
+            <Card className="w-full">
+              <CardHeader>
+                <CardTitle>Select a Category</CardTitle>
+                <CardDescription>
+                  Please select a category to start your debate.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
+                  {categoryPage.map((category) => (
+                    <Button
+                      key={category.name}
+                      onClick={() => setSelectedCategory(category.name)}
+                    >
+                      <category.icon className="mr-2 h-5 w-5" />
+                      {category.name}
+                    </Button>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        )}
+      </AnimatePresence>
+      <AnimatePresence>
+        {status === "authenticated" && selectedCategory && (
+          <motion.div
+            key="debate-input"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            transition={{ duration: 0.3 }}
+          >
+            <Card className="w-full">
+              <CardHeader>
+                <CardTitle>Enter a topic to debate</CardTitle>
+                <CardDescription>
+                  You have selected: <strong>{selectedCategory}</strong>
+                  <Button
+                    variant="link"
+                    className="ml-2"
+                    onClick={() => setSelectedCategory(null)}
+                  >
+                    Change Category
+                  </Button>
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Textarea
+                  className="w-full border border-gray-300 dark:border-neutral-800 rounded-md p-2"
+                  value={inputValue}
+                  onChange={(e) => setInputValue(e.target.value)}
+                  rows={5}
+                />
+                {error && <span className="text-red-500 text-sm">{error}</span>}
+              </CardContent>
+              <CardFooter>
+                <Button
+                  className="ml-2 whitespace-nowrap"
+                  onClick={handleStartDebate}
+                >
+                  Start Debate
+                  <PlaneIcon className="ml-2 h-4 w-4" />
+                </Button>
+              </CardFooter>
+            </Card>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 }

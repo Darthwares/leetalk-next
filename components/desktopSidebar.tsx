@@ -1,27 +1,41 @@
 "use client";
-import {
-  ChartBarSquareIcon,
-  Cog6ToothIcon,
-  SignalIcon,
-} from "@heroicons/react/24/outline";
-import React from "react";
+
+import React, { useState } from "react";
 import Image from "next/image";
 import TopicList from "./topicList";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { categoryPage } from "@/constants/default";
+import { categoryPage, generateImageUrl, navigation } from "@/constants/default";
 import { classNames } from "@/lib/utils";
-
-const navigation = [
-  { name: "Usage", href: "#", icon: ChartBarSquareIcon, current: false },
-  { name: "Activity", href: "#", icon: SignalIcon, current: true },
-  { name: "Settings", href: "#", icon: Cog6ToothIcon, current: false },
-];
+import getCategoryList from "@/lib/helper/edgedb/getCategoryList";
+import { debateListState } from "@/state/state";
+import { useRecoilState } from "recoil";
 
 const DesktopSidebar = () => {
   const pathname = usePathname();
+  const [updatedState, setUpdatedState] = useRecoilState(debateListState);
+  const [activeCategory, setActiveCategory] = useState<string>("");
 
   let pathArray = pathname === "/categories" ? categoryPage : navigation;
+
+  console.log("updatedState", updatedState);
+
+  const handleDebates = async (category: string) => {
+    setActiveCategory(category);
+    const list = await getCategoryList(category);
+    console.log("list", list);
+
+    const formattedList = list.map((debate: any) => ({
+      title: debate.topic,
+      dateAdded: new Date(debate.created_at).toLocaleDateString(),
+      id: debate.conversation_id,
+      time: new Date(debate.created_at).toLocaleTimeString(),
+      imageUrl: generateImageUrl(debate.topic),
+    }));
+
+    setUpdatedState(formattedList as any);
+    console.log("formattedList", formattedList);
+  };
 
   return (
     <div className="hidden xl:fixed xl:inset-y-0 xl:z-50 xl:flex xl:w-72 xl:flex-col">
@@ -42,11 +56,11 @@ const DesktopSidebar = () => {
             <li>
               <ul role="list" className="-mx-2 space-y-1">
                 {pathArray.map((item) => (
-                  <li key={item.name}>
+                  <li key={item.name} onClick={() => handleDebates(item.name)}>
                     <a
                       href={item.href}
                       className={classNames(
-                        item.current
+                        activeCategory === item.name
                           ? "bg-gray-800 text-white"
                           : "text-gray-700 hover:text-white hover:bg-gray-800",
                         "group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"

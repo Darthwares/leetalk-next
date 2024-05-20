@@ -5,6 +5,7 @@ import { processMessages } from "@/constants/default";
 import useDebateMessages from "@/lib/helper/useDebateMessages";
 import MessageCard from "./debates/debateMessageCard";
 import {
+  conversationIdState,
   loaderState,
   messagesState,
   showDebateInputBoxState,
@@ -13,28 +14,19 @@ import {
 import { useRecoilState, useSetRecoilState } from "recoil";
 import { useEffect, useRef } from "react";
 import { Button } from "./ui/button";
-import { io } from "socket.io-client";
-import { Message } from "@/types/types";
+import { publishConversation } from "@/lib/helper/edgedb/getCategoryList";
 
-const socket = io("http://localhost:5555");
-const socketProd = io("leettalk-server.vercel.app", {
-  transports: ["websocket"],
-  path: "/socket.io",
-  secure: true,
-  reconnection: true,
-  reconnectionAttempts: 5,
-});
 
 export default function ShowChats() {
-  // const { messages } = useDebateMessages();
   const [loader] = useRecoilState(loaderState);
   const messageRef = useRef<HTMLDivElement | null>(null);
   const [waitingMessage] = useRecoilState(waitingMessageState);
   const setShowDebateInputBox = useSetRecoilState(showDebateInputBoxState);
   const [messages, setMessagesList] = useRecoilState(messagesState);
   const messageList = processMessages(messages);
+  const [id] = useRecoilState(conversationIdState);
 
-  console.log("messages", messages);
+  console.log("messages", id, messages);
 
   useEffect(() => {
     if (messageRef.current) {
@@ -42,18 +34,6 @@ export default function ShowChats() {
     }
   }, [messageList]);
 
-  useEffect(() => {
-    const handleMessage = (messageData: Message) => {
-      console.log("Received message:", messageData);
-      setMessagesList((prevMessages) => [...prevMessages, messageData]);
-    };
-
-    socketProd.on("message", handleMessage);
-
-    return () => {
-      socketProd.off("message", handleMessage);
-    };
-  }, []);
 
   return (
     <div
@@ -108,9 +88,10 @@ export default function ShowChats() {
               onClick={() => {
                 setMessagesList([]);
                 setShowDebateInputBox(true);
+                publishConversation(id);
               }}
             >
-              Continue debate
+              Publish Debate
             </Button>
           </div>
         </div>

@@ -1,22 +1,32 @@
+"use client";
+
 import { BentoGridItem } from "@/components/ui/bento-grid";
 import { topDebates } from "@/constants/default";
+import { debateListState } from "@/state/state";
 import Link from "next/link";
 import React from "react";
+import { useRecoilState } from "recoil";
 
 const Page: React.FC = () => {
+  const [updatedState] = useRecoilState(debateListState);
+
+  const debates = updatedState.length ? updatedState : topDebates;
+
+  console.log("updatedState", updatedState);
+
   return (
     <div className="p-5 max-w-7xl w-full space-y-8">
       <div className="space-y-3 text-center">
         <div className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl pt-5 space-y-3">
           <h2>Top Debates</h2>
           <p className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-pink-600">
-            Exclusivly customised for you
+            Exclusively customised for you
           </p>
         </div>
       </div>
       <div className="overflow-x-auto">
         <div className="flex gap-4 w-max place-content-center py-2">
-          {topDebates.map((debate, index) => (
+          {debates.map((debate, index) => (
             <Link key={index} href={`/chat/${debate.id}`}>
               <div className="border border-gray-300 rounded-lg shadow-md overflow-hidden p-4 flex flex-col items-start w-72">
                 <img

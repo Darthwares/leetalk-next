@@ -50,7 +50,7 @@ export default function ListenDebate() {
   ];
 
   return (
-    <div className=" px-2 sm:px-6 mx-auto w-full p-2 sm:p-10 bg-white rounded-lg shadow-md">
+    <div className="sm:px-8 mx-auto w-full p-2 sm:p-10 bg-white">
       <CarouselDemo items={items} />
     </div>
   );
