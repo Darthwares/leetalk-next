@@ -12,11 +12,15 @@ export interface Dimensions {
   width: number;
 }
 
-export interface Conversations{
+export interface Conversations {
   conversation_id: string;
+  user_id: string;
   topic: string;
   created_at: string;
   updated_at: string;
+  category: string;
+  published: boolean;
+  first_message_text?: boolean;
 }
 
 export type Category = {
@@ -32,4 +36,3 @@ export type Card = {
 export type Cards = {
   [key: string]: Card[];
 };
-

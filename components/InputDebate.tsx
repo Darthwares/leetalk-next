@@ -33,25 +33,28 @@ export function InputDebate() {
   const [selectedCategory, setSelectedCategory] =
     useRecoilState(debateCategoryState);
   const [inputValue, setInputValue] = useState("");
-  const setId = useSetRecoilState(conversationIdState);
+  const [id, setId] = useRecoilState(conversationIdState);
   const setMessagesList = useSetRecoilState(messagesState);
   const setLoader = useSetRecoilState(loaderState);
   const [error, setError] = useState("");
+  const [retryDebate, setRetryDebate] = useState(false);
   const router = useRouter();
 
-  if (status === "unauthenticated") {
-    setTimeout(() => {
-      return router.push("/");
-    }, 1000);
-  }
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      setTimeout(() => {
+        router.push("/");
+      }, 1000);
+    }
+  }, [status, router]);
 
   if (status === "loading") {
     return <Loading />;
   }
 
   const handleStartDebate = async () => {
-    if (!inputValue) {
-      setError("Please enter debate topic!");
+    if (!inputValue.trim()) {
+      setError("Please enter a debate topic!");
       return;
     }
     const id = guid();
@@ -59,20 +62,38 @@ export function InputDebate() {
     await setConversations({
       conversationId: id,
       topic: inputValue.trim(),
-      userId: session?.user?.id ?? '',
+      userId: session?.user?.id ?? "",
       category: selectedCategory!,
       publisher: false,
     });
 
-    const result = await runDebate(inputValue.trim(), id);
+    setLoader(true);
+
     try {
-      console.log("result", result);
+      const result = await runDebate(inputValue.trim(), id);
       if (result) {
         setMessagesList(result.messages);
         setLoader(false);
       }
     } catch (error) {
-      console.log("first", error);
+      setRetryDebate(true);
+      console.log("Error starting debate:", error);
+      setLoader(false);
+    }
+  };
+
+  const handleRetryDebate = async () => {
+    setLoader(true);
+    try {
+      const result = await runDebate(inputValue.trim(), id);
+      if (result) {
+        setMessagesList(result.messages);
+        setLoader(false);
+        setRetryDebate(false);
+      }
+    } catch (error) {
+      console.log("Error retrying debate:", error);
+      setLoader(false);
     }
   };
 
@@ -144,13 +165,24 @@ export function InputDebate() {
                 {error && <span className="text-red-500 text-sm">{error}</span>}
               </CardContent>
               <CardFooter>
-                <Button
-                  className="ml-2 whitespace-nowrap"
-                  onClick={handleStartDebate}
-                >
-                  Start Debate
-                  <PlaneIcon className="ml-2 h-4 w-4" />
-                </Button>
+                {!retryDebate && (
+                  <Button
+                    className="ml-2 whitespace-nowrap"
+                    onClick={handleStartDebate}
+                  >
+                    Start Debate
+                    <PlaneIcon className="ml-2 h-4 w-4" />
+                  </Button>
+                )}
+                {retryDebate && (
+                  <Button
+                    className="ml-2 whitespace-nowrap"
+                    onClick={handleRetryDebate}
+                  >
+                    Retry Debate
+                    <PlaneIcon className="ml-2 h-4 w-4" />
+                  </Button>
+                )}
               </CardFooter>
             </Card>
           </motion.div>
