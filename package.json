@@ -4,7 +4,6 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "init": "nodemon socket/server.js",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
@@ -35,7 +34,6 @@
     "clsx": "^2.1.1",
     "cmdk": "^1.0.0",
     "edgedb": "^1.5.5",
-    "elevenlabs-node": "^2.0.3",
     "embla-carousel-react": "^8.0.4",
     "firebase": "^10.11.1",
     "framer-motion": "^11.2.4",
@@ -53,8 +51,6 @@
     "recoil": "^0.7.7",
     "remark-gfm": "^4.0.0",
     "remark-math": "^6.0.0",
-    "socket.io": "^4.7.5",
-    "socket.io-client": "^4.7.5",
     "tailwind-merge": "^2.3.0",
     "tailwindcss-animate": "^1.0.7",
     "wavesurfer.js": "^7.7.15"

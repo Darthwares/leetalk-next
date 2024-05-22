@@ -37,17 +37,19 @@ export default function RootLayout({ children, params }: any) {
             <Container>
               <div className="w-full max-w-7xl xl:max-w-[90rem] mx-auto">
                 {pathname !== '/' && (
-                  <Suspense fallback={<Loading />}>
+                  <>
+                    <Suspense fallback={<Loading />}>
                     <MobileViewSidebar
                       sidebarOpen={sidebarOpen}
                       setSidebarOpen={setSidebarOpen}
                     />
                     <DesktopSidebar />
+                    </Suspense>
                     <div className="xl:pl-72">
                       <Header setSidebarOpen={setSidebarOpen} />
                       {children}
                     </div>
-                  </Suspense>
+                  </>
                 )}
                 {pathname === '/' && <Landing />}
               </div>

@@ -1,15 +1,12 @@
 'use client';
-import { Dispatch, Fragment, SetStateAction } from 'react';
+import { Dispatch, Fragment, SetStateAction, useState, useEffect } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
-import {
-  XMarkIcon,
-} from '@heroicons/react/24/outline';
+import { XMarkIcon } from '@heroicons/react/24/outline';
 import { Separator } from './ui/separator';
-import React, { useState } from 'react';
 import Image from 'next/image';
 import TopicList from './topicList';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation';
 import {
   categoryPage,
   generateImageUrl,
@@ -18,7 +15,7 @@ import {
 import getCategoryList from '@/lib/helper/edgedb/getCategoryList';
 import { debateListState } from '@/state/state';
 import { useSetRecoilState } from 'recoil';
-
+import { SpeechIcon } from 'lucide-react';
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ');
@@ -26,35 +23,48 @@ function classNames(...classes: string[]) {
 
 interface MobileViewSidebarProps {
   sidebarOpen: boolean;
-  setSidebarOpen: Dispatch<SetStateAction<boolean>>
+  setSidebarOpen: Dispatch<SetStateAction<boolean>>;
 }
 
 const MobileViewSidebar = ({
   sidebarOpen,
   setSidebarOpen,
 }: MobileViewSidebarProps) => {
-
   const pathname = usePathname();
+  const params = useSearchParams();
+  const query = params.get('query');
   const setUpdatedState = useSetRecoilState(debateListState);
   const [activeCategory, setActiveCategory] = useState<string>('');
 
   let pathArray = pathname === '/categories' ? categoryPage : navigation;
 
-  const handleDebates = async (category: string) => {
-    setActiveCategory(category);
+  const fetchAndFormatDebates = async (category: string) => {
     const list = await getCategoryList(category);
-
-    const formattedList = list.map((debate: any) => ({
+    return list.map((debate: any) => ({
       title: debate.topic,
       dateAdded: new Date(debate.created_at).toLocaleDateString(),
       id: debate.conversation_id,
       time: new Date(debate.created_at).toLocaleTimeString(),
       imageUrl: generateImageUrl(debate.topic),
     }));
-
-    setUpdatedState(formattedList as any);
   };
-  
+
+  const handleDebates = async (category: string) => {
+    setActiveCategory(category);
+    const formattedList = await fetchAndFormatDebates(category);
+    setUpdatedState(formattedList);
+    setSidebarOpen(false); // Close the sidebar when a category is chosen
+  };
+
+  useEffect(() => {
+    if (query && categoryPage.some((item) => item.name === query)) {
+      setActiveCategory(query);
+      fetchAndFormatDebates(query).then((formattedList) => {
+        setUpdatedState(formattedList);
+      });
+    }
+  }, [query]);
+
   return (
     <Transition.Root show={sidebarOpen} as={Fragment}>
       <Dialog
@@ -108,40 +118,39 @@ const MobileViewSidebar = ({
                   </button>
                 </div>
               </Transition.Child>
-              <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-white px-2 ring-1 ring-white/10">
-                <div className="flex h-16 z-20 -pr-5 shrink-0 items-center">
-                  <Link href={'/'}>
-                    <Image
-                      width={80}
-                      height={36}
-                      className="h-[3.5rem] w-20"
-                      src="/logo1.png"
-                      alt="Your Company"
-                    />
+              <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-white ring-1 ring-white/10">
+                <div className="flex h-16 pb-2 sticky top-0 z-20 border-r-2 border-gray-300 -pr-5 text-white bg-slate-900 shrink-0 items-center">
+                  <Link
+                    href="/"
+                    className="flex items-center cursor-pointer px-5 gap-2 font-semibold"
+                  >
+                    <SpeechIcon className="h-6 w-6" />
+                    <span>Debate Anything</span>
                   </Link>
                 </div>
 
-                <div className="">
-                  {' '}
-                  <Separator />
+                <div className="w-full px-2">
+                  <h2 className="bg-gray-800 text-white text-center rounded-md py-2">
+                    All Categories
+                  </h2>
                 </div>
                 <div className="flex grow pt-5 flex-col gap-y-5 overflow-y-auto bg-gray-100 px-4 ring-1 ring-white/5">
                   <nav className="flex flex-1 flex-col">
                     <ul role="list" className="flex flex-1 flex-col gap-y-7">
                       <li>
                         <ul role="list" className="-mx-2 space-y-1">
-                          {pathArray.map((item) => (
+                          {categoryPage.map((item) => (
                             <li
                               key={item.name}
                               onClick={() => handleDebates(item.name)}
                             >
-                              <a
-                                href={item.href}
+                              <Link
+                                href={`/categories?query=${item.name}`}
                                 className={classNames(
                                   activeCategory === item.name
                                     ? 'bg-gray-800 text-white'
                                     : 'text-gray-700 hover:text-white hover:bg-gray-800',
-                                  'group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold'
+                                  'group flex gap-x-3 cursor-pointer rounded-md p-2 text-sm leading-6 font-semibold'
                                 )}
                               >
                                 <item.icon
@@ -149,13 +158,13 @@ const MobileViewSidebar = ({
                                   aria-hidden="true"
                                 />
                                 {item.name}
-                              </a>
+                              </Link>
                             </li>
                           ))}
                         </ul>
                       </li>
                       <li className="-mx-2">
-                        <TopicList setSidebarOpen={setSidebarOpen} />
+                        <TopicList />
                       </li>
                     </ul>
                   </nav>

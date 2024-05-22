@@ -73,7 +73,8 @@ export async function getConversationsByCategory(category: string): Promise<{ co
       conversation_id,
       topic
     }
-    FILTER .category = <str>$category;
+    FILTER .category = <str>$category
+    LIMIT 3;
   `, { category });
 
   console.log("conversations by category", conversations);

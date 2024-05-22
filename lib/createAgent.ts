@@ -8,9 +8,8 @@ import { Runnable } from "@langchain/core/runnables";
 import { ChatOpenAI } from "@langchain/openai";
 import { BaseMessage, HumanMessage } from "@langchain/core/messages";
 import { ChatAnthropic } from "@langchain/anthropic";
-import { getFormattedDate, guid } from "@/constants/default";
+import { guid } from "@/constants/default";
 import { setMessages } from "./helper/edgedb/setMessages";
-import { io } from "socket.io-client";
 
 export async function createAgent({
   llm,

@@ -3,6 +3,8 @@ import {
   UserGroupIcon,
   NewspaperIcon,
   ChartBarIcon,
+  CodeBracketIcon,
+  UsersIcon,
 } from "@heroicons/react/24/outline";
 import {
   Code,
@@ -20,6 +22,7 @@ import {
   Users,
   Clock,
   AlertCircle,
+  OctagonIcon,
 } from "lucide-react";
 import {
   ChartBarSquareIcon,
@@ -230,9 +233,9 @@ export const cards: Cards = {
 };
 
 export const categories: Category[] = [
-  { name: "Finance", icon: UserGroupIcon },
+  { name: "Technology", icon: CodeBracketIcon },
   { name: "Historical", icon: NewspaperIcon },
-  { name: "Information", icon: ChartBarIcon },
+  { name: "Social", icon: UsersIcon },
 ];
 
 export const testimonials = [
@@ -321,19 +324,12 @@ export const topDebates = [
 export const categoryPage = [
   { name: "Technology", href: "#", current: true, icon: Code },
   { name: "Historical", href: "#", current: false, icon: NewspaperIcon },
-  { name: "Politics", href: "#", current: false, icon: Globe },
   { name: "Education", href: "#", current: false, icon: Book },
   { name: "Health", href: "#", current: false, icon: Heart },
-  { name: "Science", href: "#", current: false, icon: Microscope },
   { name: "Sports", href: "#", current: false, icon: Gamepad2 },
   { name: "Economics", href: "#", current: false, icon: DollarSign },
-  { name: "Culture", href: "#", current: false, icon: Film },
-  { name: "Ethics", href: "#", current: false, icon: Shield },
-  { name: "Media", href: "#", current: false, icon: Newspaper },
-  { name: "Law", href: "#", current: false, icon: Gavel },
-  { name: "Philosophy", href: "#", current: false, icon: Users },
-  { name: "Information", href: "#", current: false, icon: Clock },
-  { name: "Social Issues", href: "#", current: false, icon: AlertCircle },
+  { name: "Social", href: "#", current: false, icon: UserGroupIcon },
+  { name: "Others", href: "#", current: false, icon: OctagonIcon },
 ];
 
 export const navigation = [
