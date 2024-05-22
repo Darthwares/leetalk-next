@@ -23,37 +23,69 @@ export default function ShowChats() {
   const messageList = processMessages(messages);
   const [id] = useRecoilState(conversationIdState);
   console.log('messages', id, messages);
+
+  useEffect(() => {
+    import('@lottiefiles/lottie-player');
+  });
+
   useEffect(() => {
     if (messageRef.current) {
       messageRef.current.scrollIntoView({ behavior: 'smooth' });
     }
   }, [messageList]);
+  // ai-debating
   return (
     <div
       className={`${
         messages?.length > 0 && 'bg-gray-100'
-      } bg-white flex flex-col py-10 rounded-lg`}
+      } bg-white flex flex-col py-5 rounded-lg`}
     >
-      {messages?.length > 0 && (
-        <div className="flex justify-end">
-          <Button
-            className="max-w-fit flex gap-2 py-3"
-            onClick={() => {
-              setMessagesList([]);
-              setShowDebateInputBox(true);
-            }}
-          >
-            Start new debate
-          </Button>
-        </div>
-      )}
       {/* add a lottie and refine UI*/}
-      {loader && <>AI is Debating for you!</>}
+      {loader && (
+        <>
+          <div className="flex justify-center">
+            <h2 className="py-2 leading-none tracking-tight text-2xl sm:text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-pink-600">
+              {' '}
+              AI is Debating for you!
+            </h2>
+          </div>
+          <div className="w-full">
+            <div className="h-72 lg:h-96">
+              <lottie-player
+                src="/ai-debating.json"
+                background="white"
+                speed={1}
+                loop
+                autoplay
+                data-testid="lottie"
+              />
+            </div>
+          </div>
+        </>
+      )}
       {/* refine UI */}
       {!loader && messages.length > 0 && (
-        <Button>
-          <a href={`/chat/${id}`}>Click to view your debate</a>
-        </Button>
+        <div className="w-full flex sm:space-y-10 flex-col justify-center items-center">
+          <h2 className="py-2 leading-none tracking-tight text-2xl sm:text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-pink-600">
+            {' '}
+            Your Debate is ready.
+          </h2>
+          <div className="w-full">
+            <div className="h-72 lg:h-96">
+              <lottie-player
+                src="/generated-success1.json"
+                background="white"
+                speed={1}
+                loop
+                autoplay
+                data-testid="lottie"
+              />
+            </div>
+          </div>
+          <Button variant={'link'} className="max-w-fit text-lg font-bold hover:text-blue-600">
+            <a href={`/chat/${id}`}>Click to view your debate</a>
+          </Button>
+        </div>
       )}
       {/* if !loader then show a lottie and message */}
       {/* not required  */}

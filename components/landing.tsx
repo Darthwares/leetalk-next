@@ -28,7 +28,7 @@ export default function Landing() {
   return (
     <div className="w-full mx-auto">
       <header className="flex h-20 sticky top-0 z-40 border-b bg-white border-gray-300 w-full shrink-0 items-center justify-between px-4 md:px-6">
-        <Link className="flex items-center gap-2 font-semibold" href="#">
+        <Link className="flex items-center cursor-pointer gap-2 font-semibold" href="#">
           <SpeechIcon className="h-6 w-6" />
           <span>Debate Anything</span>
         </Link>

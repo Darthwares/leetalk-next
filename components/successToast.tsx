@@ -9,7 +9,7 @@ interface SuccessToastProps{
 const SuccessToast = ({ className, title, description }: SuccessToastProps) => {
   return (
     <div
-      className={`p-4 mb-4 border rounded-lg right-0 md:right-4 w-full sm:max-w-fit fixed top-4 ${className}`}
+      className={`p-4 mb-4 border rounded-lg right-0 md:right-4 w-full sm:max-w-md fixed top-4 ${className}`}
       role="alert"
     >
       <div className="flex items-center">

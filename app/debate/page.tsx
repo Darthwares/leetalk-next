@@ -1,16 +1,18 @@
-'use client';
-
 import { InputDebate } from '@/components/InputDebate';
-import Loading from '@/components/loading';
 import ShowDebateChat from '@/components/showDebateChat';
-import { Suspense } from 'react';
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Debate - Leetalk",
+  description: "Debate section of Leetalk",
+};
 
 const Debate = () => {
   return (
-    <Suspense fallback={<Loading />}>
+    <>
       <InputDebate />
       <ShowDebateChat />
-    </Suspense>
+    </>
   );
 };
 

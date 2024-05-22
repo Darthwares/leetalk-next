@@ -62,7 +62,6 @@ export function CarouselDemo({ items }: CarouselProps) {
   React.useEffect(() => {
     async function getDebatesList() {
       const data = await getAllDebates();
-      console.log("data", data);
       if (data.length > 0) {
         setTopics(data);
         setIsPlaceholder(false);
@@ -75,7 +74,7 @@ export function CarouselDemo({ items }: CarouselProps) {
     <div className="">
       <div className="py-5 space-y-3 text-center">
         <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">
-          Featured{" "}
+          Featured{' '}
           <span className="text-gray-600 text-2xl sm:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-pink-600">
             Debates
           </span>
@@ -91,12 +90,12 @@ export function CarouselDemo({ items }: CarouselProps) {
             key={idx}
             className={` ${
               !isPlaceholder && item.first_message
-                ? "md:min-h-72"
-                : "md:min-h-40"
-            }  min-h-64 w-full items-start p-4 md:p-8  rounded-lg space-y-4`}
+                ? 'md:min-h-72'
+                : 'md:min-h-40'
+            }  h-full w-full items-start p-4 md:p-8  rounded-lg space-y-4`}
             style={{
-              background: "linear-gradient(45deg, #2B4162, #000000)",
-              backgroundSize: "400% 400%",
+              background: 'linear-gradient(45deg, #2B4162, #000000)',
+              backgroundSize: '400% 400%',
             }}
           >
             <Link href={`/chat/${item.conversation_id}`}>
@@ -108,15 +107,17 @@ export function CarouselDemo({ items }: CarouselProps) {
               {item.first_message?.message_text}
             </p>
             <div className="flex items-center justify-between w-full">
-              <p className="text-sm text-slate-50 font-bold cursor-pointer p-2 bg-slate-900 rounded-md max-w-fit">
-                {item.category}
-              </p>
+              {item.category && (
+                <p className="text-sm text-slate-50 font-bold cursor-pointer p-2 bg-slate-900 rounded-md max-w-fit">
+                  {item.category}
+                </p>
+              )}
               <div className="flex justify-end w-full items-center">
                 <span className="text-sm text-white">
-                  {new Date(item.created_at).toLocaleDateString("en-US", {
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
+                  {new Date(item.created_at).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
                   })}
                 </span>
               </div>
@@ -126,7 +127,7 @@ export function CarouselDemo({ items }: CarouselProps) {
                 <div className="w-full">
                   <TextToSpeechButton
                     content={item.first_message.message_text}
-                    senderType={"claudeDebater"}
+                    senderType={'claudeDebater'}
                   />
                 </div>
               </div>

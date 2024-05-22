@@ -90,9 +90,9 @@ const TextToSpeechButton = ({
         <button
           onClick={handleClick}
           className={`${
-            senderType === "openAIDebater"
-              ? "bg-black text-white"
-              : "bg-white text-black"
+            senderType === 'openAIDebater'
+              ? 'bg-black text-white'
+              : 'bg-white text-black'
           } rounded-full p-2`}
           disabled={isLoading}
         >
@@ -103,7 +103,7 @@ const TextToSpeechButton = ({
           )}
         </button>
         {!isLoading && isPlaying && (
-          <span className="invert font-bold">{formatTime(currentTime)}</span>
+          <span className="text-blue-500">{formatTime(currentTime)}</span>
         )}
 
         {isLoading ? (
@@ -126,14 +126,21 @@ const TextToSpeechButton = ({
                 />
               </svg>
             </span>
-            <span className="invert font-bold">Wait, audio is loading...</span>
+            <span
+              // className="text-blue-600 font-bold"
+              className={`${
+                senderType === 'openAIDebater' ? 'text-black' : 'text-white'
+              }`}
+            >
+              Wait, audio is loading...
+            </span>
           </div>
         ) : (
           <div ref={waveformRef} className="w-full"></div>
         )}
       </div>
       {!isLoading && isPlaying && (
-        <div className="flex justify-end items-center invert font-bold">
+        <div className="flex justify-end items-center text-blue-500">
           <span>{formatTime(duration)}</span>
         </div>
       )}

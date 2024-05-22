@@ -20,22 +20,6 @@ const placeholderData = [
     conversation_id: "placeholder-3",
     topic: "Placeholder Topic 3",
   },
-  {
-    conversation_id: "placeholder-4",
-    topic: "Placeholder Topic 4",
-  },
-  {
-    conversation_id: "placeholder-5",
-    topic: "Placeholder Topic 5",
-  },
-  {
-    conversation_id: "placeholder-6",
-    topic: "Placeholder Topic 6",
-  },
-  {
-    conversation_id: "placeholder-7",
-    topic: "Placeholder Topic 7",
-  },
 ];
 
 const CategoryList: React.FC = () => {
@@ -64,7 +48,7 @@ const CategoryList: React.FC = () => {
       <div className="space-y-3 text-center">
         <div className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl pt-5 pb-10">
           <h2 className="py-4 text-2xl sm:text-4xl font-extrabold">
-            We have a{" "}
+            We have a{' '}
             <span className="text-gray-600 text-2xl sm:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-pink-600">
               debate for you
             </span>
@@ -77,8 +61,8 @@ const CategoryList: React.FC = () => {
             key={index}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg ${
               selectedCategory === category.name
-                ? "bg-slate-700 font-semibold text-white"
-                : "bg-white border font-semibold border-slate-600"
+                ? 'bg-slate-900 font-semibold text-white'
+                : 'bg-white border font-semibold border-slate-900'
             }`}
             onClick={() => handleClick(category.name)}
             whileHover={{ scale: 1.05 }}
@@ -104,7 +88,7 @@ const CategoryList: React.FC = () => {
               key={i}
               title={item.topic}
               image={generateImageUrl(item.topic)}
-              className={""}
+              className={''}
               id={item.conversation_id}
             />
           ))}
@@ -113,7 +97,7 @@ const CategoryList: React.FC = () => {
             <div className="group-hover/bento:translate-x-2 relative bottom-[50%] transition duration-200">
               <div className="font-sans text-center font-bold text-neutral-600 dark:text-neutral-200">
                 <Link href={`/categories?query=${selectedCategory}`}>
-                  <span className="text-center text-sm bg-black text-white rounded-lg p-2">
+                  <span className="text-center text-sm bg-black text-white rounded-lg px-4 py-2">
                     Explore More
                   </span>
                 </Link>
