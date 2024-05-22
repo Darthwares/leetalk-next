@@ -6,10 +6,8 @@ import { Fragment } from "react";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { signIn, signOut, useSession } from "next-auth/react";
 
-import Loading from "./loading";
 import { useRouter } from "next/navigation";
 import { classNames } from "@/lib/utils";
-import { Button } from "./ui/button";
 interface HeaderProps {
   setSidebarOpen: Dispatch<SetStateAction<boolean>>;
 }
