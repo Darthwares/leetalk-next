@@ -6,7 +6,6 @@ import { useRecoilState } from "recoil";
 import "react-multi-carousel/lib/styles.css";
 import ReusableSidebarItems from "@/components/reusableSidebarItems";
 import { useSearchParams } from "next/navigation";
-import Link from "next/link";
 
 const CategoryContainer: React.FC = () => {
   const [updatedState] = useRecoilState(debateListState);
@@ -16,9 +15,9 @@ const CategoryContainer: React.FC = () => {
       fallback={
         <div className="p-5 max-w-7xl w-full space-y-8">
           <div className="space-x-3 flex items-center ">
-            <Link href={"/categories"} className="text-lg ">
+            <span className="text-lg ">
               Category
-            </Link>{" "}
+            </span>{" "}
             <span>{">"}</span>{" "}
             <span className="font-bold text-lg">Loading...</span>
           </div>
