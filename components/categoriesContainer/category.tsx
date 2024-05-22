@@ -15,10 +15,7 @@ const CategoryContainer: React.FC = () => {
       fallback={
         <div className="p-5 max-w-7xl w-full space-y-8">
           <div className="space-x-3 flex items-center ">
-            <span className="text-lg ">
-              Category
-            </span>{" "}
-            <span>{">"}</span>{" "}
+            <span className="text-lg ">Category</span> <span>{">"}</span>{" "}
             <span className="font-bold text-lg">Loading...</span>
           </div>
           <div className="space-y-3 text-center">
@@ -44,10 +41,7 @@ const CategoryContainerWithSearchParams: React.FC<{
   return (
     <div className="p-5 max-w-7xl w-full space-y-8">
       <div className="space-x-3 flex items-center ">
-        <Link href={"/categories"} className="text-lg ">
-          Category
-        </Link>{" "}
-        <span>{">"}</span>{" "}
+        <div className="text-lg ">Category</div> <span>{">"}</span>{" "}
         <span className="font-bold text-lg">{selectedCategory}</span>
       </div>
       <div className="space-y-3 text-center">
