@@ -12,7 +12,8 @@ export default async function getList() {
       category,
       published
     }
-    FILTER .published = true;
+    FILTER .published = true
+    ORDER BY .created_at DESC;
   `);
 
   console.log("conversations", conversations);
@@ -73,8 +74,24 @@ export async function getConversationsByCategory(category: string): Promise<{ co
       conversation_id,
       topic
     }
-    FILTER .category = <str>$category
+    FILTER .category = <str>$category AND .published = true
     LIMIT 3;
+  `, { category });
+
+  console.log("conversations by category", conversations);
+
+  return conversations as { conversation_id: string; topic: string }[];
+}
+
+
+export async function getSelectedCategory(category: string) {
+  const conversations = await client.query(`
+    SELECT Conversations {
+      conversation_id,
+      topic
+    }
+    FILTER .category = <str>$category AND .published = true
+    LIMIT 4;
   `, { category });
 
   console.log("conversations by category", conversations);

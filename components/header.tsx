@@ -1,21 +1,17 @@
 "use client";
-
 import React, { Dispatch, SetStateAction } from "react";
 import { Bars3Icon } from "@heroicons/react/24/outline";
 import { Fragment } from "react";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { signIn, signOut, useSession } from "next-auth/react";
-
 import { useRouter } from "next/navigation";
 import { classNames } from "@/lib/utils";
 interface HeaderProps {
   setSidebarOpen: Dispatch<SetStateAction<boolean>>;
 }
-
 const Header = ({ setSidebarOpen }: HeaderProps) => {
   const { data: session } = useSession();
   const router = useRouter();
-
   return (
     <>
       <Disclosure as="nav" className="bg-gray-900 sticky top-0 z-40">
@@ -44,7 +40,7 @@ const Header = ({ setSidebarOpen }: HeaderProps) => {
                         <span className="sr-only">Open user menu</span>
                         <img
                           className="h-8 w-8 bg-gray-300 rounded-full"
-                          src={session?.user?.image ?? ""}
+                          src={session?.user?.image ?? ''}
                           alt={session?.user?.name!}
                         />
                       </Menu.Button>
@@ -64,8 +60,8 @@ const Header = ({ setSidebarOpen }: HeaderProps) => {
                             <a
                               href="/my-debates"
                               className={classNames(
-                                active ? "bg-gray-100" : "",
-                                "block px-4 py-2 text-sm text-gray-700"
+                                active ? 'bg-gray-100' : '',
+                                'block px-4 py-2 text-sm text-gray-700'
                               )}
                             >
                               My Debates
@@ -75,10 +71,10 @@ const Header = ({ setSidebarOpen }: HeaderProps) => {
                         <Menu.Item>
                           {({ active }) => (
                             <a
-                              href="/categories"
+                              href="/categories?query=Technology"
                               className={classNames(
-                                active ? "bg-gray-100" : "",
-                                "block px-4 py-2 text-sm text-gray-700"
+                                active ? 'bg-gray-100' : '',
+                                'block px-4 py-2 text-sm text-gray-700'
                               )}
                             >
                               Categories
@@ -89,12 +85,12 @@ const Header = ({ setSidebarOpen }: HeaderProps) => {
                           {({ active }) => (
                             <button
                               className={classNames(
-                                active ? "bg-gray-100" : "",
-                                "block px-4 py-2 text-sm text-gray-700"
+                                active ? 'bg-gray-100' : '',
+                                'block px-4 py-2 text-sm text-gray-700'
                               )}
                               onClick={() => {
                                 signOut({ redirect: false }).then(() =>
-                                  router.push("/")
+                                  router.push('/')
                                 );
                               }}
                             >
@@ -109,7 +105,7 @@ const Header = ({ setSidebarOpen }: HeaderProps) => {
               )}
               {!session && (
                 <button
-                className="bg-white text-black px-3.5 py-1.5 rounded-md hover:bg-gray-200 font-medium mr-3 lg:mr-0"
+                  className="bg-white text-black px-3.5 py-1.5 rounded-md hover:bg-gray-200 font-medium mr-3 lg:mr-0"
                   onClick={async () => {
                     await signIn();
                   }}

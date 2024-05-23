@@ -41,5 +41,5 @@ export const setConversations = async ({
 
   const conversation = await client.querySingle(query, params);
 
-  console.log('Conversation inserted:', conversation);
+  console.log('Conversation inserted:', conversation, conversationId);
 };

@@ -3,7 +3,8 @@
 import client from './edgedb';
 
 export default async function getUserDebates(userId: string) {
-  const conversations = await client.query(`
+  const conversations = await client.query(
+    `
     SELECT Conversations {
       conversation_id,
       user_id,
@@ -12,8 +13,11 @@ export default async function getUserDebates(userId: string) {
       category,
       published
     }
-    FILTER .user_id = <str>$userId;
-  `, { userId });
+    FILTER .user_id = <str>$userId
+    ORDER BY .created_at DESC;
+  `,
+    { userId }
+  );
 
   console.log('conversations', conversations);
 

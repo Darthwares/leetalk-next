@@ -1,65 +1,83 @@
-import { ChatOpenAI } from '@langchain/openai';
-import { HumanMessage } from '@langchain/core/messages';
-import { ChatAnthropic } from '@langchain/anthropic';
+import { ChatOpenAI } from "@langchain/openai";
+import { HumanMessage, SystemMessage } from "@langchain/core/messages";
+import { ChatAnthropic } from "@langchain/anthropic";
+import { guid } from '@/constants/default';
+import { setMessages } from "@/lib/helper/edgedb/setMessages";
 
 const encoder = new TextEncoder();
 const decoder = new TextDecoder();
 
 interface DebateResponse {
-  model: string;
-  response: string;
+  sender: string;
+  message_text: string;
+  created_at: string;
 }
 
 const runDebate = async function* (
   prompt: string,
   key: string,
-  maxIterations: number = 5
+  maxIterations: number = 7
 ): AsyncGenerator<DebateResponse | { end: true }, void, unknown> {
   let currentPrompt = prompt;
-  let currentModel = 'OpenAI'; // Start with OpenAI
+  let currentModel = "openAIDebater"; // Start with openAIDebater
   let iterations = 0;
+
+  const systemMessageOpenAIDebater = new SystemMessage(
+    "You are an AI assistant named openAIDebater. Your role is to engage in a debate with another AI assistant named claudeDebater. Analyze the given topic and provide your perspective, while also considering and responding to claudeDebater's arguments. The debate should continue until a satisfactory conclusion is reached. As an engineer, aim to provide technical insights and logical reasoning to support your position."
+  );
+
+  const systemMessageClaudeDebater = new SystemMessage(
+    "You are an AI assistant named claudeDebater. Your role is to engage in a debate with another AI assistant named openAIDebater. Analyze the given topic and provide your perspective, while also considering and responding to openAIDebater's arguments. The debate should continue until a satisfactory conclusion is reached. Aim to provide well-reasoned and insightful arguments to support your position."
+  );
 
   while (iterations < maxIterations) {
     let responseStream;
     let modelIdentifier: string;
 
-    if (currentModel === 'Anthropic') {
-      responseStream = await runLLMChainAnthropic(currentPrompt);
-      modelIdentifier = 'Claude';
-      currentModel = 'OpenAI';
+    if (currentModel === "Anthropic") {
+      responseStream = await runLLMChainAnthropic(
+        currentPrompt,
+        systemMessageClaudeDebater
+      );
+      modelIdentifier = "claudeDebater";
+      currentModel = "openAIDebater";
     } else {
-      responseStream = await runLLMChainOpenAI(currentPrompt, key);
-      modelIdentifier = 'OpenAI';
-      currentModel = 'Anthropic';
+      responseStream = await runLLMChainOpenAI(
+        currentPrompt,
+        key,
+        systemMessageOpenAIDebater
+      );
+      modelIdentifier = "openAIDebater";
+      currentModel = "Anthropic";
     }
 
-    let responseText = '';
+    let responseText = "";
     for await (const token of streamToString(responseStream)) {
       responseText += token;
     }
 
-    // Add greeting and addressing each other
     let addressedResponse = responseText.trim();
     if (iterations === 0) {
       addressedResponse = `Hello ${
-        modelIdentifier === 'Claude' ? 'OpenAI' : 'Claude'
+        modelIdentifier === "claudeDebater" ? "openAIDebater" : "claudeDebater"
       }, ${addressedResponse}`;
     } else {
-      addressedResponse = `Dear ${
-        modelIdentifier === 'Claude' ? 'OpenAI' : 'Claude'
-      }, ${addressedResponse}`;
+      addressedResponse = `${modelIdentifier}, ${addressedResponse}`;
     }
 
-    yield { model: modelIdentifier, response: addressedResponse };
+    const createdAt = new Date().toISOString();
+    yield { sender: modelIdentifier, message_text: addressedResponse, created_at: createdAt };
     currentPrompt = addressedResponse;
     iterations++;
   }
 
-  // Yield an end marker
-  yield { end: true };
+ yield { sender: 'system', message_text: '', created_at: new Date().toISOString(), end: true };
 };
 
-const runLLMChainAnthropic = async (prompt: string) => {
+const runLLMChainAnthropic = async (
+  prompt: string,
+  systemMessage: SystemMessage
+) => {
   const stream = new TransformStream();
   const writer = stream.writable.getWriter();
 
@@ -80,12 +98,16 @@ const runLLMChainAnthropic = async (prompt: string) => {
     ],
   });
 
-  model.call([new HumanMessage(prompt)]);
+  model.call([systemMessage, new HumanMessage(prompt)]);
 
   return stream.readable;
 };
 
-const runLLMChainOpenAI = async (prompt: string, key: string) => {
+const runLLMChainOpenAI = async (
+  prompt: string,
+  key: string,
+  systemMessage: SystemMessage
+) => {
   const stream = new TransformStream();
   const writer = stream.writable.getWriter();
 
@@ -106,14 +128,14 @@ const runLLMChainOpenAI = async (prompt: string, key: string) => {
     ],
   });
 
-  model.call([new HumanMessage(prompt)]);
+  model.call([systemMessage, new HumanMessage(prompt)]);
 
   return stream.readable;
 };
 
 const streamToString = async function* (stream: ReadableStream) {
   const reader = stream.getReader();
-  let result = '';
+  let result = "";
   while (true) {
     const { done, value } = await reader.read();
     if (done) break;
@@ -125,12 +147,23 @@ const streamToString = async function* (stream: ReadableStream) {
 export async function POST(req: Request) {
   const { prompt, key } = await req.json();
 
-  const debateStream = runDebate(prompt, key);
+  const debateStream: any = runDebate(prompt, key);
+  // console.log('key', key);
   const stream = new TransformStream();
   const writer = stream.writable.getWriter();
 
   (async () => {
     for await (const response of debateStream) {
+      console.log('jsonResponse', response);
+      
+       const message = {
+         conversationId: key!,
+         messageId: guid(),
+         messageText: response?.message_text ?? '',
+         sender: response?.sender ?? '',
+       };
+
+       await setMessages(message);
       const jsonResponse = JSON.stringify(response);
       await writer.ready;
       await writer.write(encoder.encode(jsonResponse + '\n'));
@@ -139,7 +172,11 @@ export async function POST(req: Request) {
     await writer.close();
   })();
 
+  
+
+  // console.log('stream.readable', stream.readable);
+
   return new Response(stream.readable, {
-    headers: { 'Content-Type': 'application/json' },
+    headers: { "Content-Type": "application/json" },
   });
 }
