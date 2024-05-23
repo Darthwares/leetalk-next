@@ -24,6 +24,7 @@ import { useSession } from 'next-auth/react';
 import { useToast } from '@/components/ui/use-toast';
 import { publishConversation } from '@/lib/helper/edgedb/getCategoryList';
 import Loading from '@/components/loading';
+import DebateHeader from '../reusableDebateHeader';
 
 const ShowSingle = ({ params }: { params: { id: string } }) => {
   const [messages, setMessages] = useRecoilState(messagesState);
@@ -128,7 +129,7 @@ const ShowSingle = ({ params }: { params: { id: string } }) => {
     <>
       {processedMessages.remainingMessages && !loading && (
         <div className="flex flex-col w-full mx-auto p-4 md:p-6 bg-white shadow rounded-lg rounded-t-none">
-          <div className="flex lg:flex-row flex-col pb-10 lg:pb-0 items-center justify-between w-full">
+          {/* <div className="flex lg:flex-row flex-col pb-10 lg:pb-0 items-center justify-between w-full">
             {topic?.topic && (
               <div className="mx-auto w-full py-5">
                 <h2 className="font-extrabold text-4xl">Debate Topic</h2>
@@ -148,7 +149,6 @@ const ShowSingle = ({ params }: { params: { id: string } }) => {
                     </div>
                   </div>
                 </div>
-                {/* we can also publish direcly after clicking here, we can show a modal and then publish directly */}
               </div>
             )}
             <div className="flex justify-end">
@@ -158,7 +158,13 @@ const ShowSingle = ({ params }: { params: { id: string } }) => {
                 </Button>
               </Link>
             </div>
-          </div>
+          </div> */}
+          <DebateHeader
+            topic={topic?.topic}
+            path={'/debate'}
+            text={'Start new debate'}
+            handleShare={handleShare}
+          />
           <div
             className={`${
               loader && 'bg-gray-100'
@@ -182,35 +188,37 @@ const ShowSingle = ({ params }: { params: { id: string } }) => {
                   <ShowMarkdown content={processedMessages.conclusion} />
                 </div>
               )}
-              { status==='authenticated' &&  session?.user.id === debates?.user_id && !loading && (
-                <div className="fixed bottom-0 gap-5 left-0 w-full bg-white shadow-lg p-4 flex justify-end">
-                  {!debates?.published && (
-                    <Button
-                      onClick={() => handlePublish(params.id)}
-                      disabled={loading}
-                      className="flex items-center cursor-pointer space-x-1"
-                    >
-                      <Link href={'/my-debates'}>
-                        <span className="flex gap-1">
-                          <span className="text-sm">
-                            {loading ? (
-                              <span className="flex items-center space-x-1">
-                                <SpinnerIcon className="inline w-4 h-4 me-3 text-gray-200 animate-spin dark:text-gray-600" />
-                                Wait...
-                              </span>
-                            ) : (
-                              <span className="flex gap-1 items-center space-x-1">
-                                <EyeIcon className="h-5 w-5 text-white" />
-                                Publish debate
-                              </span>
-                            )}
+              {status === 'authenticated' &&
+                session?.user.id === debates?.user_id &&
+                !loading && (
+                  <div className="fixed bottom-0 gap-5 left-0 w-full bg-white shadow-lg p-4 flex justify-end">
+                    {!debates?.published && (
+                      <Button
+                        onClick={() => handlePublish(params.id)}
+                        disabled={loading}
+                        className="flex items-center cursor-pointer space-x-1"
+                      >
+                        <Link href={'/my-debates'}>
+                          <span className="flex gap-1">
+                            <span className="text-sm">
+                              {loading ? (
+                                <span className="flex items-center space-x-1">
+                                  <SpinnerIcon className="inline w-4 h-4 me-3 text-gray-200 animate-spin dark:text-gray-600" />
+                                  Wait...
+                                </span>
+                              ) : (
+                                <span className="flex gap-1 items-center space-x-1">
+                                  <EyeIcon className="h-5 w-5 text-white" />
+                                  Publish debate
+                                </span>
+                              )}
+                            </span>
                           </span>
-                        </span>
-                      </Link>
-                    </Button>
-                  )}
-                </div>
-              )}
+                        </Link>
+                      </Button>
+                    )}
+                  </div>
+                )}
             </div>
           </div>
         </div>

@@ -36,7 +36,8 @@ const MobileViewSidebar = ({
   const setUpdatedState = useSetRecoilState(debateListState);
   const [activeCategory, setActiveCategory] = useState<string>('');
 
-  let pathArray = pathname === '/categories' ? categoryPage : navigation;
+  let pathArray =
+    pathname === '/categories?query=Technology' ? categoryPage : navigation;
 
   const fetchAndFormatDebates = async (category: string) => {
     const list = await getCategoryList(category);

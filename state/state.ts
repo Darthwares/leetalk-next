@@ -51,11 +51,19 @@ const debateListState = atom<any[]>({
 });
 const debateCategoryState = atom<string | null>({
   key: "debateCategoryState",
-  default: "",
+  default: "`Technology`",
 });
 const topicListState = atom<Conversations[]>({
-  key: 'topicListState',
+  key: "topicListState",
   default: [],
+});
+const showPublishState = atom<boolean>({
+  key: "showPublishState",
+  default: true,
+});
+const showTopicState = atom<string>({
+  key: "showTopicState",
+  default: "",
 });
 
 export {
@@ -70,4 +78,6 @@ export {
   debateListState,
   debateCategoryState,
   topicListState,
+  showPublishState,
+  showTopicState,
 };
