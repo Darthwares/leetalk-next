@@ -12,7 +12,6 @@ import getSingleMessage from "@/lib/helper/edgedb/getSingleMessage";
 import { processMessages } from "@/constants/default";
 import getSingleTopic from "@/lib/helper/edgedb/getSingleTopic";
 import { Conversations, Message } from "@/types/types";
-import { ShareIcon } from "@heroicons/react/24/outline";
 import { EyeIcon } from "lucide-react";
 import TextToSpeechButton from "@/components/textToSpeech";
 import SuccessToast from "@/components/successToast";
@@ -143,7 +142,7 @@ const ShowSingle = ({ params }: { params: { id: string } }) => {
           <div
             className={`${
               loader && "bg-gray-100"
-            }  flex flex-col py-10 rounded-lg`}
+            }  flex flex-col py-5 sm:py-10 rounded-lg`}
           >
             <div className="flex-grow overflow-y-auto py-4 space-y-8">
               {processedMessages.remainingMessages.map((message, index) => (

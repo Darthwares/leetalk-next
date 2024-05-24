@@ -20,7 +20,7 @@ import {
 } from "@/lib/helper/edgedb/postLikeManager";
 import { signIn, useSession } from "next-auth/react";
 import TextToSpeechButton from "../textToSpeech";
-import { useParams, useSearchParams } from "next/navigation";
+import { useParams } from "next/navigation";
 import useHideAudio from "@/lib/helper/useHideAudio";
 
 const comments = [
