@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Fragment } from "react";
+import { Fragment, useEffect } from "react";
 import { Menu, Transition } from "@headlessui/react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "./ui/button";
@@ -16,11 +16,15 @@ import { useRouter } from "next/navigation";
 
 export default function Landing() {
   const { data: session, status } = useSession();
-  const router = useRouter()
+  const router = useRouter();
 
   const handleSignIn = () => {
     signIn("google", { callbackUrl: "/debate" });
   };
+
+  useEffect(() => {
+    import("@lottiefiles/lottie-player");
+  });
 
   if (status === "loading") {
     return <Loading />;
@@ -58,7 +62,7 @@ export default function Landing() {
                         <span className="sr-only">Open user menu</span>
                         <Image
                           className="h-8 w-8 rounded-full"
-                          src={session?.user?.image ?? ''}
+                          src={session?.user?.image ?? ""}
                           height={20}
                           width={20}
                           alt=""
@@ -80,8 +84,8 @@ export default function Landing() {
                             <a
                               href="/my-debates"
                               className={classNames(
-                                active ? 'bg-gray-100' : '',
-                                'block px-4 py-2 text-sm text-gray-700'
+                                active ? "bg-gray-100" : "",
+                                "block px-4 py-2 text-sm text-gray-700"
                               )}
                             >
                               My Debates
@@ -93,8 +97,8 @@ export default function Landing() {
                             <a
                               href="/categories?query=Technology"
                               className={classNames(
-                                active ? 'bg-gray-100' : '',
-                                'block px-4 py-2 text-sm text-gray-700'
+                                active ? "bg-gray-100" : "",
+                                "block px-4 py-2 text-sm text-gray-700"
                               )}
                             >
                               Categories
@@ -105,8 +109,8 @@ export default function Landing() {
                           {({ active }) => (
                             <button
                               className={classNames(
-                                active ? 'bg-gray-100' : '',
-                                'block px-4 py-2 text-sm text-gray-700'
+                                active ? "bg-gray-100" : "",
+                                "block px-4 py-2 text-sm text-gray-700"
                               )}
                               onClick={() => {
                                 return signOut();
@@ -161,7 +165,7 @@ export default function Landing() {
                   return signOut();
                 }}
               >
-                {session?.user.id ? 'Logout' : 'Login'}
+                {session?.user.id ? "Logout" : "Login"}
               </Button>
             </div>
           </SheetContent>
@@ -187,7 +191,7 @@ export default function Landing() {
                     if (!session?.user.id) {
                       return handleSignIn();
                     }
-                    return router.push('/debate');
+                    return router.push("/debate");
                   }}
                   className="inline-flex h-10 items-center justify-center rounded-md bg-gray-900 px-8 text-sm font-medium text-gray-50 shadow transition-colors hover:bg-gray-900/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-950 disabled:pointer-events-none disabled:opacity-50 dark:bg-gray-50 dark:text-gray-900 dark:hover:bg-gray-50/90 dark:focus-visible:ring-gray-300"
                 >
@@ -195,13 +199,16 @@ export default function Landing() {
                 </button>
               </div>
             </div>
-            <img
-              alt="Hero"
-              className="mx-auto aspect-video overflow-hidden rounded-xl object-bottom sm:w-full lg:order-last lg:aspect-square"
-              //   height="550"
-              src="/hero.png"
-              //   width="550"
-            />
+            <div className="h-[18rem] md:h-[30rem] w-full">
+              <lottie-player
+                src="/talking.json"
+                background=""
+                speed="1"
+                loop
+                autoplay
+                className="bg-gradient-to-r from-indigo-100 to-pink-200"
+              ></lottie-player>
+            </div>
           </div>
         </div>
       </section>

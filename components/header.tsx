@@ -6,12 +6,15 @@ import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { classNames } from "@/lib/utils";
+
 interface HeaderProps {
   setSidebarOpen: Dispatch<SetStateAction<boolean>>;
 }
+
 const Header = ({ setSidebarOpen }: HeaderProps) => {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const router = useRouter();
+
   return (
     <>
       <Disclosure as="nav" className="bg-gray-900 sticky top-0 z-40">
@@ -31,7 +34,7 @@ const Header = ({ setSidebarOpen }: HeaderProps) => {
                 </div>
               </div>
               <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start"></div>
-              {session?.user.id && (
+              {session?.user?.id && (
                 <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
                   <Menu as="div" className="relative ml-3">
                     <div>
@@ -40,7 +43,7 @@ const Header = ({ setSidebarOpen }: HeaderProps) => {
                         <span className="sr-only">Open user menu</span>
                         <img
                           className="h-8 w-8 bg-gray-300 rounded-full"
-                          src={session?.user?.image ?? ''}
+                          src={session?.user?.image ?? ""}
                           alt={session?.user?.name!}
                         />
                       </Menu.Button>
@@ -60,8 +63,8 @@ const Header = ({ setSidebarOpen }: HeaderProps) => {
                             <a
                               href="/my-debates"
                               className={classNames(
-                                active ? 'bg-gray-100' : '',
-                                'block px-4 py-2 text-sm text-gray-700'
+                                active ? "bg-gray-100" : "",
+                                "block px-4 py-2 text-sm text-gray-700"
                               )}
                             >
                               My Debates
@@ -73,8 +76,8 @@ const Header = ({ setSidebarOpen }: HeaderProps) => {
                             <a
                               href="/categories?query=Technology"
                               className={classNames(
-                                active ? 'bg-gray-100' : '',
-                                'block px-4 py-2 text-sm text-gray-700'
+                                active ? "bg-gray-100" : "",
+                                "block px-4 py-2 text-sm text-gray-700"
                               )}
                             >
                               Categories
@@ -85,12 +88,12 @@ const Header = ({ setSidebarOpen }: HeaderProps) => {
                           {({ active }) => (
                             <button
                               className={classNames(
-                                active ? 'bg-gray-100' : '',
-                                'block px-4 py-2 text-sm text-gray-700'
+                                active ? "bg-gray-100" : "",
+                                "block px-4 py-2 text-sm text-gray-700"
                               )}
                               onClick={() => {
                                 signOut({ redirect: false }).then(() =>
-                                  router.push('/')
+                                  router.push("/")
                                 );
                               }}
                             >
@@ -103,7 +106,7 @@ const Header = ({ setSidebarOpen }: HeaderProps) => {
                   </Menu>
                 </div>
               )}
-              {!session && (
+              {!session && status !== "loading" && (
                 <button
                   className="bg-white text-black px-3.5 py-1.5 rounded-md hover:bg-gray-200 font-medium mr-3 lg:mr-0"
                   onClick={async () => {
@@ -120,4 +123,5 @@ const Header = ({ setSidebarOpen }: HeaderProps) => {
     </>
   );
 };
+
 export default Header;

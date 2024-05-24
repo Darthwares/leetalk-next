@@ -51,7 +51,7 @@ const debateListState = atom<any[]>({
 });
 const debateCategoryState = atom<string | null>({
   key: "debateCategoryState",
-  default: "`Technology`",
+  default: "Technology",
 });
 const topicListState = atom<Conversations[]>({
   key: "topicListState",
