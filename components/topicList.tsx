@@ -2,9 +2,7 @@
 
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { useWindowDimensions } from "@/lib/helper/useWindowDimensions";
 import { Input } from "./ui/input";
-import useDebateTopics from "@/lib/helper/useDebateTopics";
 import getList from "@/lib/helper/edgedb/dbClient";
 import { useRecoilState } from "recoil";
 import { topicListState } from "@/state/state";
@@ -14,18 +12,16 @@ interface TopicListProps {
   setSidebarOpen?: Dispatch<SetStateAction<boolean>>;
 }
 const TopicList = ({ setSidebarOpen }: TopicListProps) => {
-  const { height, width } = useWindowDimensions();
   const [searchTerm, setSearchTerm] = useState("");
-  // const { topics } = useDebateTopics();
   const [topics, setTopics] = useRecoilState(topicListState);
 
   useEffect(() => {
     async function getBlogList() {
-      const data = await getList(); // Assuming getList fetches your topics
-      setTopics(data as Conversations[]); // Set topics here
+      const data = await getList();
+      setTopics(data as Conversations[]);
     }
     getBlogList();
-  }, []); // Dependencies can be added if needed
+  }, []);
 
   const filteredTopics = useMemo(() => {
     return topics?.filter((topic: any) =>
@@ -33,18 +29,9 @@ const TopicList = ({ setSidebarOpen }: TopicListProps) => {
     );
   }, [searchTerm, topics]);
 
-  // useEffect(() => {
-  //   (async function getBlogList() {
-  //     const data = await getList();
-  //     console.log("data", data);
-  //   })();
-  // }, []);
 
   return (
-    <div
-      className="flex flex-col w-full pb-10 h-full space-y-3 bg-white p-2 rounded-lg"
-      //   style={{ maxHeight: `calc(${height}px - 250px)`, overflowY: 'scroll' }}
-    >
+    <div className="flex flex-col w-full pb-10 h-full space-y-3 bg-white p-2 rounded-lg">
       <h2 className="bg-gray-800 text-white text-center rounded-md p-2">
         Topic Suggestions
       </h2>
@@ -55,10 +42,7 @@ const TopicList = ({ setSidebarOpen }: TopicListProps) => {
           onChange={(e) => setSearchTerm(e.target.value)}
         />
       </div>
-      <div
-        // style={{ maxHeight: `calc(${height}px - 250px)`, overflowY: 'scroll' }}
-        className=""
-      >
+      <div>
         {filteredTopics!?.length > 0 ? (
           <div className="space-y-2">
             {filteredTopics?.map((item, index) => (

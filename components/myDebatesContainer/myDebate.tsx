@@ -171,8 +171,6 @@ const MyDebateContainer = () => {
     if (filter === "unpublished") return !debate.published;
   });
 
-  console.log("debates", debates);
-
   return (
     <>
       <div className="px-5 py-8 max-w-7xl mx-auto">

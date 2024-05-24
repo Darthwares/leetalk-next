@@ -46,7 +46,6 @@ export default function Home() {
     }
   };
 
-  console.log('streamedData', streamedData)
   const handleClearChat = () => {
     setStreamedData([]);
     setIsDebateOver(false);

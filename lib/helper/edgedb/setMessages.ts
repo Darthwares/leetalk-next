@@ -1,5 +1,5 @@
-'use server';
-import client from './edgedb';
+"use server";
+import client from "./edgedb";
 
 interface MessageProps {
   messageId: string;
@@ -31,7 +31,5 @@ export const setMessages = async ({
     messageText,
   };
 
-  const message = await client.querySingle(query, params);
-
-  console.log('Message inserted:', message);
+  await client.querySingle(query, params);
 };

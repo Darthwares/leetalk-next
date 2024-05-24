@@ -45,7 +45,6 @@ export const authOptions: NextAuthOptions = {
 
         if (!existingUser) {
           await client.querySingle(query, params);
-          console.log("User inserted successfully.");
         }
 
         return true;

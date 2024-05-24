@@ -1,6 +1,6 @@
-'use server';
+"use server";
 
-import client from './edgedb';
+import client from "./edgedb";
 
 interface ConversationProps {
   conversationId: string;
@@ -25,8 +25,8 @@ export const setConversations = async ({
     topic := <str>$topic,
     category := <str>$category,
     published := <bool>$publisher,
-    ${userId ? `user_id := <str>$userId,` : ''}
-    ${createdAt ? `created_at := <datetime>$createdAt` : ''}
+    ${userId ? `user_id := <str>$userId,` : ""}
+    ${createdAt ? `created_at := <datetime>$createdAt` : ""}
     }
   `;
 
@@ -39,7 +39,5 @@ export const setConversations = async ({
     ...(createdAt && { createdAt }),
   };
 
-  const conversation = await client.querySingle(query, params);
-
-  console.log('Conversation inserted:', conversation, conversationId);
+  await client.querySingle(query, params);
 };
