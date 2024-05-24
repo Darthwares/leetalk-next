@@ -58,8 +58,23 @@ export function CarouselDemo({ items }: CarouselProps) {
   const [topics, setTopics] =
     React.useState<FirstConversation[]>(placeholderData);
   const [isPlaceholder, setIsPlaceholder] = React.useState(true);
+  const [hideAudioinIphone, setHideAudioinIphone] = React.useState(true);
 
   React.useEffect(() => {
+    function checkOS() {
+      const userAgent = navigator.userAgent;
+      let os = "";
+
+      if (userAgent.includes("iPad") || userAgent.includes("iPhone")) {
+        os = "iOS";
+        setHideAudioinIphone(false);
+      }
+
+      return os;
+    }
+
+    checkOS();
+
     async function getDebatesList() {
       const data = await getAllDebates();
       if (data.length > 0) {
@@ -74,7 +89,7 @@ export function CarouselDemo({ items }: CarouselProps) {
     <div className="">
       <div className="py-5 space-y-3 text-center">
         <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">
-          Featured{' '}
+          Featured{" "}
           <span className="text-gray-600 text-2xl sm:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-pink-600">
             Debates
           </span>
@@ -90,12 +105,12 @@ export function CarouselDemo({ items }: CarouselProps) {
             key={idx}
             className={` ${
               !isPlaceholder && item.first_message
-                ? 'md:min-h-72'
-                : 'md:min-h-40'
+                ? "md:min-h-72"
+                : "md:min-h-40"
             }  h-full w-full items-start p-4 md:p-8  rounded-lg space-y-4`}
             style={{
-              background: 'linear-gradient(45deg, #2B4162, #000000)',
-              backgroundSize: '400% 400%',
+              background: "linear-gradient(45deg, #2B4162, #000000)",
+              backgroundSize: "400% 400%",
             }}
           >
             <Link href={`/chat/${item.conversation_id}`}>
@@ -114,20 +129,20 @@ export function CarouselDemo({ items }: CarouselProps) {
               )}
               <div className="flex justify-end w-full items-center">
                 <span className="text-sm text-white">
-                  {new Date(item.created_at).toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
+                  {new Date(item.created_at).toLocaleDateString("en-US", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
                   })}
                 </span>
               </div>
             </div>
-            {!isPlaceholder && item.first_message && (
+            {!isPlaceholder && item.first_message && hideAudioinIphone && (
               <div className="w-full">
                 <div className="w-full">
                   <TextToSpeechButton
                     content={item.first_message.message_text}
-                    senderType={'claudeDebater'}
+                    senderType={"claudeDebater"}
                   />
                 </div>
               </div>

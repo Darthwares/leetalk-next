@@ -137,18 +137,25 @@ export default function Landing() {
           </SheetTrigger>
           <SheetContent side="right">
             <div className="grid gap-2 py-6">
-              <Link
+              <button
                 className="flex w-full items-center py-2 text-lg font-semibold"
-                href="/debate"
+                onClick={() => {
+                  if (!session?.user.id) {
+                    return handleSignIn();
+                  }
+                  return router.push("/debate");
+                }}
               >
                 Start Debate
-              </Link>
-              <Link
-                className="flex w-full items-center py-2 text-lg font-semibold"
-                href="/my-debates"
-              >
-                My Debates
-              </Link>
+              </button>
+              {status === "authenticated" && (
+                <Link
+                  className="flex w-full items-center py-2 text-lg font-semibold"
+                  href="/my-debates"
+                >
+                  My Debates
+                </Link>
+              )}
 
               <Link
                 className="flex w-full items-center py-2 text-lg font-semibold"

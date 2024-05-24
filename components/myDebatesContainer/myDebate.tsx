@@ -181,11 +181,11 @@ const MyDebateContainer = () => {
           </p>
         </div>
         <div className="flex justify-center mb-4">
-          <Link href="/debate">
+          <a href="/debate">
             <Button className="max-w-fit flex gap-2 py-3">
               Start new debate
             </Button>
-          </Link>
+          </a>
         </div>
 
         <div className="flex sm:flex-row flex-col gap-y-5 justify-between items-center py-4">

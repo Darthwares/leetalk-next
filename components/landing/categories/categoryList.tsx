@@ -44,7 +44,7 @@ const CategoryList: React.FC = () => {
   }, []);
 
   return (
-    <div className="w-full">
+    <div className="w-full pt-14">
       <div className="space-y-3 text-center">
         <div className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl pt-5 pb-10">
           <h2 className="py-4 text-2xl sm:text-4xl font-extrabold">
