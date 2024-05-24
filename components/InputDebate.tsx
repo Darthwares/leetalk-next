@@ -42,6 +42,8 @@ import {
   getSelectedCategory,
 } from "@/lib/helper/edgedb/dbClient";
 import Link from "next/link";
+import checkIsTopicExist from "@/lib/helper/edgedb/checkIsTopicExist";
+import deleteConversation from "@/lib/helper/edgedb/deleteConversation";
 
 export function InputDebate() {
   const { data: session, status } = useSession();
@@ -154,6 +156,25 @@ export function InputDebate() {
     e.preventDefault();
     setMessagesList([]);
     setLoader(true);
+
+    const existingTopic = await checkIsTopicExist(inputValue.trim());
+    if (existingTopic) {
+      toast({
+        className: "toastClass",
+        action: (
+          <div className="px-5">
+            <SuccessToast
+              title="Topic Already Exists!"
+              description="The topic you have entered already exists. Please choose a different topic."
+              className="text-yellow-800 border-yellow-300 bg-yellow-50"
+            />
+          </div>
+        ),
+      });
+      setLoader(false);
+      return;
+    }
+
     setId(Idx);
 
     await setConversations({
@@ -211,6 +232,7 @@ export function InputDebate() {
         });
       }
     } catch (error) {
+      await deleteConversation(Idx);
       toast({
         className: "toastClass",
         action: (
@@ -345,7 +367,7 @@ export function InputDebate() {
                             {loader ? (
                               <span className="flex items-center space-x-1">
                                 <SpinnerIcon className="inline w-4 h-4 me-3 text-gray-200 animate-spin dark:text-gray-600" />
-                                Debating...
+                                Generating...
                               </span>
                             ) : (
                               <span className="flex gap-1 items-center space-x-1">

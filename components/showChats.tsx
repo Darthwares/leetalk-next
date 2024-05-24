@@ -20,7 +20,7 @@ import DebateHeader from "./reusableDebateHeader";
 export default function ShowChats() {
   const messageRef = useRef<HTMLDivElement | null>(null);
   const [loader] = useRecoilState(loaderState);
-  const [messages] = useRecoilState(messagesState);
+  const [messages, setMessagesList] = useRecoilState(messagesState);
   const messageList = processMessages(messages);
   const [id] = useRecoilState(conversationIdState);
   const [publishState, setPublishState] = useRecoilState(showPublishState);
@@ -153,7 +153,7 @@ export default function ShowChats() {
                   href={"/my-debates"}
                   className="max-w-fit flex gap-2 py-3"
                   onClick={async () => {
-                    // setMessagesList([]);
+                    setMessagesList([]);
                     // setShowDebateInputBox(true);
                     await publishConversation(id);
                   }}
