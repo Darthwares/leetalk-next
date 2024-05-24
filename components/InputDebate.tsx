@@ -385,7 +385,7 @@ export function InputDebate() {
                               className="hover:text-blue-500"
                             >
                               <Link
-                                href={`/conversation/${conversation.conversation_id}`}
+                                href={`/chat/${conversation.conversation_id}`}
                               >
                                 {conversation.topic}
                               </Link>

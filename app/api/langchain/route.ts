@@ -98,7 +98,7 @@ const runLLMChainAnthropic = async (
     ],
   });
 
-  model.call([systemMessage, new HumanMessage(prompt)]);
+  model.invoke([systemMessage, new HumanMessage(prompt)]);
 
   return stream.readable;
 };
@@ -128,7 +128,7 @@ const runLLMChainOpenAI = async (
     ],
   });
 
-  model.call([systemMessage, new HumanMessage(prompt)]);
+  model.invoke([systemMessage, new HumanMessage(prompt)]);
 
   return stream.readable;
 };

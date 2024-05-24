@@ -4,6 +4,7 @@ import { processMessages } from "@/constants/default";
 import MessageCard from "./debates/debateMessageCard";
 import {
   conversationIdState,
+  debateCategoryState,
   loaderState,
   messagesState,
   showPublishState,
@@ -23,6 +24,9 @@ export default function ShowChats() {
   const messageList = processMessages(messages);
   const [id] = useRecoilState(conversationIdState);
   const [publishState, setPublishState] = useRecoilState(showPublishState);
+  const [activeCategory] = useRecoilState(debateCategoryState);
+
+  console.log('activeCategory', activeCategory)
 
   const [inputValue] = useRecoilState(showTopicState);
 
@@ -126,6 +130,7 @@ export default function ShowChats() {
               path={"/my-debates"}
               text={"See all debates"}
               handleShare={handleShare}
+              category={activeCategory!}
             />
 
             {messageList.remainingMessages?.map((message, id) => {
