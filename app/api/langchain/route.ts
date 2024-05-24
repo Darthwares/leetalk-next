@@ -7,6 +7,9 @@ import { setMessages } from "@/lib/helper/edgedb/setMessages";
 const encoder = new TextEncoder();
 const decoder = new TextDecoder();
 
+export const maxDuration = 300; // This function can run for a maximum of 5 minutes
+export const dynamic = 'force-dynamic';
+
 interface DebateResponse {
   sender: string;
   message_text: string;
