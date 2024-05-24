@@ -153,29 +153,30 @@ export async function POST(req: Request) {
   const writer = stream.writable.getWriter();
 
   (async () => {
-    for await (const response of debateStream) {
-      console.log('jsonResponse', response);
-      
-       const message = {
-         conversationId: key!,
-         messageId: guid(),
-         messageText: response?.message_text ?? '',
-         sender: response?.sender ?? '',
-       };
+    try {
+      for await (const response of debateStream) {
+        console.log('jsonResponse', response);
 
-       await setMessages(message);
-      const jsonResponse = JSON.stringify(response);
+        const message = {
+          conversationId: key!,
+          messageId: guid(),
+          messageText: response?.message_text ?? '',
+          sender: response?.sender ?? '',
+        };
+
+        await setMessages(message);
+        const jsonResponse = JSON.stringify(response);
+        await writer.ready;
+        await writer.write(encoder.encode(jsonResponse + '\n'));
+      }
+    } catch (error) {
+      console.error('Error during debate stream:', error);
+    } finally {
       await writer.ready;
-      await writer.write(encoder.encode(jsonResponse + '\n'));
+      await writer.close();
     }
-    await writer.ready;
-    await writer.close();
   })();
-
   
-
-  // console.log('stream.readable', stream.readable);
-
   return new Response(stream.readable, {
     headers: { "Content-Type": "application/json" },
   });
