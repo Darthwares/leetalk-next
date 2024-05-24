@@ -17,7 +17,7 @@ const ReusableSidebarItems: React.FC = () => {
   });
 
   return (
-    <div className="p-5 max-w-7xl w-full space-y-8">
+    <div className="sm:p-5 max-w-7xl w-full space-y-8">
       {updatedState.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 py-10 lg:grid-cols-3 gap-4">
           {updatedState.map((debate, index) => (

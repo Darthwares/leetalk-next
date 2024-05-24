@@ -21,6 +21,7 @@ import {
 import { signIn, useSession } from "next-auth/react";
 import TextToSpeechButton from "../textToSpeech";
 import { useParams, useSearchParams } from "next/navigation";
+import useHideAudio from "@/lib/helper/useHideAudio";
 
 const comments = [
   { id: 1, user: "User 1", comment: "Great point!", time: "2 hours ago" },
@@ -72,6 +73,7 @@ const MessageCard = ({ message, senderType }: MessageProps) => {
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
   const params = useParams();
+  const { hideAudioinIphone } = useHideAudio();
 
   let userId = session?.user.id;
   let conversation_id = message.conversation_id;
@@ -154,10 +156,12 @@ const MessageCard = ({ message, senderType }: MessageProps) => {
               : "bg-white"
           }`}
         >
-          <TextToSpeechButton
-            content={message.message_text}
-            senderType={senderType}
-          />
+          {hideAudioinIphone && (
+            <TextToSpeechButton
+              content={message.message_text}
+              senderType={senderType}
+            />
+          )}
           <ShowMarkdown content={message.message_text} />
 
           {params.id && (

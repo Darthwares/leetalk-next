@@ -1,12 +1,11 @@
 import * as React from "react";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
-import { PauseIcon, PlayIcon } from "./svg";
 import { responsive } from "@/constants/default";
 import { FirstConversation, getAllDebates } from "@/lib/helper/edgedb/dbClient";
 import TextToSpeechButton from "./textToSpeech";
-import { Button } from "./ui/button";
 import Link from "next/link";
+import useHideAudio from "@/lib/helper/useHideAudio";
 
 interface CarouselProps {
   items: any;
@@ -58,23 +57,9 @@ export function CarouselDemo({ items }: CarouselProps) {
   const [topics, setTopics] =
     React.useState<FirstConversation[]>(placeholderData);
   const [isPlaceholder, setIsPlaceholder] = React.useState(true);
-  const [hideAudioinIphone, setHideAudioinIphone] = React.useState(true);
+  const { hideAudioinIphone } = useHideAudio();
 
   React.useEffect(() => {
-    function checkOS() {
-      const userAgent = navigator.userAgent;
-      let os = "";
-
-      if (userAgent.includes("iPad") || userAgent.includes("iPhone")) {
-        os = "iOS";
-        setHideAudioinIphone(false);
-      }
-
-      return os;
-    }
-
-    checkOS();
-
     async function getDebatesList() {
       const data = await getAllDebates();
       if (data.length > 0) {
@@ -104,7 +89,7 @@ export function CarouselDemo({ items }: CarouselProps) {
           <div
             key={idx}
             className={` ${
-              !isPlaceholder && item.first_message
+              !isPlaceholder && item.first_message && hideAudioinIphone
                 ? "md:min-h-72"
                 : "md:min-h-40"
             }  h-full w-full items-start p-4 md:p-8  rounded-lg space-y-4`}

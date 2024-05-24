@@ -21,11 +21,13 @@ import { useToast } from "@/components/ui/use-toast";
 import { publishConversation } from "@/lib/helper/edgedb/getCategoryList";
 import Loading from "@/components/loading";
 import DebateHeader from "../reusableDebateHeader";
+import useHideAudio from "@/lib/helper/useHideAudio";
 
 const ShowSingle = ({ params }: { params: { id: string } }) => {
   const [messages, setMessages] = useRecoilState(messagesState);
   const [topic, setTopic] = useRecoilState<any>(singleTopicState);
   const [loader] = useRecoilState<any>(loaderState);
+  const { hideAudioinIphone } = useHideAudio();
 
   const { data: session, status } = useSession();
   const [debates, setDebates] = useState<any>();
@@ -154,10 +156,12 @@ const ShowSingle = ({ params }: { params: { id: string } }) => {
               {processedMessages.conclusion && (
                 <div className="bg-green-100 p-4 space-y-2">
                   <h3 className="text-xl font-bold">Conclusion:</h3>
-                  <TextToSpeechButton
-                    content={processedMessages.conclusion}
-                    senderType={""}
-                  />
+                  {hideAudioinIphone && (
+                    <TextToSpeechButton
+                      content={processedMessages.conclusion}
+                      senderType={""}
+                    />
+                  )}
                   <ShowMarkdown content={processedMessages.conclusion} />
                 </div>
               )}
