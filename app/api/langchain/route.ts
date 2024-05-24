@@ -151,14 +151,12 @@ export async function POST(req: Request) {
   const { prompt, key } = await req.json();
 
   const debateStream: any = runDebate(prompt, key);
-  // console.log('key', key);
   const stream = new TransformStream();
   const writer = stream.writable.getWriter();
 
   (async () => {
     try {
       for await (const response of debateStream) {
-        console.log('jsonResponse', response);
 
         const message = {
           conversationId: key!,

@@ -7,7 +7,6 @@ import { claude_sonnet, openAI_GPT35 } from '@/lib/llm';
 import { tavilyTool } from '@/lib/tavilySearchTool';
 import { agentState } from '@/lib/agentState';
 import { toolNode } from '@/lib/toolNode';
-import { supabase } from '@/lib/supabase';
 
 export async function runDebate(topic: string, id: string) {
   try {

@@ -19,7 +19,5 @@ export default async function getUserDebates(userId: string) {
     { userId }
   );
 
-  console.log('conversations', conversations);
-
   return conversations;
 }

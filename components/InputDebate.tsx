@@ -77,7 +77,6 @@ export function InputDebate() {
     setSelectedCategory(category);
     const data = await getSelectedCategory(category);
     setConversationList(data);
-    console.log("data", data);
   };
 
   useEffect(() => {
@@ -346,7 +345,7 @@ export function InputDebate() {
                             {loader ? (
                               <span className="flex items-center space-x-1">
                                 <SpinnerIcon className="inline w-4 h-4 me-3 text-gray-200 animate-spin dark:text-gray-600" />
-                                Generating...
+                                Debating...
                               </span>
                             ) : (
                               <span className="flex gap-1 items-center space-x-1">

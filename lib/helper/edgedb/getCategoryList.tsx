@@ -30,7 +30,6 @@ export async function publishConversation(id: string) {
 
   try {
     const result = await client.query(query, { id });
-    console.log("Conversation updated successfully:", result);
     return result as Conversations[];
   } catch (error) {
     console.error("Error updating conversation:", error);
@@ -49,7 +48,6 @@ export async function unPublishConversation(id: string) {
 
   try {
     const result = await client.query(query, { id });
-    console.log('Conversation updated successfully:', result);
     return result as Conversations[];
   } catch (error) {
     console.error('Error updating conversation:', error);

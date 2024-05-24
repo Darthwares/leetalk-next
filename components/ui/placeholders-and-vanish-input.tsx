@@ -44,8 +44,6 @@ export function PlaceholdersAndVanishInput({
     } 
   }, [placeholders, placeholders.length]);
 
-  console.log('placeholders items', placeholders);
-
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const newDataRef = useRef<any[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);

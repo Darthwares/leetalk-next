@@ -16,8 +16,6 @@ export default async function getList() {
     ORDER BY .created_at DESC;
   `);
 
-  console.log("conversations", conversations);
-
   return conversations;
 }
 
@@ -62,39 +60,39 @@ export async function getAllDebates(): Promise<FirstConversation[]> {
   LIMIT 6;
   `);
 
-  console.log("conversations", conversations);
-
   return conversations as FirstConversation[];
 }
 
-
-export async function getConversationsByCategory(category: string): Promise<{ conversation_id: string; topic: string }[]> {
-  const conversations = await client.query(`
+export async function getConversationsByCategory(
+  category: string
+): Promise<{ conversation_id: string; topic: string }[]> {
+  const conversations = await client.query(
+    `
     SELECT Conversations {
       conversation_id,
       topic
     }
     FILTER .category = <str>$category AND .published = true
     LIMIT 3;
-  `, { category });
-
-  console.log("conversations by category", conversations);
+  `,
+    { category }
+  );
 
   return conversations as { conversation_id: string; topic: string }[];
 }
 
-
 export async function getSelectedCategory(category: string) {
-  const conversations = await client.query(`
+  const conversations = await client.query(
+    `
     SELECT Conversations {
       conversation_id,
       topic
     }
     FILTER .category = <str>$category AND .published = true
     LIMIT 4;
-  `, { category });
-
-  console.log("conversations by category", conversations);
+  `,
+    { category }
+  );
 
   return conversations as { conversation_id: string; topic: string }[];
 }

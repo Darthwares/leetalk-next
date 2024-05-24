@@ -29,7 +29,6 @@ export async function toolNode(state: any) {
   const toolMessages = toolResponses.map((response, idx) => {
     const action = toolInputs[idx];
     const toolName = action.tool;
-    console.log("Debug Response:", response);
     let contentString = typeof response === 'string' ? response : JSON.stringify(response);
   
   return new ToolMessage({

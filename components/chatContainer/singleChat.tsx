@@ -115,7 +115,6 @@ const ShowSingle = ({ params }: { params: { id: string } }) => {
           text: "I found this interesting:",
           url: document.location.href,
         });
-        console.log("Content shared successfully");
       } catch (error) {
         console.error("Error sharing content:", error);
       }
