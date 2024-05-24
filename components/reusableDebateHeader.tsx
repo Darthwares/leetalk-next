@@ -35,18 +35,18 @@ const DebateHeader: React.FC<DebateHeaderProps> = React.memo(({
                 aria-label="Share"
               >
                 <ShareIcon className="h-5 w-5 text-gray-400" />
-                <span className="text-sm md:block hidden">Share</span>
+                <span className="text-sm">Share</span>
               </div>
               <div
                 className="flex items-center space-x-1"
                 aria-label={category}
               >
                 <TagIcon className="h-5 w-5 text-gray-400" />
-                <span className="text-sm md:block hidden">{category}</span>
+                <span className="text-sm">{category}</span>
               </div>
             </div>
           </div>
-          <div className="flex justify-end">
+          <div className="flex justify-end pt-5 md:pt-0">
             <Button className="max-w-fit flex gap-2 py-3">
               <Link href={path} passHref>
                 <>{text}</>
