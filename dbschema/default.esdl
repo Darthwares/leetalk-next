@@ -33,6 +33,7 @@ type Conversations {
     required conversation_id: str;
     required sender: str;
     required message_text: str;
+    property audio_url: str;
     property created_at -> datetime {
         default := datetime_current();
     }

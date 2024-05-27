@@ -5,6 +5,7 @@ export interface Message {
   message_text: string;
   sender: string;
   created_at: string;
+  audio_url?: string;
 }
 
 export interface Dimensions {

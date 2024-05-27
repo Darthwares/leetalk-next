@@ -10,9 +10,6 @@ import {
   CardContent,
   CardFooter,
 } from "@ui/card";
-import { runDebate } from "@/serverActions/runDebate";
-import { Textarea } from "@ui/textarea";
-import { PlaneIcon, SpinnerIcon } from "./svg";
 import { guid } from "@/constants/default";
 import { useRecoilState, useSetRecoilState } from "recoil";
 import {
@@ -44,6 +41,9 @@ import {
 import Link from "next/link";
 import checkIsTopicExist from "@/lib/helper/edgedb/checkIsTopicExist";
 import deleteConversation from "@/lib/helper/edgedb/deleteConversation";
+import { PlaneIcon } from "lucide-react";
+import { SpinnerIcon } from "./svg";
+import { Textarea } from "./ui/textarea";
 
 export function InputDebate() {
   const { data: session, status } = useSession();
@@ -101,24 +101,25 @@ export function InputDebate() {
     });
     try {
       const reader = response.body?.getReader();
+      const decoder = new TextDecoder();
+      let result = "";
+
       if (reader) {
         while (true) {
           const { done, value } = await reader.read();
-          if (done) {
-            break;
-          }
-          const text = new TextDecoder().decode(value);
-          const jsonResponse = text
+          if (done) break;
+          result += decoder.decode(value, { stream: true });
+          const jsonResponse = result
             .trim()
             .split("\n")
             .map((line) => JSON.parse(line));
-          for (const response of jsonResponse) {
-            if (response.end) {
-              // setIsDebateOver(true);
+
+          for (const res of jsonResponse) {
+            if (res.end) {
               setPublishState(true);
               break;
             } else {
-              setMessagesList((prevData) => [...prevData, response]);
+              setMessagesList((prevData) => [...prevData, res]);
             }
           }
         }
@@ -197,24 +198,25 @@ export function InputDebate() {
     });
     try {
       const reader = response.body?.getReader();
+      const decoder = new TextDecoder();
+      let result = "";
+
       if (reader) {
         while (true) {
           const { done, value } = await reader.read();
-          if (done) {
-            break;
-          }
-          const text = new TextDecoder().decode(value);
-          const jsonResponse = text
+          if (done) break;
+          result += decoder.decode(value, { stream: true });
+          const jsonResponse = result
             .trim()
             .split("\n")
             .map((line) => JSON.parse(line));
-          for (const response of jsonResponse) {
-            if (response.end) {
-              // setIsDebateOver(true);
+
+          for (const res of jsonResponse) {
+            if (res.end) {
               setPublishState(true);
               break;
             } else {
-              setMessagesList((prevData) => [...prevData, response]);
+              setMessagesList((prevData) => [...prevData, res]);
             }
           }
         }
@@ -232,7 +234,7 @@ export function InputDebate() {
         });
       }
     } catch (error) {
-      await deleteConversation(Idx);
+      // await deleteConversation(Idx);
       toast({
         className: "toastClass",
         action: (
@@ -359,7 +361,6 @@ export function InputDebate() {
                       <Button
                         type="submit"
                         className="ml-2 whitespace-nowrap"
-                        // onClick={handleStartDebate}
                         disabled={inputValue.length === 0 || loader}
                       >
                         <span className="flex gap-1">

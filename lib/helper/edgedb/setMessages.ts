@@ -7,6 +7,7 @@ interface MessageProps {
   sender: string;
   messageText: string;
   created_at?: string;
+  audioUrl?: string;
 }
 
 export const setMessages = async ({
@@ -14,11 +15,13 @@ export const setMessages = async ({
   conversationId,
   sender,
   messageText,
+  audioUrl,
 }: MessageProps) => {
   const query = `
     INSERT Messages {
       message_id := <str>$messageId,
       conversation_id := <str>$conversationId,
+      audio_url := <str>$audioUrl,
       sender := <str>$sender,
       message_text := <str>$messageText
     }
@@ -29,6 +32,7 @@ export const setMessages = async ({
     conversationId,
     sender,
     messageText,
+    audioUrl, // Ensure audio_url is always defined
   };
 
   await client.querySingle(query, params);
