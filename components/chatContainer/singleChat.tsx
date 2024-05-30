@@ -1,36 +1,59 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import ShowMarkdown from "@/components/showMarkdown";
-import MessageCard from "@/components/debates/debateMessageCard";
-import { Button } from "@/components/ui/button";
-import { SpinnerIcon } from "@/components/svg";
-import Link from "next/link";
-import { useRecoilState } from "recoil";
-import { loaderState, messagesState, singleTopicState } from "@/state/state";
-import getSingleMessage from "@/lib/helper/edgedb/getSingleMessage";
-import { processMessages } from "@/constants/default";
-import getSingleTopic from "@/lib/helper/edgedb/getSingleTopic";
-import { Conversations, Message } from "@/types/types";
-import { EyeIcon } from "lucide-react";
-import SuccessToast from "@/components/successToast";
-import { useSession } from "next-auth/react";
-import { useToast } from "@/components/ui/use-toast";
-import { publishConversation } from "@/lib/helper/edgedb/getCategoryList";
-import Loading from "@/components/loading";
-import DebateHeader from "../reusableDebateHeader";
-import useHideAudio from "@/lib/helper/useHideAudio";
+import { useEffect, useRef, useState } from 'react';
+import ShowMarkdown from '@/components/showMarkdown';
+import MessageCard from '@/components/debates/debateMessageCard';
+import { Button } from '@/components/ui/button';
+import { SpinnerIcon } from '@/components/svg';
+import Link from 'next/link';
+import { useRecoilState } from 'recoil';
+import {
+  currentAudioIndexState,
+  isGlobalAudioPlayingState,
+  messagesState,
+  playFullAudioState,
+  showAudioPlayingState,
+  singleTopicState,
+} from '@/state/state';
+import getSingleMessage from '@/lib/helper/edgedb/getSingleMessage';
+import { extractPlaylist, processMessages } from '@/constants/default';
+import getSingleTopic from '@/lib/helper/edgedb/getSingleTopic';
+import { Conversations, Message } from '@/types/types';
+import { EyeIcon } from 'lucide-react';
+import TextToSpeechButton from '@/components/textToSpeech';
+import SuccessToast from '@/components/successToast';
+import { useSession } from 'next-auth/react';
+import { useToast } from '@/components/ui/use-toast';
+import { publishConversation } from '@/lib/helper/edgedb/getCategoryList';
+import Loading from '@/components/loading';
+import DebateHeader from '../reusableDebateHeader';
+import AudioPlayer from 'react-h5-audio-player';
+import 'react-h5-audio-player/lib/styles.css';
+import AudioFooter from '../audio/audioFooter';
+import AudioHeader from '../audio/audioHeader';
+import { handleShare } from '@/lib/helper/handleShare';
 
 const ShowSingle = ({ params }: { params: { id: string } }) => {
   const [messages, setMessages] = useRecoilState(messagesState);
+  // const [currentIndex] = useRecoilState(currentAudioIndexState);
   const [topic, setTopic] = useRecoilState<any>(singleTopicState);
-  const [loader] = useRecoilState<any>(loaderState);
-  const { hideAudioinIphone } = useHideAudio();
-
   const { data: session, status } = useSession();
   const [debates, setDebates] = useState<any>();
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
+  // const [currentMusicIndex, setCurrentMusicIndex] = useState(0);
+  const [currentMusicIndex, setCurrentMusicIndex] = useRecoilState(
+    currentAudioIndexState
+  );
+  const [playFullAudio, setPlayFullAudio] = useRecoilState(playFullAudioState);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [isGlobalAudioPlaying, setIsGlobalAudioPlaying] = useRecoilState(
+    isGlobalAudioPlayingState
+  );
+  const audioPlayerRef = useRef<AudioPlayer>(null);
+  const [showAudioPlayer, setShowAudioPlayer] = useRecoilState(
+    showAudioPlayingState
+  );
 
   useEffect(() => {
     const fetchData = async () => {
@@ -51,7 +74,7 @@ const ShowSingle = ({ params }: { params: { id: string } }) => {
       if (updatedDebate) {
         setLoading(false);
         toast({
-          className: "toastClass",
+          className: 'toastClass',
           action: (
             <div className="px-5">
               <SuccessToast
@@ -66,7 +89,7 @@ const ShowSingle = ({ params }: { params: { id: string } }) => {
     } catch (error) {
       setLoading(false);
       toast({
-        className: "toastClass",
+        className: 'toastClass',
         action: (
           <div className="px-5">
             <SuccessToast
@@ -88,7 +111,7 @@ const ShowSingle = ({ params }: { params: { id: string } }) => {
         getSingleTopic(params.id),
       ]);
       const filteredMessages = (messageData as Message[]).filter(
-        (message) => message.sender !== "system"
+        (message) => message.sender !== 'system'
       );
 
       setMessages(filteredMessages);
@@ -101,63 +124,114 @@ const ShowSingle = ({ params }: { params: { id: string } }) => {
 
     return () => {
       setMessages([]);
-      setTopic({ topic: "", created_at: "", conversation_id: "" });
+      setTopic({ topic: '', created_at: '', conversation_id: '' });
     };
   }, [params.id, setMessages, setTopic]);
 
   const processedMessages = processMessages(messages);
 
-  const handleShare = async () => {
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: "Check this out!",
-          text: "I found this interesting:",
-          url: document.location.href,
-        });
-      } catch (error) {
-        console.error("Error sharing content:", error);
-      }
+  const playlist = extractPlaylist(messages);
+
+  const handleClickPrevious = (): void => {
+    setCurrentMusicIndex((prevIndex) =>
+      prevIndex === 0 ? playlist.length - 1 : prevIndex - 1
+    );
+    setPlayFullAudio(true);
+  };
+
+  const handleClickNext = (): void => {
+    setCurrentMusicIndex((prevIndex) =>
+      prevIndex < playlist.length - 1 ? prevIndex + 1 : 0
+    );
+    setPlayFullAudio(true);
+  };
+
+  useEffect(() => {
+    if (playFullAudio) {
+      setCurrentMusicIndex(currentMusicIndex);
+    }
+  }, [playFullAudio, currentMusicIndex]);
+
+  useEffect(() => {
+    if (isGlobalAudioPlaying) {
+      audioPlayerRef.current?.audio.current?.play();
+      setPlayFullAudio(isGlobalAudioPlaying);
     } else {
-      console.log("Share not supported on this platform");
+      audioPlayerRef.current?.audio.current?.pause();
+      setPlayFullAudio(!isGlobalAudioPlaying);
+    }
+  }, [isGlobalAudioPlaying, setPlayFullAudio]);
+
+  const handlePlay = () => {
+    setIsGlobalAudioPlaying(true);
+    setIsPlaying(true);
+  };
+
+  const handlePause = () => {
+    setIsGlobalAudioPlaying(false);
+    setIsPlaying(false);
+  };
+
+  const handlePlayListClick = (index: number) => {
+    if (currentMusicIndex === index) {
+      setIsPlaying(!isPlaying);
+      setIsGlobalAudioPlaying(!isPlaying);
+    } else {
+      setCurrentMusicIndex(index);
+      setPlayFullAudio(true);
+      setIsGlobalAudioPlaying(true);
+      setIsPlaying(true);
     }
   };
 
-  if (status === "loading" || loading) {
+  const nextSpeakerIndex = (currentMusicIndex + 1) % playlist.length;
+
+  const handleClose = () => {
+    setShowAudioPlayer(false);
+  };
+
+  if (status === 'loading' || loading) {
     return <Loading />;
   }
 
   return (
-    <>
+    <div className="bg-white w-full">
       {processedMessages.remainingMessages && !loading && (
         <div className="flex flex-col w-full mx-auto p-4 md:p-6 bg-white shadow rounded-lg rounded-t-none">
           <DebateHeader
             topic={topic?.topic}
-            path={"/debate"}
-            text={"Start new debate"}
-            handleShare={handleShare}
+            path={'/debate'}
+            text={'Start new debate'}
+            handleShare={() =>
+              handleShare(
+                'Check this out!',
+                'I found this interesting:',
+                document.location.href
+              )
+            }
             category={topic?.category}
           />
-          <div
-            className={`${
-              loader && "bg-gray-100"
-            }  flex flex-col py-5 sm:py-10 rounded-lg`}
-          >
+          <div className={`flex flex-col py-5 sm:py-10 rounded-lg`}>
             <div className="flex-grow overflow-y-auto py-4 space-y-8">
               {processedMessages.remainingMessages.map((message, index) => (
                 <MessageCard
                   key={index}
                   message={message}
                   senderType={message.sender}
+                  index={index}
                 />
               ))}
-              {processedMessages.conclusion && (
+              {processedMessages?.conclusion && (
                 <div className="bg-green-100 p-4 space-y-2">
                   <h3 className="text-xl font-bold">Conclusion:</h3>
-                  <ShowMarkdown content={processedMessages.conclusion} />
+                  <TextToSpeechButton
+                    senderType={messages[messages?.length - 1].sender}
+                    index={messages?.length - 1}
+                  />
+                  <ShowMarkdown content={processedMessages?.conclusion} />
                 </div>
               )}
-              {status === "authenticated" &&
+              {status === 'authenticated' &&
                 session?.user.id === debates?.user_id &&
                 !loading && (
                   <div className="fixed bottom-0 gap-5 left-0 w-full bg-white shadow-lg p-4 flex justify-end">
@@ -167,7 +241,7 @@ const ShowSingle = ({ params }: { params: { id: string } }) => {
                         disabled={loading}
                         className="flex items-center cursor-pointer space-x-1"
                       >
-                        <Link href={"/my-debates"}>
+                        <Link href={'/my-debates'}>
                           <span className="flex gap-1">
                             <span className="text-sm">
                               {loading ? (
@@ -192,7 +266,42 @@ const ShowSingle = ({ params }: { params: { id: string } }) => {
           </div>
         </div>
       )}
-    </>
+      <div className=" w-full max-w-7xl px-2 mx-auto">
+        <div className="fixed w-full mx-auto bottom-2">
+          {showAudioPlayer && (
+            <AudioPlayer
+              onEnded={handleClickNext}
+              autoPlayAfterSrcChange={true}
+              showSkipControls={true}
+              ref={audioPlayerRef}
+              showJumpControls={false}
+              src={playlist[currentMusicIndex]?.src}
+              onClickPrevious={handleClickPrevious}
+              onClickNext={handleClickNext}
+              onPlay={handlePlay}
+              onPause={handlePause}
+              header={
+                <AudioHeader topic={topic?.topic} handleClose={handleClose} />
+              }
+              footer={
+                <AudioFooter
+                  playlist={playlist}
+                  currentMusicIndex={currentMusicIndex}
+                  nextSpeakerIndex={nextSpeakerIndex}
+                  isPlaying={isPlaying}
+                  topic={topic?.topic}
+                  messages={processedMessages?.remainingMessages}
+                  handlePlayListClick={handlePlayListClick}
+                />
+              }
+              style={{
+                borderRadius: '10px',
+              }}
+            />
+          )}
+        </div>
+      </div>
+    </div>
   );
 };
 

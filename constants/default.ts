@@ -51,7 +51,7 @@ export function processMessages(messages: Message[]) {
   let conclusion;
 
   const lastMessageWithFinalAnswer = messages?.find((message) =>
-    message?.message_text?.includes("FINAL ANSWER")
+    message?.message_text?.includes("Thank you for the debate.")
   );
   let hasFinalAnswer = lastMessageWithFinalAnswer ? true : false;
   if (hasFinalAnswer) {
@@ -59,7 +59,7 @@ export function processMessages(messages: Message[]) {
   }
 
   const remainingMessages = messages?.filter(
-    (message) => !message?.message_text?.includes("FINAL ANSWER")
+    (message) => !message?.message_text?.includes("Thank you for the debate.")
   );
 
   return { conclusion, remainingMessages };
@@ -369,7 +369,49 @@ export function formatDateAndTime(dateString: string): string {
   return parsedDate.toLocaleDateString("en-US", options);
 }
 
+export const extractPlaylist = (messages: Message[]) => {
+  return messages
+    ?.filter((message) => message?.audio_url)
+    .map((message) => ({
+      src: message?.audio_url as string,
+      sender: message?.sender,
+    }));
+};
 
+
+export const comments = [
+  { id: 1, user: 'User 1', comment: 'Great point!', time: '2 hours ago' },
+  {
+    id: 2,
+    user: 'User 2',
+    comment: 'I disagree with this.',
+    time: '1 day ago',
+  },
+  {
+    id: 3,
+    user: 'User 3',
+    comment: 'Could you provide more details?',
+    time: '3 days ago',
+  },
+  {
+    id: 3,
+    user: 'User 3',
+    comment: 'Could you provide more details?',
+    time: '3 days ago',
+  },
+  {
+    id: 3,
+    user: 'User 3',
+    comment: 'Could you provide more details?',
+    time: '3 days ago',
+  },
+  {
+    id: 3,
+    user: 'User 3',
+    comment: 'Could you provide more details?',
+    time: '3 days ago',
+  },
+];
 
 
 

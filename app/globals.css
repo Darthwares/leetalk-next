@@ -126,3 +126,15 @@ html {
 *{
   /* border:1px solid red !important */
 }
+
+.rhap_container {
+  width: 76.5% !important;
+  line-height: 1.5 !important;
+  padding: 0px 15px !important;
+}
+
+@media screen and (max-width: 1024px) {
+  .rhap_container {
+    width: 98% !important;
+  }
+}

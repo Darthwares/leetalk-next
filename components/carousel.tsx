@@ -1,68 +1,33 @@
-import * as React from "react";
-import Carousel from "react-multi-carousel";
-import "react-multi-carousel/lib/styles.css";
-import { responsive } from "@/constants/default";
-import { FirstConversation, getAllDebates } from "@/lib/helper/edgedb/dbClient";
-import TextToSpeechButton from "./textToSpeech";
-import Link from "next/link";
-import useHideAudio from "@/lib/helper/useHideAudio";
+import * as React from 'react';
+import Carousel from 'react-multi-carousel';
+import 'react-multi-carousel/lib/styles.css';
+import { extractPlaylist, responsive } from '@/constants/default';
+import { FirstConversation, getAllDebates } from '@/lib/helper/edgedb/dbClient';
+import Link from 'next/link';
+import useHideAudio from '@/lib/helper/useHideAudio';
+import AudioPlayer from 'react-h5-audio-player';
+import 'react-h5-audio-player/lib/styles.css';
+import { PauseIcon, PlayIcon } from './svg';
+import getSingleMessages from '@/lib/helper/edgedb/getSingleMessage';
+import AudioFooter from './audio/audioFooter';
+import AudioHeader from './audio/audioHeader';
 
-interface CarouselProps {
-  items: any;
-}
-
-const placeholderData: FirstConversation[] = [
-  {
-    conversation_id: "placeholder-1",
-    user_id: "user-1",
-    topic: "The Benefits of Online Learning in Modern Education",
-    created_at: new Date().toISOString(),
-    category: "Education",
-    published: true,
-    first_message: {
-      message_text:
-        "Online learning provides flexibility and accessibility to students from diverse backgrounds.",
-      sender: "Education",
-    },
-  },
-  {
-    conversation_id: "placeholder-2",
-    user_id: "user-2",
-    topic: "The Impact of Sports on Youth Development",
-    created_at: new Date().toISOString(),
-    category: "Sports",
-    published: true,
-    first_message: {
-      message_text:
-        "Engaging in sports can significantly enhance physical and mental health in young individuals.",
-      sender: "Sports",
-    },
-  },
-  {
-    conversation_id: "placeholder-3",
-    user_id: "user-3",
-    topic: "Uncovering the Mysteries of Ancient Civilizations",
-    created_at: new Date().toISOString(),
-    category: "History",
-    published: true,
-    first_message: {
-      message_text:
-        "Studying ancient civilizations helps us understand the cultural and technological advancements of the past.",
-      sender: "Historical",
-    },
-  },
-];
-
-export function CarouselDemo({ items }: CarouselProps) {
-  const [topics, setTopics] =
-    React.useState<FirstConversation[]>(placeholderData);
+export function CarouselDemo() {
+  const [topics, setTopics] = React.useState<FirstConversation[]>([]);
   const [isPlaceholder, setIsPlaceholder] = React.useState(true);
   const { hideAudioinIphone } = useHideAudio();
+  const [currentMusicIndex, setCurrentMusicIndex] = React.useState(0);
+  const [isPlaying, setIsPlaying] = React.useState(false);
+  const [conversationId, setConversationId] = React.useState('');
+  const [topic, setTopic] = React.useState('');
+  const [currentId, setCurrentId] = React.useState('');
+  const [messages, setMessages] = React.useState([]);
+  const [showAudioPlayer, setShowAudioPlayer] = React.useState(false);
+  const audioPlayerRef = React.useRef<AudioPlayer>(null);
 
   React.useEffect(() => {
     async function getDebatesList() {
       const data = await getAllDebates();
-      console.log('data', data)
       if (data.length > 0) {
         setTopics(data);
         setIsPlaceholder(false);
@@ -71,32 +36,102 @@ export function CarouselDemo({ items }: CarouselProps) {
     getDebatesList();
   }, []);
 
+  React.useEffect(() => {
+    async function getMessages() {
+      const data = await getSingleMessages(conversationId);
+      if (data) {
+        setMessages(data as any);
+      }
+    }
+    if (conversationId) {
+      getMessages();
+    }
+  }, [conversationId]);
+
+  const playlist = extractPlaylist(messages);
+
+  const handleClickPrevious = (): void => {
+    setCurrentMusicIndex((prevIndex) =>
+      prevIndex === 0 ? playlist.length - 1 : prevIndex - 1
+    );
+  };
+
+  const handleClickNext = (): void => {
+    setCurrentMusicIndex((prevIndex) =>
+      prevIndex < playlist.length - 1 ? prevIndex + 1 : 0
+    );
+  };
+
+  React.useEffect(() => {
+    if (isPlaying) {
+      audioPlayerRef.current?.audio.current?.play();
+    } else {
+      audioPlayerRef.current?.audio.current?.pause();
+    }
+  }, [isPlaying]);
+
+  const handlePlay = () => {
+    setIsPlaying(true);
+  };
+
+  const handlePause = () => {
+    setIsPlaying(false);
+  };
+
+  const handlePlayListClick = (index: number, conversation_id?: string) => {
+    if (conversationId === conversation_id) {
+      if (currentMusicIndex === index) {
+        setIsPlaying(!isPlaying);
+      } else {
+        setCurrentMusicIndex(index || 0);
+        setIsPlaying(true);
+      }
+    } else {
+      setConversationId(conversation_id!);
+      setCurrentMusicIndex(index || 0);
+      setIsPlaying(true);
+    }
+  };
+
+  const handleClose = () => {
+    setShowAudioPlayer(false);
+    setCurrentMusicIndex(0);
+    setIsPlaying(false);
+    setConversationId('');
+    setMessages([]);
+  };
+
+  const nextSpeakerIndex = (currentMusicIndex + 1) % playlist.length;
+
+  if (topics.length === 0) {
+    return null;
+  }
+
   return (
     <div className="">
       <div className="py-5 space-y-3 text-center">
         <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">
-          Featured{" "}
+          Featured{' '}
           <span className="text-gray-600 text-2xl sm:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-pink-600">
             Debates
           </span>
         </h2>
-
         <p className="mx-auto max-w-[700px] text-gray-500 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed dark:text-gray-400">
           Explore the hottest debates and join the conversation.
         </p>
       </div>
       <Carousel responsive={responsive} className="space-x-4" itemClass="px-2">
-        {topics.map((item, idx) => (
+        {topics?.map((item, idx) => (
           <div
             key={idx}
             className={` ${
               !isPlaceholder && item.first_message && hideAudioinIphone
-                ? "md:min-h-72"
-                : "md:min-h-40"
+                ? 'md:min-h-72'
+                : 'md:min-h-40'
             }  h-full w-full items-start p-4 md:p-8  rounded-lg space-y-4`}
             style={{
-              background: "linear-gradient(45deg, #2B4162, #000000)",
-              backgroundSize: "400% 400%",
+              background: 'linear-gradient(45deg, #2B4162, #000000)',
+              backgroundSize: '400% 400%',
             }}
           >
             <Link href={`/chat/${item.conversation_id}`}>
@@ -115,27 +150,74 @@ export function CarouselDemo({ items }: CarouselProps) {
               )}
               <div className="flex justify-end w-full items-center">
                 <span className="text-sm text-white">
-                  {new Date(item.created_at).toLocaleDateString("en-US", {
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
+                  {new Date(item.created_at).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
                   })}
                 </span>
               </div>
             </div>
-            {!isPlaceholder && item.first_message && hideAudioinIphone && (
+            {
               <div className="w-full">
-                <div className="w-full">
-                  <TextToSpeechButton
-                    content={item.first_message.audio_url!}
-                    senderType={"claudeDebater"}
-                  />
+                <div
+                  className=""
+                  onClick={() => {
+                    setConversationId(item.conversation_id);
+                    setShowAudioPlayer(true);
+                    setTopic(item.topic);
+                    setCurrentId(item.conversation_id);
+                    setCurrentId(item.conversation_id);
+                    handlePlayListClick(0, item.conversation_id);
+                  }}
+                >
+                  <div className="py-2 max-w-fit bg-white p-2 cursor-pointer rounded-full">
+                    {currentId === item.conversation_id && isPlaying ? (
+                      <PauseIcon className="w-6 h-6" />
+                    ) : (
+                      <PlayIcon className="w-6 h-6" />
+                    )}
+                  </div>
                 </div>
               </div>
-            )}
+            }
           </div>
         ))}
       </Carousel>
+      <div className="w-full max-w-7xl px-2 mx-auto">
+        <div className="fixed w-full mx-auto bottom-0 z-50 -right-1 sm:right-auto">
+          {showAudioPlayer && (
+            <AudioPlayer
+              ref={audioPlayerRef}
+              onEnded={handleClickNext}
+              autoPlayAfterSrcChange={true}
+              autoPlay={true}
+              showSkipControls={true}
+              showJumpControls={false}
+              src={playlist[currentMusicIndex]?.src}
+              onClickPrevious={handleClickPrevious}
+              onClickNext={handleClickNext}
+              onPlay={handlePlay}
+              onPause={handlePause}
+              header={<AudioHeader topic={topic} handleClose={handleClose} />}
+              footer={
+                <AudioFooter
+                  playlist={playlist}
+                  currentMusicIndex={currentMusicIndex}
+                  nextSpeakerIndex={nextSpeakerIndex}
+                  isPlaying={isPlaying}
+                  topic={topic}
+                  messages={messages}
+                  handlePlayListClick={handlePlayListClick}
+                />
+              }
+              style={{
+                borderRadius: '10px',
+              }}
+            />
+          )}
+        </div>
+      </div>
     </div>
   );
 }

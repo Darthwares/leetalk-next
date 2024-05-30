@@ -65,6 +65,23 @@ const showTopicState = atom<string>({
   key: "showTopicState",
   default: "",
 });
+const currentAudioIndexState = atom<number>({
+  key: 'currentAudioIndexState',
+  default: 0,
+});
+const playFullAudioState = atom<boolean>({
+  key: 'playFullAudioState',
+  default: false,
+});
+
+const isGlobalAudioPlayingState = atom<boolean>({
+  key: 'isGlobalAudioPlayingState',
+  default: false,
+});
+const showAudioPlayingState = atom<boolean>({
+  key: 'showAudioPlayingState',
+  default: false,
+});
 
 export {
   conversationIdState,
@@ -80,4 +97,8 @@ export {
   topicListState,
   showPublishState,
   showTopicState,
+  currentAudioIndexState,
+  playFullAudioState,
+  isGlobalAudioPlayingState,
+  showAudioPlayingState,
 };
