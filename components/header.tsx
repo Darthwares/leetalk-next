@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { classNames } from "@/lib/utils";
 import { debateCategoryState, loaderState, messagesState } from "@/state/state";
 import { useSetRecoilState } from "recoil";
+import { Button } from "./ui/button";
 
 interface HeaderProps {
   setSidebarOpen: Dispatch<SetStateAction<boolean>>;

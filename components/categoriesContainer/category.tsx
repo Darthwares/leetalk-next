@@ -55,13 +55,15 @@ const CategoryContainerWithSearchParams: React.FC<{
             </p>
           )}
         </div>
-        <div className="flex justify-center">
-          <Link href="/debate">
-            <Button className="max-w-fit flex gap-2 py-3">
-              Start new debate
-            </Button>
-          </Link>
-        </div>
+        {updatedState.length > 0 && (
+          <div className="flex justify-center">
+            <Link href="/debate">
+              <Button className="max-w-fit flex gap-2 py-3">
+                Start new debate
+              </Button>
+            </Link>
+          </div>
+        )}
       </div>
       <ReusableSidebarItems />
     </div>
