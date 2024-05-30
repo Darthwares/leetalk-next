@@ -18,6 +18,7 @@ import {
   debateListState,
   loaderState,
   messagesState,
+  showTopicState,
 } from "@/state/state";
 import { useSetRecoilState } from "recoil";
 import { SpeechIcon } from "lucide-react";
@@ -43,6 +44,7 @@ const MobileViewSidebar = ({
   const setMessagesList = useSetRecoilState(messagesState);
   const setSelectedCategory = useSetRecoilState(debateCategoryState);
   const setLoader = useSetRecoilState(loaderState);
+  const setInputValue = useSetRecoilState(showTopicState);
 
   let pathArray =
     pathname === "/categories?query=Technology" ? categoryPage : navigation;
@@ -134,6 +136,7 @@ const MobileViewSidebar = ({
                     onClick={() => {
                       setMessagesList([]);
                       setSelectedCategory(null);
+                      setInputValue("");
                       setLoader(false);
                     }}
                     className="flex items-center cursor-pointer px-5 gap-2 font-semibold"

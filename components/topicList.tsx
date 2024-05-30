@@ -9,6 +9,7 @@ import {
   debateCategoryState,
   loaderState,
   messagesState,
+  showTopicState,
   topicListState,
 } from "@/state/state";
 import { Conversations } from "@/types/types";
@@ -22,6 +23,7 @@ const TopicList = ({ setSidebarOpen }: TopicListProps) => {
   const setMessagesList = useSetRecoilState(messagesState);
   const setSelectedCategory = useSetRecoilState(debateCategoryState);
   const setLoader = useSetRecoilState(loaderState);
+  const setInputValue = useSetRecoilState(showTopicState);
 
   useEffect(() => {
     async function getBlogList() {
@@ -62,6 +64,7 @@ const TopicList = ({ setSidebarOpen }: TopicListProps) => {
                     setMessagesList([]);
                     setSelectedCategory(null);
                     setLoader(false);
+                    setInputValue("");
                   }}
                 >
                   {item.topic}

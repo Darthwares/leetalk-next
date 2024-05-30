@@ -5,7 +5,7 @@ import React from "react";
 import { Button } from "./ui/button";
 import Link from "next/link";
 import { useSetRecoilState } from "recoil";
-import { debateCategoryState, loaderState, messagesState } from "@/state/state";
+import { debateCategoryState, loaderState, messagesState, showTopicState } from "@/state/state";
 
 type DebateHeaderProps = {
   topic: string;
@@ -20,6 +20,7 @@ const DebateHeader: React.FC<DebateHeaderProps> = React.memo(
     const setMessagesList = useSetRecoilState(messagesState);
     const setSelectedCategory = useSetRecoilState(debateCategoryState);
     const setLoader = useSetRecoilState(loaderState);
+    const setInputValue = useSetRecoilState(showTopicState);
 
     return (
       <div className="w-full flex flex-col lg:flex-row items-center justify-between pb-10 lg:pb-0">
@@ -55,6 +56,7 @@ const DebateHeader: React.FC<DebateHeaderProps> = React.memo(
                     setMessagesList([]);
                     setSelectedCategory(null);
                     setLoader(false);
+                    setInputValue("");
                   }
                 }}
               >

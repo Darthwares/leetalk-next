@@ -267,7 +267,7 @@ const ShowSingle = ({ params }: { params: { id: string } }) => {
         </div>
       )}
       <div className=" w-full max-w-7xl px-2 mx-auto">
-        <div className="fixed w-full mx-auto bottom-2">
+        <div className="fixed w-full mx-auto bottom-2 sm:bottom-0">
           {showAudioPlayer && (
             <AudioPlayer
               onEnded={handleClickNext}

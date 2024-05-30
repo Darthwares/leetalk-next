@@ -11,6 +11,7 @@ import {
   debateListState,
   loaderState,
   messagesState,
+  showTopicState,
 } from "@/state/state";
 import { useRecoilState, useSetRecoilState } from "recoil";
 import { SpeechIcon } from "lucide-react";
@@ -24,6 +25,7 @@ const DesktopSidebar = () => {
   const setMessagesList = useSetRecoilState(messagesState);
   const setSelectedCategory = useSetRecoilState(debateCategoryState);
   const setLoader = useSetRecoilState(loaderState);
+  const setInputValue = useSetRecoilState(showTopicState);
 
   const fetchAndFormatDebates = async (category: string) => {
     const list = await getCategoryList(category);
@@ -59,6 +61,7 @@ const DesktopSidebar = () => {
           onClick={() => {
             setMessagesList([]);
             setSelectedCategory(null);
+            setInputValue("");
             setLoader(false);
           }}
           className="flex items-center cursor-pointer px-5 gap-2 font-semibold"
@@ -92,6 +95,7 @@ const DesktopSidebar = () => {
                         setMessagesList([]);
                         setSelectedCategory(null);
                         setLoader(false);
+                        setInputValue("");
                       }}
                     >
                       <item.icon

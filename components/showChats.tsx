@@ -207,7 +207,7 @@ export default function ShowChats() {
 
           {showAudioPlayer && (
             <div className="w-full max-w-7xl px-2 mx-auto">
-              <div className="fixed w-full mx-auto bottom-0 z-50 -right-1 sm:right-auto">
+              <div className="fixed w-full mx-auto bottom-2 sm:bottom-0 z-50 -right-1 sm:right-auto">
                 <AudioPlayer
                   ref={audioPlayerRef}
                   onEnded={handleClickNext}
