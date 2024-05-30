@@ -3,12 +3,12 @@ import React from "react";
 const useHideAudio = () => {
   const [hideAudioinIphone, setHideAudioinIphone] = React.useState(true);
 
-  const userAgent = navigator.userAgent;
+  const userAgent = navigator?.userAgent;
   React.useEffect(() => {
     function checkOS() {
       let os = "";
 
-      if (userAgent.includes("iPad") || userAgent.includes("iPhone")) {
+      if (userAgent?.includes("iPad") || userAgent?.includes("iPhone")) {
         os = "iOS";
         setHideAudioinIphone(false);
       }

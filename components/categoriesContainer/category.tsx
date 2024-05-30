@@ -6,6 +6,8 @@ import { useRecoilState } from "recoil";
 import "react-multi-carousel/lib/styles.css";
 import ReusableSidebarItems from "@/components/reusableSidebarItems";
 import { useSearchParams } from "next/navigation";
+import Link from "next/link";
+import { Button } from "../ui/button";
 
 const CategoryContainer: React.FC = () => {
   const [updatedState] = useRecoilState(debateListState);
@@ -44,7 +46,7 @@ const CategoryContainerWithSearchParams: React.FC<{
         <div className="text-lg ">Category</div> <span>{">"}</span>{" "}
         <span className="font-bold text-lg">{selectedCategory}</span>
       </div>
-      <div className="space-y-3 text-center">
+      <div className="space-y-6 text-center">
         <div className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl pt-5 space-y-3">
           <h2>{updatedState.length ? "Top Debates" : "No Debates Found"}</h2>
           {updatedState.length > 0 && (
@@ -52,6 +54,13 @@ const CategoryContainerWithSearchParams: React.FC<{
               Exclusively customised for you
             </p>
           )}
+        </div>
+        <div className="flex justify-center">
+          <Link href="/debate">
+            <Button className="max-w-fit flex gap-2 py-3">
+              Start new debate
+            </Button>
+          </Link>
         </div>
       </div>
       <ReusableSidebarItems />

@@ -1,24 +1,29 @@
-'use client';
-import { Dispatch, Fragment, SetStateAction, useState, useEffect } from 'react';
-import { Dialog, Transition } from '@headlessui/react';
-import { XMarkIcon } from '@heroicons/react/24/outline';
-import { Separator } from './ui/separator';
-import Image from 'next/image';
-import TopicList from './topicList';
-import Link from 'next/link';
-import { usePathname, useSearchParams } from 'next/navigation';
+"use client";
+import { Dispatch, Fragment, SetStateAction, useState, useEffect } from "react";
+import { Dialog, Transition } from "@headlessui/react";
+import { XMarkIcon } from "@heroicons/react/24/outline";
+import { Separator } from "./ui/separator";
+import Image from "next/image";
+import TopicList from "./topicList";
+import Link from "next/link";
+import { usePathname, useSearchParams } from "next/navigation";
 import {
   categoryPage,
   generateImageUrl,
   navigation,
-} from '@/constants/default';
-import getCategoryList from '@/lib/helper/edgedb/getCategoryList';
-import { debateListState } from '@/state/state';
-import { useSetRecoilState } from 'recoil';
-import { SpeechIcon } from 'lucide-react';
+} from "@/constants/default";
+import getCategoryList from "@/lib/helper/edgedb/getCategoryList";
+import {
+  debateCategoryState,
+  debateListState,
+  loaderState,
+  messagesState,
+} from "@/state/state";
+import { useSetRecoilState } from "recoil";
+import { SpeechIcon } from "lucide-react";
 
 function classNames(...classes: string[]) {
-  return classes.filter(Boolean).join(' ');
+  return classes.filter(Boolean).join(" ");
 }
 
 interface MobileViewSidebarProps {
@@ -32,12 +37,15 @@ const MobileViewSidebar = ({
 }: MobileViewSidebarProps) => {
   const pathname = usePathname();
   const params = useSearchParams();
-  const query = params.get('query');
+  const query = params.get("query");
   const setUpdatedState = useSetRecoilState(debateListState);
-  const [activeCategory, setActiveCategory] = useState<string>('');
+  const [activeCategory, setActiveCategory] = useState<string>("");
+  const setMessagesList = useSetRecoilState(messagesState);
+  const setSelectedCategory = useSetRecoilState(debateCategoryState);
+  const setLoader = useSetRecoilState(loaderState);
 
   let pathArray =
-    pathname === '/categories?query=Technology' ? categoryPage : navigation;
+    pathname === "/categories?query=Technology" ? categoryPage : navigation;
 
   const fetchAndFormatDebates = async (category: string) => {
     const list = await getCategoryList(category);
@@ -123,6 +131,11 @@ const MobileViewSidebar = ({
                 <div className="flex h-16 pb-2 sticky top-0 z-20 border-r-2 border-gray-300 -pr-5 text-white bg-slate-900 shrink-0 items-center">
                   <Link
                     href="/"
+                    onClick={() => {
+                      setMessagesList([]);
+                      setSelectedCategory(null);
+                      setLoader(false);
+                    }}
                     className="flex items-center cursor-pointer px-5 gap-2 font-semibold"
                   >
                     <SpeechIcon className="h-6 w-6" />
@@ -147,11 +160,16 @@ const MobileViewSidebar = ({
                             >
                               <Link
                                 href={`/categories?query=${item.name}`}
+                                onClick={() => {
+                                  setMessagesList([]);
+                                  setSelectedCategory(null);
+                                  setLoader(false);
+                                }}
                                 className={classNames(
                                   activeCategory === item.name
-                                    ? 'bg-gray-800 text-white'
-                                    : 'text-gray-700 hover:text-white hover:bg-gray-800',
-                                  'group flex gap-x-3 cursor-pointer rounded-md p-2 text-sm leading-6 font-semibold'
+                                    ? "bg-gray-800 text-white"
+                                    : "text-gray-700 hover:text-white hover:bg-gray-800",
+                                  "group flex gap-x-3 cursor-pointer rounded-md p-2 text-sm leading-6 font-semibold"
                                 )}
                               >
                                 <item.icon

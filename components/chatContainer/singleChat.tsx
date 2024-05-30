@@ -13,7 +13,6 @@ import { processMessages } from "@/constants/default";
 import getSingleTopic from "@/lib/helper/edgedb/getSingleTopic";
 import { Conversations, Message } from "@/types/types";
 import { EyeIcon } from "lucide-react";
-import TextToSpeechButton from "@/components/textToSpeech";
 import SuccessToast from "@/components/successToast";
 import { useSession } from "next-auth/react";
 import { useToast } from "@/components/ui/use-toast";
@@ -155,12 +154,6 @@ const ShowSingle = ({ params }: { params: { id: string } }) => {
               {processedMessages.conclusion && (
                 <div className="bg-green-100 p-4 space-y-2">
                   <h3 className="text-xl font-bold">Conclusion:</h3>
-                  {hideAudioinIphone && (
-                    <TextToSpeechButton
-                      content={processedMessages.conclusion}
-                      senderType={""}
-                    />
-                  )}
                   <ShowMarkdown content={processedMessages.conclusion} />
                 </div>
               )}

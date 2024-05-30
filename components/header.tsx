@@ -6,6 +6,8 @@ import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { classNames } from "@/lib/utils";
+import { debateCategoryState, loaderState, messagesState } from "@/state/state";
+import { useSetRecoilState } from "recoil";
 
 interface HeaderProps {
   setSidebarOpen: Dispatch<SetStateAction<boolean>>;
@@ -14,6 +16,9 @@ interface HeaderProps {
 const Header = ({ setSidebarOpen }: HeaderProps) => {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const setMessagesList = useSetRecoilState(messagesState);
+  const setSelectedCategory = useSetRecoilState(debateCategoryState);
+  const setLoader = useSetRecoilState(loaderState);
 
   return (
     <>
@@ -62,6 +67,11 @@ const Header = ({ setSidebarOpen }: HeaderProps) => {
                           {({ active }) => (
                             <a
                               href="/my-debates"
+                              onClick={() => {
+                                setMessagesList([]);
+                                setSelectedCategory(null);
+                                setLoader(false);
+                              }}
                               className={classNames(
                                 active ? "bg-gray-100" : "",
                                 "block px-4 py-2 text-sm text-gray-700"
@@ -79,6 +89,11 @@ const Header = ({ setSidebarOpen }: HeaderProps) => {
                                 active ? "bg-gray-100" : "",
                                 "block px-4 py-2 text-sm text-gray-700"
                               )}
+                              onClick={() => {
+                                setMessagesList([]);
+                                setSelectedCategory(null);
+                                setLoader(false);
+                              }}
                             >
                               Categories
                             </a>
