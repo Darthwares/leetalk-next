@@ -10,7 +10,8 @@ export default async function getSingleMessages(conversationId: string) {
       message_id,
       sender,
       message_text,
-      created_at
+      created_at,
+      audio_url
     }
     filter .conversation_id = <str>$conversationId; 
   `;

@@ -1,20 +1,29 @@
-'use client';
-import React, { useState, useEffect } from 'react';
-import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
-import { categoryPage, generateImageUrl } from '@/constants/default';
-import { classNames } from '@/lib/utils';
-import getCategoryList from '@/lib/helper/edgedb/getCategoryList';
-import { debateListState } from '@/state/state';
-import { useRecoilState } from 'recoil';
-import { SpeechIcon } from 'lucide-react';
-import TopicList from './topicList';
+"use client";
+
+import React, { useState, useEffect } from "react";
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { categoryPage, generateImageUrl } from "@/constants/default";
+import { classNames } from "@/lib/utils";
+import getCategoryList from "@/lib/helper/edgedb/getCategoryList";
+import {
+  debateCategoryState,
+  debateListState,
+  loaderState,
+  messagesState,
+} from "@/state/state";
+import { useRecoilState, useSetRecoilState } from "recoil";
+import { SpeechIcon } from "lucide-react";
+import TopicList from "./topicList";
 
 const DesktopSidebar = () => {
   const params = useSearchParams();
-  const query = params.get('query');
-  const [updatedState, setUpdatedState] = useRecoilState(debateListState);
-  const [activeCategory, setActiveCategory] = useState<string>('');
+  const query = params.get("query");
+  const setUpdatedState= useSetRecoilState(debateListState);
+  const [activeCategory, setActiveCategory] = useState<string>("");
+  const setMessagesList = useSetRecoilState(messagesState);
+  const setSelectedCategory = useSetRecoilState(debateCategoryState);
+  const setLoader = useSetRecoilState(loaderState);
 
   const fetchAndFormatDebates = async (category: string) => {
     const list = await getCategoryList(category);
@@ -47,6 +56,11 @@ const DesktopSidebar = () => {
       <div className="flex h-16 pb-2 sticky top-0 z-20 border-r-2 border-gray-300 -pr-5 text-white bg-slate-900 shrink-0 items-center">
         <Link
           href="/"
+          onClick={() => {
+            setMessagesList([]);
+            setSelectedCategory(null);
+            setLoader(false);
+          }}
           className="flex items-center cursor-pointer px-5 gap-2 font-semibold"
         >
           <SpeechIcon className="h-6 w-6" />
@@ -69,11 +83,16 @@ const DesktopSidebar = () => {
                       href={`/categories?query=${item.name}`}
                       className={classNames(
                         activeCategory === item.name
-                          ? 'bg-gray-800 text-white'
-                          : 'text-gray-700 hover:text-white hover:bg-gray-800',
-                        'group flex gap-x-3 cursor-pointer rounded-md p-2 text-sm leading-6 font-semibold'
+                          ? "bg-gray-800 text-white"
+                          : "text-gray-700 hover:text-white hover:bg-gray-800",
+                        "group flex gap-x-3 cursor-pointer rounded-md p-2 text-sm leading-6 font-semibold"
                       )}
-                      onClick={() => handleDebates(item.name)}
+                      onClick={() => {
+                        handleDebates(item.name);
+                        setMessagesList([]);
+                        setSelectedCategory(null);
+                        setLoader(false);
+                      }}
                     >
                       <item.icon
                         className="h-6 w-6 shrink-0"

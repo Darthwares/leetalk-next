@@ -8,9 +8,11 @@ import { PlayIcon } from "./svg";
 const TextToSpeechButton = ({
   content,
   senderType,
+  audioURL,
 }: {
   content: string;
   senderType?: string;
+  audioURL?: string;
 }) => {
   const waveSurferRef = useRef<WaveSurfer | null>(null);
   const waveformRef = useRef<HTMLDivElement | null>(null);
@@ -46,21 +48,21 @@ const TextToSpeechButton = ({
 
   const handleFetchAudio = async () => {
     setIsLoading(true);
-    const response = await fetch("/api/texttospeech", {
-      method: "POST",
-      body: JSON.stringify({
-        text: content,
-        senderType: senderType === "openAIDebater" ? "alloy" : "nova",
-      }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    const blob = await response.blob();
-    const url = URL.createObjectURL(blob);
-    setAudioUrl(url);
+    // const response = await fetch("/api/texttospeech", {
+    //   method: "POST",
+    //   body: JSON.stringify({
+    //     text: content,
+    //     senderType: senderType === "openAIDebater" ? "alloy" : "nova",
+    //   }),
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //   },
+    // });
+    // const blob = await response.blob();
+    // const url = URL.createObjectURL(blob);
+    setAudioUrl(audioURL!);
     if (waveSurferRef.current) {
-      waveSurferRef.current.load(url);
+      waveSurferRef.current.load(audioURL!);
     }
     setIsLoading(false);
   };
@@ -90,9 +92,9 @@ const TextToSpeechButton = ({
         <button
           onClick={handleClick}
           className={`${
-            senderType === 'openAIDebater'
-              ? 'bg-black text-white'
-              : 'bg-white text-black'
+            senderType === "openAIDebater"
+              ? "bg-black text-white"
+              : "bg-white text-black"
           } rounded-full p-2`}
           disabled={isLoading}
         >
@@ -127,9 +129,8 @@ const TextToSpeechButton = ({
               </svg>
             </span>
             <span
-              // className="text-blue-600 font-bold"
               className={`${
-                senderType === 'openAIDebater' ? 'text-black' : 'text-white'
+                senderType === "openAIDebater" ? "text-black" : "text-white"
               }`}
             >
               Wait, audio is loading...

@@ -1,20 +1,53 @@
 import { ChatOpenAI } from "@langchain/openai";
 import { HumanMessage, SystemMessage } from "@langchain/core/messages";
 import { ChatAnthropic } from "@langchain/anthropic";
-import { guid } from '@/constants/default';
+import { guid } from "@/constants/default";
+import OpenAI from "openai";
+import { put } from "@vercel/blob";
+import { NextResponse } from "next/server";
 import { setMessages } from "@/lib/helper/edgedb/setMessages";
 
 const encoder = new TextEncoder();
 const decoder = new TextDecoder();
 
 export const maxDuration = 300; // This function can run for a maximum of 5 minutes
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 interface DebateResponse {
   sender: string;
   message_text: string;
   created_at: string;
+  audio_url?: string;
 }
+
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY!,
+});
+
+const generateAudioBytes = async (
+  text: string,
+  voice: any
+): Promise<ArrayBuffer> => {
+  const mp3 = await openai.audio.speech.create({
+    model: "tts-1",
+    voice: voice,
+    input: text,
+    speed: 1,
+    response_format: "mp3",
+  });
+
+  return mp3.arrayBuffer();
+};
+
+const uploadAudioToVercelBlob = async (
+  filename: string,
+  audioBuffer: ArrayBuffer
+) => {
+  const blob = await put(filename, audioBuffer, {
+    access: "public",
+  });
+  return blob;
+};
 
 const runDebate = async function* (
   prompt: string,
@@ -36,6 +69,7 @@ const runDebate = async function* (
   while (iterations < maxIterations) {
     let responseStream;
     let modelIdentifier: string;
+    let voice: string;
 
     if (currentModel === "Anthropic") {
       responseStream = await runLLMChainAnthropic(
@@ -43,6 +77,7 @@ const runDebate = async function* (
         systemMessageClaudeDebater
       );
       modelIdentifier = "claudeDebater";
+      voice = "nova";
       currentModel = "openAIDebater";
     } else {
       responseStream = await runLLMChainOpenAI(
@@ -51,6 +86,7 @@ const runDebate = async function* (
         systemMessageOpenAIDebater
       );
       modelIdentifier = "openAIDebater";
+      voice = "alloy";
       currentModel = "Anthropic";
     }
 
@@ -68,13 +104,33 @@ const runDebate = async function* (
       addressedResponse = `${modelIdentifier}, ${addressedResponse}`;
     }
 
+    const audioBuffer = await generateAudioBytes(addressedResponse, voice);
+    const blob = await uploadAudioToVercelBlob(
+      `${modelIdentifier}-${iterations}.mp3`,
+      audioBuffer
+    );
+
+    console.log("blob", blob);
+
     const createdAt = new Date().toISOString();
-    yield { sender: modelIdentifier, message_text: addressedResponse, created_at: createdAt };
+    yield {
+      sender: modelIdentifier,
+      message_text: addressedResponse,
+      created_at: createdAt,
+      audio_url: blob.url,
+    };
+
     currentPrompt = addressedResponse;
     iterations++;
   }
 
- yield { sender: 'system', message_text: '', created_at: new Date().toISOString(), end: true };
+  yield {
+    sender: "system",
+    message_text: "",
+    audio_url: "",
+    created_at: new Date().toISOString(),
+    end: true,
+  };
 };
 
 const runLLMChainAnthropic = async (
@@ -147,8 +203,8 @@ const streamToString = async function* (stream: ReadableStream) {
   }
 };
 
-export async function POST(req: Request) {
-  const { prompt, key } = await req.json();
+export async function POST(request: Request): Promise<NextResponse> {
+  const { prompt, key } = await request.json();
 
   const debateStream: any = runDebate(prompt, key);
   const stream = new TransformStream();
@@ -157,28 +213,29 @@ export async function POST(req: Request) {
   (async () => {
     try {
       for await (const response of debateStream) {
-
+        console.log("response", response);
         const message = {
           conversationId: key!,
           messageId: guid(),
-          messageText: response?.message_text ?? '',
-          sender: response?.sender ?? '',
+          messageText: response?.message_text!,
+          sender: response?.sender!,
+          audioUrl: response?.audio_url!,
         };
 
         await setMessages(message);
         const jsonResponse = JSON.stringify(response);
         await writer.ready;
-        await writer.write(encoder.encode(jsonResponse + '\n'));
+        await writer.write(encoder.encode(jsonResponse + "\n"));
       }
     } catch (error) {
-      console.error('Error during debate stream:', error);
+      console.error("Error during debate stream:", error);
     } finally {
       await writer.ready;
       await writer.close();
     }
   })();
-  
-  return new Response(stream.readable, {
+
+  return new NextResponse(stream.readable, {
     headers: { "Content-Type": "application/json" },
   });
 }

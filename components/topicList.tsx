@@ -4,8 +4,13 @@ import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { Input } from "./ui/input";
 import getList from "@/lib/helper/edgedb/dbClient";
-import { useRecoilState } from "recoil";
-import { topicListState } from "@/state/state";
+import { useRecoilState, useSetRecoilState } from "recoil";
+import {
+  debateCategoryState,
+  loaderState,
+  messagesState,
+  topicListState,
+} from "@/state/state";
 import { Conversations } from "@/types/types";
 
 interface TopicListProps {
@@ -14,6 +19,9 @@ interface TopicListProps {
 const TopicList = ({ setSidebarOpen }: TopicListProps) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [topics, setTopics] = useRecoilState(topicListState);
+  const setMessagesList = useSetRecoilState(messagesState);
+  const setSelectedCategory = useSetRecoilState(debateCategoryState);
+  const setLoader = useSetRecoilState(loaderState);
 
   useEffect(() => {
     async function getBlogList() {
@@ -28,7 +36,6 @@ const TopicList = ({ setSidebarOpen }: TopicListProps) => {
       topic?.topic?.toLowerCase()?.includes(searchTerm?.toLowerCase())
     );
   }, [searchTerm, topics]);
-
 
   return (
     <div className="flex flex-col w-full pb-10 h-full space-y-3 bg-white p-2 rounded-lg">
@@ -50,7 +57,12 @@ const TopicList = ({ setSidebarOpen }: TopicListProps) => {
                 <Link
                   href={`/chat/${item.conversation_id}`}
                   className="line-clamp-2 hover:line-clamp-none delay-200 translate-x-0 duration-150"
-                  onClick={() => setSidebarOpen && setSidebarOpen(false)}
+                  onClick={() => {
+                    setSidebarOpen && setSidebarOpen(false);
+                    setMessagesList([]);
+                    setSelectedCategory(null);
+                    setLoader(false);
+                  }}
                 >
                   {item.topic}
                 </Link>

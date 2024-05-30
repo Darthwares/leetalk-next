@@ -20,6 +20,7 @@ export default async function getList() {
 }
 
 export interface FirstMessage {
+  audio_url?: string;
   message_text: string;
   sender: string;
 }
@@ -46,14 +47,16 @@ export async function getAllDebates(): Promise<FirstConversation[]> {
     first_message := (
       SELECT Messages {
         message_text,
-        sender
+        sender,
+        audio_url
       }
       FILTER .conversation_id = Conversations.conversation_id
       ORDER BY .created_at
       LIMIT 1
     ) {
       message_text,
-      sender
+      sender,
+      audio_url
     }
   }
   FILTER .published = true

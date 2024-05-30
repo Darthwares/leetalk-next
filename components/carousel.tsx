@@ -62,6 +62,7 @@ export function CarouselDemo({ items }: CarouselProps) {
   React.useEffect(() => {
     async function getDebatesList() {
       const data = await getAllDebates();
+      console.log('data', data)
       if (data.length > 0) {
         setTopics(data);
         setIsPlaceholder(false);
@@ -126,7 +127,7 @@ export function CarouselDemo({ items }: CarouselProps) {
               <div className="w-full">
                 <div className="w-full">
                   <TextToSpeechButton
-                    content={item.first_message.message_text}
+                    content={item.first_message.audio_url!}
                     senderType={"claudeDebater"}
                   />
                 </div>
