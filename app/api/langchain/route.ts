@@ -96,13 +96,11 @@ const runDebate = async function* (
     }
 
     let addressedResponse = responseText.trim();
-    if (iterations === 0) {
-      addressedResponse = `Hello ${
-        modelIdentifier === "claudeDebater" ? "openAIDebater" : "claudeDebater"
-      }, ${addressedResponse}`;
-    } else {
-      addressedResponse = `${modelIdentifier}, ${addressedResponse}`;
-    }
+   if (iterations === 0) {
+     addressedResponse = `Hello, ${addressedResponse}`;
+   } else if (iterations === maxIterations - 1) {
+     addressedResponse = `${addressedResponse} Thank you for the debate.`;
+   }
 
     const audioBuffer = await generateAudioBytes(addressedResponse, voice);
     const blob = await uploadAudioToVercelBlob(

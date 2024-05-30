@@ -52,7 +52,6 @@ export async function getAllDebates(): Promise<FirstConversation[]> {
       }
       FILTER .conversation_id = Conversations.conversation_id
       ORDER BY .created_at
-      LIMIT 1
     ) {
       message_text,
       sender,
