@@ -17,7 +17,7 @@ const ReusableSidebarItems: React.FC = () => {
   });
 
   return (
-    <div className="sm:p-5 max-w-7xl w-full space-y-8">
+    <div className="max-w-7xl w-full space-y-8">
       {updatedState.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 py-10 lg:grid-cols-3 gap-4">
           {updatedState.map((debate, index) => (
@@ -31,7 +31,7 @@ const ReusableSidebarItems: React.FC = () => {
                   className="w-full aspect-square h-44 object-cover rounded-xl bg-gradient-to-br from-neutral-200 dark:from-neutral-900 dark:to-neutral-800 to-neutral-100"
                 />
                 <div className="group-hover/bento:translate-x-2 space-y-2 transition duration-200">
-                  <div className="font-sans font-bold text-neutral-600 dark:text-neutral-200">
+                  <div className="font-sans font-bold text-neutral-600 dark:text-neutral-200 line-clamp-2">
                     {debate.title}
                   </div>
                   <p className="text-sm text-gray-500">

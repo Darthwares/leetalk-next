@@ -1,16 +1,16 @@
-import * as React from 'react';
-import Carousel from 'react-multi-carousel';
-import 'react-multi-carousel/lib/styles.css';
-import { extractPlaylist, responsive } from '@/constants/default';
-import { FirstConversation, getAllDebates } from '@/lib/helper/edgedb/dbClient';
-import Link from 'next/link';
-import useHideAudio from '@/lib/helper/useHideAudio';
-import AudioPlayer from 'react-h5-audio-player';
-import 'react-h5-audio-player/lib/styles.css';
-import { PauseIcon, PlayIcon } from './svg';
-import getSingleMessages from '@/lib/helper/edgedb/getSingleMessage';
-import AudioFooter from './audio/audioFooter';
-import AudioHeader from './audio/audioHeader';
+import * as React from "react";
+import Carousel from "react-multi-carousel";
+import "react-multi-carousel/lib/styles.css";
+import { extractPlaylist, responsive } from "@/constants/default";
+import { FirstConversation, getAllDebates } from "@/lib/helper/edgedb/dbClient";
+import Link from "next/link";
+import useHideAudio from "@/lib/helper/useHideAudio";
+import AudioPlayer from "react-h5-audio-player";
+import "react-h5-audio-player/lib/styles.css";
+import { PauseIcon, PlayIcon } from "./svg";
+import getSingleMessages from "@/lib/helper/edgedb/getSingleMessage";
+import AudioFooter from "./audio/audioFooter";
+import AudioHeader from "./audio/audioHeader";
 
 export function CarouselDemo() {
   const [topics, setTopics] = React.useState<FirstConversation[]>([]);
@@ -18,9 +18,9 @@ export function CarouselDemo() {
   const { hideAudioinIphone } = useHideAudio();
   const [currentMusicIndex, setCurrentMusicIndex] = React.useState(0);
   const [isPlaying, setIsPlaying] = React.useState(false);
-  const [conversationId, setConversationId] = React.useState('');
-  const [topic, setTopic] = React.useState('');
-  const [currentId, setCurrentId] = React.useState('');
+  const [conversationId, setConversationId] = React.useState("");
+  const [topic, setTopic] = React.useState("");
+  const [currentId, setCurrentId] = React.useState("");
   const [messages, setMessages] = React.useState([]);
   const [showAudioPlayer, setShowAudioPlayer] = React.useState(false);
   const audioPlayerRef = React.useRef<AudioPlayer>(null);
@@ -97,7 +97,7 @@ export function CarouselDemo() {
     setShowAudioPlayer(false);
     setCurrentMusicIndex(0);
     setIsPlaying(false);
-    setConversationId('');
+    setConversationId("");
     setMessages([]);
   };
 
@@ -111,7 +111,7 @@ export function CarouselDemo() {
     <div className="">
       <div className="py-5 space-y-3 text-center">
         <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">
-          Featured{' '}
+          Featured{" "}
           <span className="text-gray-600 text-2xl sm:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-pink-600">
             Debates
           </span>
@@ -126,21 +126,22 @@ export function CarouselDemo() {
             key={idx}
             className={` ${
               !isPlaceholder && item.first_message && hideAudioinIphone
-                ? 'md:min-h-72'
-                : 'md:min-h-40'
+                ? "md:min-h-72"
+                : "md:min-h-40"
             }  h-full w-full items-start p-4 md:p-8  rounded-lg space-y-4`}
             style={{
-              background: 'linear-gradient(45deg, #2B4162, #000000)',
-              backgroundSize: '400% 400%',
+              background: "linear-gradient(45deg, #2B4162, #000000)",
+              backgroundSize: "400% 400%",
             }}
           >
             <Link href={`/chat/${item.conversation_id}`}>
-              <h2 className="text-2xl h-[60px] text-white line-clamp-2 font-bold">
+              <h2 className="text-2xl text-white line-clamp-2 font-bold">
                 {item.topic}
               </h2>
             </Link>
             <p className="text-sm line-clamp-2 text-white">
-              {item.first_message?.message_text}
+              {/* @ts-ignore */}
+              {`${item.first_message?.[0].message_text}`}
             </p>
             <div className="flex items-center justify-between w-full">
               {item.category && (
@@ -150,10 +151,10 @@ export function CarouselDemo() {
               )}
               <div className="flex justify-end w-full items-center">
                 <span className="text-sm text-white">
-                  {new Date(item.created_at).toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
+                  {new Date(item.created_at).toLocaleDateString("en-US", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
                   })}
                 </span>
               </div>
@@ -185,7 +186,7 @@ export function CarouselDemo() {
         ))}
       </Carousel>
       <div className="w-full max-w-7xl px-2 mx-auto">
-        <div className="fixed w-full mx-auto bottom-0 z-50 -right-1 sm:right-auto">
+        <div className="fixed w-full mx-auto bottom-2 sm:bottom-0 z-50 -right-1 sm:right-auto">
           {showAudioPlayer && (
             <AudioPlayer
               ref={audioPlayerRef}
@@ -212,7 +213,7 @@ export function CarouselDemo() {
                 />
               }
               style={{
-                borderRadius: '10px',
+                borderRadius: "10px",
               }}
             />
           )}
