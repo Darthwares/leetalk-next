@@ -33,13 +33,26 @@ export default function Landing() {
     <div className="w-full mx-auto">
       <header className="flex h-20 sticky top-0 z-40 border-b bg-white border-gray-300 w-full shrink-0 items-center justify-between px-4 md:px-6">
         <Link
-          className="flex items-center cursor-pointer gap-2 font-semibold"
+          className="flex items-center cursor-pointer  gap-2 font-semibold max-w-fit w-full"
           href="#"
         >
           <SpeechIcon className="h-6 w-6" />
           <span>Debate Anything</span>
         </Link>
-        <nav className="ml-auto hidden gap-4 sm:gap-6 sm:flex">
+        <div className="md:flex gap-5 items-center hidden w-full justify-center ">
+          {session && (
+            <Link className="font-semibold" href="/my-debates">
+              My Debate
+            </Link>
+          )}
+          <button className="font-semibold" onClick={handleSignIn}>
+            Start Debate
+          </button>
+          <Link href="/categories?query=Technology" className="font-semibold">
+            Categories
+          </Link>
+        </div>
+        <nav className="ml-auto hidden gap-4 sm:gap-6 sm:flex w-full max-w-fit">
           {!session?.user.id ? (
             <button
               className="inline-flex h-9 items-center justify-center rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-gray-50 shadow transition-colors hover:bg-gray-900/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-950 disabled:pointer-events-none disabled:opacity-50 dark:bg-gray-50 dark:text-gray-900 dark:hover:bg-gray-50/90 dark:focus-visible:ring-gray-300"

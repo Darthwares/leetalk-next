@@ -8,7 +8,7 @@ import {
 } from "@/lib/helper/edgedb/getCategoryList";
 import getUserDebates from "@/lib/helper/edgedb/myDebates";
 import { topicListState } from "@/state/state";
-import { useSession } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -20,9 +20,12 @@ import { SpinnerIcon, UnPublishIcon } from "@/components/svg";
 import Loading from "@/components/loading";
 import { motion, AnimatePresence } from "framer-motion";
 import { TagIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
+import ReusablePlaceholder from "../reusablePlaceholder";
 
 const MyDebateContainer = () => {
   const { data: session, status } = useSession();
+  const router = useRouter();
   const [filter, setFilter] = useState("all");
   const [debates, setDebates] = useState<any[]>([]);
   const [loadingStates, setLoadingStates] = useState<{
@@ -101,6 +104,10 @@ const MyDebateContainer = () => {
     }
   };
 
+  useEffect(() => {
+    import("@lottiefiles/lottie-player");
+  });
+
   const handleUnPublish = async (id: string) => {
     try {
       setLoadingStates((prevStates) => ({ ...prevStates, [id]: true }));
@@ -153,9 +160,44 @@ const MyDebateContainer = () => {
   }
   if (!session) {
     return (
-      <div className="text-center space-y-2 mb-8">
-        <p className="text-xl">You must be logged in to view this page</p>
-      </div>
+      <>
+        <ReusablePlaceholder
+          desctiption="You must be logged in to view this section, ensuring secure
+                    access for authenticated users only"
+          src="/user-login.json"
+          text="You must be logged in to view this section"
+          content={<Button onClick={() => signIn()}>Login</Button>}
+        />
+        {/* <div className="flex flex-col items-center justify-center md:mt-12 p-4">
+          <div className="text-center">
+            {
+              <div className="mt-4">
+                <div className="h-64 w-full">
+                  <lottie-player
+                    src="/user-login.json"
+                    background=""
+                    speed="1"
+                    autoplay
+                    className="bg-gradient-to-r from-slate-100 to-pink-200"
+                  />
+                </div>
+                {
+                  <div className="flex flex-col items-center justify-center gap-7">
+                    <h2 className="text-2xl font-semibold text-gray-800">
+                      You must be logged in to view this section
+                    </h2>
+                    <p className={`text-gray-600 md:w-[30rem] w-full`}>
+                      You must be logged in to view this section, ensuring
+                      secure access for authenticated users only
+                    </p>
+                    <Button onClick={() => signIn()}>Login</Button>
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        </div> */}
+      </>
     );
   }
 
@@ -176,10 +218,11 @@ const MyDebateContainer = () => {
       <div className="px-5 py-8 max-w-7xl mx-auto">
         <div className="text-center space-y-2 mb-8">
           <h1 className="text-4xl font-bold">Top Debates</h1>
-          <p className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-pink-600">
+          <p className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-slate-600 to-pink-600">
             Exclusively customized for you
           </p>
         </div>
+        {filteredDebates.length > 0 && 
         <div className="flex justify-center mb-4">
           <a href="/debate">
             <Button className="max-w-fit flex gap-2 py-3">
@@ -187,32 +230,36 @@ const MyDebateContainer = () => {
             </Button>
           </a>
         </div>
+        }
 
-        <div className="flex sm:flex-row flex-col gap-y-5 justify-between items-center py-4">
-          <span>
-            <strong>Note:</strong> If you publish, it will be visible to others.
-          </span>
-          <div className="flex justify-center mb-4 pt-4">
-            <motion.div className="flex space-x-4">
-              {filterOptions.map((option, index) => (
-                <motion.button
-                  key={index}
-                  onClick={() => setFilter(option.name)}
-                  className={`px-4 py-1.5 rounded-lg ${
-                    filter === option.name
-                      ? "bg-slate-900 font-semibold text-white"
-                      : "bg-white border font-semibold border-slate-900"
-                  }`}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  layout
-                >
-                  {option.label}
-                </motion.button>
-              ))}
-            </motion.div>
+        {filteredDebates.length > 0 && (
+          <div className="flex sm:flex-row flex-col gap-y-5 justify-between items-center py-4">
+            <span>
+              <strong>Note:</strong> If you publish, it will be visible to
+              others.
+            </span>
+            <div className="flex justify-center mb-4 pt-4">
+              <motion.div className="flex space-x-4">
+                {filterOptions.map((option, index) => (
+                  <motion.button
+                    key={index}
+                    onClick={() => setFilter(option.name)}
+                    className={`px-4 py-1.5 rounded-lg ${
+                      filter === option.name
+                        ? "bg-slate-900 font-semibold text-white"
+                        : "bg-white border font-semibold border-slate-900"
+                    }`}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    layout
+                  >
+                    {option.label}
+                  </motion.button>
+                ))}
+              </motion.div>
+            </div>
           </div>
-        </div>
+        )}
         <div>
           {filteredDebates.length > 0 ? (
             <AnimatePresence mode="wait">
@@ -257,7 +304,9 @@ const MyDebateContainer = () => {
                         </p>
                         <div className="flex gap-2 items-center">
                           <TagIcon className="w-5 h-5 text-gray-500" />{" "}
-                          <span className="text-gray-500">{debate.category}</span>
+                          <span className="text-gray-500">
+                            {debate.category}
+                          </span>
                         </div>
                         {debate.published ? (
                           <div className="flex justify-end">
@@ -315,9 +364,20 @@ const MyDebateContainer = () => {
               </motion.div>
             </AnimatePresence>
           ) : (
-            <div className="flex justify-center pt-10 md:pt-16">
-              <p className="text-2xl">No debates found.</p>
-            </div>
+            <ReusablePlaceholder
+              desctiption="No debates found. Please check back later or start a new debate to engage in discussions on various topics."
+              src="/not-found.json"
+              text="No debates found"
+              content={
+                <div className="flex justify-center mb-4">
+                  <a href="/debate">
+                    <Button className="max-w-fit flex gap-2 py-3">
+                      Start new debate
+                    </Button>
+                  </a>
+                </div>
+              }
+            />
           )}
         </div>
       </div>

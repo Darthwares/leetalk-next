@@ -11,6 +11,7 @@ import { PauseIcon, PlayIcon } from "./svg";
 import getSingleMessages from "@/lib/helper/edgedb/getSingleMessage";
 import AudioFooter from "./audio/audioFooter";
 import AudioHeader from "./audio/audioHeader";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export function CarouselDemo() {
   const [topics, setTopics] = React.useState<FirstConversation[]>([]);
@@ -103,9 +104,34 @@ export function CarouselDemo() {
 
   const nextSpeakerIndex = (currentMusicIndex + 1) % playlist.length;
 
-  if (topics.length === 0) {
-    return null;
-  }
+  const renderSkeletons = () => {
+    const skeletons = [];
+    const skeletonCount = 3;
+
+    for (let i = 0; i < skeletonCount; i++) {
+      skeletons.push(
+        <div
+          key={i}
+          className="h-full w-full md:w-[27.5rem] relative left-2 items-start p-4 md:p-8 rounded-lg space-y-5 bg-slate-50"
+        >
+          <Skeleton className="h-6 w-[200px] bg-slate-200" />
+          <div className="flex flex-col gap-3">
+            <Skeleton className="h-2 w-[350px] bg-slate-200" />
+            <Skeleton className="h-2 w-[350px] bg-slate-200" />
+          </div>
+          <div className="flex items-center justify-between w-full">
+            <Skeleton className="h-5 w-[50px] bg-slate-200" />
+            <Skeleton className="h-5 w-[50px] bg-slate-200" />
+          </div>
+          <div className="flex items-center justify-between w-full">
+            <Skeleton className="h-10 w-10 rounded-full bg-slate-200" />
+          </div>
+        </div>
+      );
+    }
+
+    return skeletons;
+  };
 
   return (
     <div className="">
@@ -120,71 +146,92 @@ export function CarouselDemo() {
           Explore the hottest debates and join the conversation.
         </p>
       </div>
-      <Carousel responsive={responsive} className="space-x-4" itemClass="px-2">
-        {topics?.map((item, idx) => (
-          <div
-            key={idx}
-            className={` ${
-              !isPlaceholder && item.first_message && hideAudioinIphone
-                ? "md:min-h-72"
-                : "md:min-h-40"
-            }  h-full w-full items-start p-4 md:p-8  rounded-lg space-y-4`}
-            style={{
-              background: "linear-gradient(45deg, #2B4162, #000000)",
-              backgroundSize: "400% 400%",
-            }}
+      <div className="pt-4">
+        {topics.length === 0 ? (
+          <div className="flex flex-wrap items-center gap-3 lg:flex-nowrap">
+            {renderSkeletons()}
+          </div>
+        ) : (
+          <Carousel
+            responsive={responsive}
+            className="space-x-4"
+            itemClass="px-2"
           >
-            <Link href={`/chat/${item.conversation_id}`}>
-              <h2 className="text-2xl text-white line-clamp-2 font-bold">
-                {item.topic}
-              </h2>
-            </Link>
-            <p className="text-sm line-clamp-2 text-white">
-              {/* @ts-ignore */}
-              {`${item.first_message?.[0].message_text}`}
-            </p>
-            <div className="flex items-center justify-between w-full">
-              {item.category && (
-                <p className="text-sm text-slate-50 font-bold cursor-pointer p-2 bg-slate-900 rounded-md max-w-fit">
-                  {item.category}
+            {topics?.map((item, idx) => (
+              <div
+                key={idx}
+                className={` ${
+                  !isPlaceholder && item.first_message && hideAudioinIphone
+                    ? "md:min-h-6"
+                    : "md:min-h-40"
+                }  h-full w-full items-start p-4 md:p-8 rounded-lg space-y-4`}
+                style={{
+                  background: "linear-gradient(45deg, #2B4162, #000000)",
+                  backgroundSize: "400% 400%",
+                }}
+              >
+                <Link href={`/chat/${item.conversation_id}`}>
+                  <h2 className="text-2xl text-white line-clamp-2 font-bold">
+                    {item.topic}
+                  </h2>
+                </Link>
+                <p className="text-sm line-clamp-2 text-white">
+                  {/* @ts-ignore */}
+                  {`${item.first_message?.[0].message_text}`}
                 </p>
-              )}
-              <div className="flex justify-end w-full items-center">
-                <span className="text-sm text-white">
-                  {new Date(item.created_at).toLocaleDateString("en-US", {
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                  })}
-                </span>
-              </div>
-            </div>
-            {
-              <div className="w-full">
-                <div
-                  className=""
-                  onClick={() => {
-                    setConversationId(item.conversation_id);
-                    setShowAudioPlayer(true);
-                    setTopic(item.topic);
-                    setCurrentId(item.conversation_id);
-                    setCurrentId(item.conversation_id);
-                    handlePlayListClick(0, item.conversation_id);
-                  }}
-                >
-                  <div className="py-2 max-w-fit bg-white p-2 cursor-pointer rounded-full">
-                    {currentId === item.conversation_id && isPlaying ? (
-                      <PauseIcon className="w-6 h-6" />
-                    ) : (
-                      <PlayIcon className="w-6 h-6" />
-                    )}
+                <div className="flex items-center justify-between w-full">
+                  {item.category && (
+                    <p className="text-sm text-slate-50 font-bold cursor-pointer p-2 bg-slate-900 rounded-md max-w-fit">
+                      {item.category}
+                    </p>
+                  )}
+                  <div className="flex justify-end w-full items-center">
+                    <span className="text-sm text-white">
+                      {new Date(item.created_at).toLocaleDateString("en-US", {
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                      })}
+                    </span>
                   </div>
                 </div>
+                {
+                  <div className="w-full">
+                    <div
+                      className=""
+                      onClick={() => {
+                        setConversationId(item.conversation_id);
+                        setShowAudioPlayer(true);
+                        setTopic(item.topic);
+                        setCurrentId(item.conversation_id);
+                        setCurrentId(item.conversation_id);
+                        handlePlayListClick(0, item.conversation_id);
+                      }}
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="py-2 max-w-fit bg-white p-2 cursor-pointer rounded-full">
+                          <div>
+                            {currentId === item.conversation_id && isPlaying ? (
+                              <PauseIcon className="w-6 h-6" />
+                            ) : (
+                              <PlayIcon className="w-6 h-6" />
+                            )}
+                          </div>
+                        </div>
+                        {currentId === item.conversation_id && isPlaying ? (
+                          <p className="text-white">Pause</p>
+                        ) : (
+                          <p className="text-white">Play</p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                }
               </div>
-            }
-          </div>
-        ))}
-      </Carousel>
+            ))}
+          </Carousel>
+        )}
+      </div>
       <div className="w-full max-w-7xl px-2 mx-auto">
         <div className="fixed w-full mx-auto bottom-2 sm:bottom-0 z-50 -right-1 sm:right-auto">
           {showAudioPlayer && (
@@ -222,3 +269,5 @@ export function CarouselDemo() {
     </div>
   );
 }
+
+export default CarouselDemo;
