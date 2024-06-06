@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { comments, timeAgo } from '@/constants/default';
-import ShowMarkdown from '../showMarkdown';
-import { ClaudeIcon, HeartIcon, MessageCircleIcon, OpenAiIcon } from '../svg';
-import { Separator } from '@radix-ui/react-separator';
-import { AvatarImage, AvatarFallback, Avatar } from '@/components/ui/avatar';
+import React, { useEffect, useState } from "react";
+import { comments, timeAgo } from "@/constants/default";
+import ShowMarkdown from "../showMarkdown";
+import { ClaudeIcon, HeartIcon, MessageCircleIcon, OpenAiIcon } from "../svg";
+import { Separator } from "@radix-ui/react-separator";
+import { AvatarImage, AvatarFallback, Avatar } from "@/components/ui/avatar";
 import {
   DialogTrigger,
   DialogTitle,
@@ -11,19 +11,17 @@ import {
   DialogFooter,
   DialogContent,
   Dialog,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Textarea } from '../ui/textarea';
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "../ui/textarea";
 import {
   getPostLikeStatus,
   setPostLikes,
-} from '@/lib/helper/edgedb/postLikeManager';
-import { signIn, useSession } from 'next-auth/react';
-import TextToSpeechButton from '../textToSpeech';
-import { useParams } from 'next/navigation';
-import useHideAudio from '@/lib/helper/useHideAudio';
-import { Message } from '@/types/types';
-
+} from "@/lib/helper/edgedb/postLikeManager";
+import { signIn, useSession } from "next-auth/react";
+import TextToSpeechButton from "../textToSpeech";
+import { useParams } from "next/navigation";
+import { Message } from "@/types/types";
 
 interface MessageProps {
   message: Message;
@@ -36,10 +34,10 @@ const MessageCard = ({ message, index, senderType }: MessageProps) => {
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
   const params = useParams();
-  const { hideAudioinIphone } = useHideAudio();
 
   let userId = session?.user.id;
   let conversation_id = message.conversation_id;
+  let audioURL = message.audio_url;
 
   useEffect(() => {
     const fetchLikeStatus = async () => {
@@ -56,8 +54,8 @@ const MessageCard = ({ message, index, senderType }: MessageProps) => {
   }, [message.message_id, userId]);
 
   const toggleLike = async () => {
-    if (status === 'unauthenticated') {
-      return signIn('google', { callbackUrl: `/chat/${conversation_id}` });
+    if (status === "unauthenticated") {
+      return signIn("google", { callbackUrl: `/chat/${conversation_id}` });
     }
 
     const likeProps = {
@@ -78,48 +76,53 @@ const MessageCard = ({ message, index, senderType }: MessageProps) => {
 
   return (
     <div
+      id={`message-${index}`}
       className={`lg:flex items-start max-w-7xl mx-auto gap-1 space-y-2 lg:space-y-0 lg:space-x-2 ${
-        senderType === 'claudeDebater' ? 'justify-end' : ''
+        senderType === "claudeDebater" ? "justify-end" : ""
       }`}
     >
       <div className="flex gap-2 max-w-fit items-center">
-        {senderType === 'openAIDebater' && <OpenAiIcon />}
+        {senderType === "openAIDebater" && <OpenAiIcon />}
         <h3
-          className={`flex items-start font-bold capitalize lg:hidden space-x-2 ${
-            senderType === 'claudeDebater' ? 'justify-end' : ''
+          className={`flex items-start font-bold capitalize lg:hidden space-x-2${
+            senderType === "claudeDebater" ? "justify-end" : ""
           }`}
         >
-          {senderType === 'openAIDebater' && senderType}
+          {senderType === "openAIDebater" && "OpenAI"}
         </h3>
       </div>
       <div>
         <div
           className={`${
-            senderType === 'claudeDebater' ? 'justify-end pb-2' : ''
-          } flex gap-2 justify-end`}
+            senderType === "claudeDebater" ? "justify-end pb-2" : ""
+          } flex gap-2 justify-end items-center`}
         >
-          {senderType === 'claudeDebater' && <ClaudeIcon />}
+          {senderType === "claudeDebater" && <ClaudeIcon />}
           <h3
-            className={`flex items-start capitalize pb-2 font-bold space-x-2 ${
-              senderType === 'claudeDebater' ? 'justify-end' : ''
+            className={`flex capitalize font-bold space-x-2 ${
+              senderType === "claudeDebater" ? "justify-end" : ""
             }`}
           >
-            {senderType === 'claudeDebater' && senderType}
+            {senderType === "claudeDebater" && "Claude"}
           </h3>
         </div>
-        {senderType === 'openAIDebater' && (
-          <h3 className="lg:block -mt-2 capitalize pb-2.5 hidden font-bold">
-            {senderType}
+        {senderType === "openAIDebater" && (
+          <h3 className="lg:block capitalize relative top-2 hidden font-bold">
+            {"OpenAI"}
           </h3>
         )}
         <div
           className={`rounded-lg p-4 lg:mt-1.5 shadow w-full max-w-full lg:max-w-[40rem] ${
-            senderType === 'claudeDebater'
-              ? 'bg-gray-800 text-white'
-              : 'bg-white'
+            senderType === "claudeDebater"
+              ? "bg-gray-800 text-white"
+              : "bg-white"
           }`}
         >
-          <TextToSpeechButton senderType={senderType} index={index} />
+          <TextToSpeechButton
+            senderType={senderType}
+            index={index}
+            audioURL={audioURL}
+          />
           <ShowMarkdown content={message.message_text} />
 
           {params.id && (
@@ -132,7 +135,7 @@ const MessageCard = ({ message, index, senderType }: MessageProps) => {
                 >
                   <HeartIcon
                     className="h-5 w-5 text-gray-400"
-                    fillColor={liked ? 'red' : 'gray'}
+                    fillColor={liked ? "red" : "gray"}
                   />
                   <span className="text-sm flex gap-1">
                     {likeCount} <span className="md:block hidden">likes</span>
