@@ -32,7 +32,8 @@ export interface FirstConversation {
   created_at: string;
   category: string;
   published: boolean;
-  first_message?: FirstMessage;
+  first_message?: FirstMessage[];
+  audio_duration?: number;
 }
 
 export async function getAllDebates(): Promise<FirstConversation[]> {
@@ -59,7 +60,6 @@ export async function getAllDebates(): Promise<FirstConversation[]> {
     }
   }
   FILTER .published = true
-  LIMIT 6;
   `);
 
   return conversations as FirstConversation[];
@@ -97,4 +97,38 @@ export async function getSelectedCategory(category: string) {
   );
 
   return conversations as { conversation_id: string; topic: string }[];
+}
+
+export async function getDebatesWithCategory(
+  category: string
+): Promise<FirstConversation[]> {
+  const conversations = await client.query(
+    `
+  SELECT Conversations {
+    conversation_id,
+    user_id,
+    topic,
+    created_at,
+    category,
+    published,
+    first_message := (
+      SELECT Messages {
+        message_text,
+        sender,
+        audio_url
+      }
+      FILTER .conversation_id = Conversations.conversation_id
+      ORDER BY .created_at
+    ) {
+      message_text,
+      sender,
+      audio_url
+    }
+  }
+  FILTER .category = <str>$category AND .published = true
+  `,
+    { category }
+  );
+
+  return conversations as FirstConversation[];
 }

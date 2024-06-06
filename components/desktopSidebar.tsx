@@ -13,7 +13,7 @@ import {
   messagesState,
   showTopicState,
 } from "@/state/state";
-import { useRecoilState, useSetRecoilState } from "recoil";
+import { useSetRecoilState } from "recoil";
 import { SpeechIcon } from "lucide-react";
 import TopicList from "./topicList";
 
@@ -61,6 +61,7 @@ const DesktopSidebar = () => {
           onClick={() => {
             setMessagesList([]);
             setSelectedCategory(null);
+            // setAudioPlayer(false);
             setInputValue("");
             setLoader(false);
           }}
@@ -93,6 +94,7 @@ const DesktopSidebar = () => {
                       onClick={() => {
                         handleDebates(item.name);
                         setMessagesList([]);
+                        // setAudioPlayer(false);
                         setSelectedCategory(null);
                         setLoader(false);
                         setInputValue("");

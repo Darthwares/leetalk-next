@@ -1,28 +1,34 @@
-'use client';
+"use client";
 
-import { PauseIcon } from '@heroicons/react/24/outline';
-import React, { useState, useEffect } from 'react';
-import { PlayIcon } from './svg';
-import { useRecoilState, useSetRecoilState } from 'recoil';
+import { PauseIcon } from "@heroicons/react/24/outline";
+import React, { useState, useEffect } from "react";
+import { PlayIcon } from "./svg";
+import { useRecoilState, useSetRecoilState } from "recoil";
 import {
   currentAudioIndexState,
   isGlobalAudioPlayingState,
   playFullAudioState,
   showAudioPlayingState,
-} from '@/state/state';
+  showCurrentPlayingURL,
+} from "@/state/state";
 
-const TextToSpeechButton = ({
-  senderType,
-  index,
-}: {
+interface TextToSpeechButtonProps {
   senderType?: string;
   index?: number;
+  audioURL?: string;
+}
+
+const TextToSpeechButton: React.FC<TextToSpeechButtonProps> = ({
+  senderType,
+  index,
+  audioURL,
 }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentAudioIndex, setCurrentAudioIndex] = useRecoilState(
     currentAudioIndexState
   );
   const setPlayFullAudio = useSetRecoilState(playFullAudioState);
+  const setCurrentPlayingURL = useSetRecoilState(showCurrentPlayingURL);
   const setShowAudioPlayerState = useSetRecoilState(showAudioPlayingState);
   const [isGlobalAudioPlaying, setIsGlobalAudioPlaying] = useRecoilState(
     isGlobalAudioPlayingState
@@ -37,6 +43,7 @@ const TextToSpeechButton = ({
   }, [currentAudioIndex, index, isPlaying, isGlobalAudioPlaying]);
 
   const handleClick = async () => {
+    setCurrentPlayingURL(audioURL!);
     if (currentAudioIndex !== index) {
       setCurrentAudioIndex(index!);
       setPlayFullAudio(true);
@@ -56,9 +63,9 @@ const TextToSpeechButton = ({
         <button
           onClick={handleClick}
           className={`${
-            senderType === 'openAIDebater'
-              ? 'bg-black text-white'
-              : 'bg-white text-black'
+            senderType === "openAIDebater"
+              ? "bg-black text-white"
+              : "bg-white text-black"
           } rounded-full p-2`}
         >
           {currentAudioIndex === index && isPlaying && isGlobalAudioPlaying ? (

@@ -10,9 +10,9 @@ import Image from "next/image";
 import Loading from "./loading";
 import CategoryList from "./landing/categories/categoryList";
 import TestimonialCard from "./landing/testimonial/card";
-import ListenDebate from "./listenDebate";
 import { classNames } from "@/lib/utils";
 import { useRouter } from "next/navigation";
+import CardView from "./cardView";
 
 export default function Landing() {
   const { data: session, status } = useSession();
@@ -191,6 +191,10 @@ export default function Landing() {
           </SheetContent>
         </Sheet>
       </header>
+      <CardView />
+      <div className="w-full flex flex-col items-center justify-center">
+        <CategoryList />
+      </div>
       <section className="w-full py-12 md:pt-16">
         <div className="container px-2 sm:px-8">
           <div className="grid gap-6 lg:grid-cols-[1fr_400px] lg:gap-12 xl:grid-cols-[1fr_600px]">
@@ -232,12 +236,6 @@ export default function Landing() {
           </div>
         </div>
       </section>
-      <section className="w-full bg-white dark:bg-gray-800">
-        <ListenDebate />
-      </section>
-      <div className="w-full flex flex-col items-center justify-center">
-        <CategoryList />
-      </div>
       <TestimonialCard />
 
       <footer className="flex flex-col gap-2 sm:flex-row py-6 w-full shrink-0 items-center px-4 md:px-6 border-t">

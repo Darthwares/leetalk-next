@@ -66,21 +66,25 @@ const showTopicState = atom<string>({
   default: "",
 });
 const currentAudioIndexState = atom<number>({
-  key: 'currentAudioIndexState',
+  key: "currentAudioIndexState",
   default: 0,
 });
 const playFullAudioState = atom<boolean>({
-  key: 'playFullAudioState',
+  key: "playFullAudioState",
   default: false,
 });
 
 const isGlobalAudioPlayingState = atom<boolean>({
-  key: 'isGlobalAudioPlayingState',
+  key: "isGlobalAudioPlayingState",
   default: false,
 });
 const showAudioPlayingState = atom<boolean>({
-  key: 'showAudioPlayingState',
+  key: "showAudioPlayingState",
   default: false,
+});
+const showCurrentPlayingURL = atom<string>({
+  key: "showCurrentPlayingURL",
+  default: "",
 });
 
 export {
@@ -101,4 +105,5 @@ export {
   playFullAudioState,
   isGlobalAudioPlayingState,
   showAudioPlayingState,
+  showCurrentPlayingURL,
 };
