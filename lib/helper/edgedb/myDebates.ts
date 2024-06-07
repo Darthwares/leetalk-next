@@ -9,6 +9,7 @@ export default async function getUserDebates(userId: string) {
       conversation_id,
       user_id,
       topic,
+      imageURL,
       created_at,
       category,
       published

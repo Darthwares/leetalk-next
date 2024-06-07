@@ -61,7 +61,7 @@ export function InputDebate() {
   >([]);
   const router = useRouter();
   const setPublishState = useSetRecoilState(showPublishState);
-  const Idx = guid();
+  const idx = guid();
 
   useEffect(() => {
     import("@lottiefiles/lottie-player");
@@ -93,7 +93,7 @@ export function InputDebate() {
       method: "POST",
       body: JSON.stringify({
         prompt: inputValue.trim(),
-        key: Idx,
+        key: idx,
       }),
       headers: {
         "Content-Type": "application/json",
@@ -175,21 +175,41 @@ export function InputDebate() {
       return;
     }
 
-    setId(Idx);
+    setId(idx);
 
-    await setConversations({
-      conversationId: Idx,
-      topic: inputValue.trim(),
-      userId: session?.user?.id ?? "",
-      category: selectedCategory!,
-      publisher: false,
-    });
+    try {
+      const response = await fetch("/api/generateImage", {
+        method: "POST",
+        body: JSON.stringify({
+          text: inputValue.trim(),
+        }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        await setConversations({
+          conversationId: idx,
+          topic: inputValue.trim(),
+          userId: session?.user?.id ?? "",
+          category: selectedCategory!,
+          publisher: false,
+          imageURL: data.image,
+        });
+      } else {
+      }
+    } catch (error) {
+      console.error("Error fetching image:", error);
+    }
 
     const response = await fetch("api/langchain", {
       method: "POST",
       body: JSON.stringify({
         prompt: inputValue.trim(),
-        key: Idx,
+        key: idx,
       }),
       headers: {
         "Content-Type": "application/json",
@@ -232,7 +252,7 @@ export function InputDebate() {
         });
       }
     } catch (error) {
-      await deleteConversation(Idx);
+      await deleteConversation(idx);
       toast({
         className: "toastClass",
         action: (

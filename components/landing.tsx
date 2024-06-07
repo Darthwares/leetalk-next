@@ -37,12 +37,18 @@ export default function Landing() {
           href="#"
         >
           <SpeechIcon className="h-6 w-6" />
-          <span>Debate Anything</span>
+          {/* <Image
+            src={"/logo2.png"}
+            width={25}
+            height={25}
+            alt="debat.ai logo"
+          /> */}
+          <span>Debate anything</span>
         </Link>
         <div className="md:flex gap-5 items-center hidden w-full justify-center ">
           {session && (
             <Link className="font-semibold" href="/my-debates">
-              My Debate
+              My Debates
             </Link>
           )}
           <button className="font-semibold" onClick={handleSignIn}>
@@ -240,7 +246,7 @@ export default function Landing() {
 
       <footer className="flex flex-col gap-2 sm:flex-row py-6 w-full shrink-0 items-center px-4 md:px-6 border-t">
         <p className="text-sm text-gray-500 dark:text-gray-400">
-          © 2024 Debate Anything. All rights reserved.
+          © 2024 Debat.ai. All rights reserved.
         </p>
         <nav className="sm:ml-auto flex gap-4 sm:gap-6">
           <Link className="text-sm hover:underline underline-offset-4" href="#">

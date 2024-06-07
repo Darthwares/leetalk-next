@@ -222,7 +222,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
   return (
     <div
       className={cn(
-        "flex size-full flex-col bg-white overflow-visible relative",
+        "flex size-full flex-col bg-white overflow-visible relative pb-2",
         {
           hidden: !audio?.audioUrl || audio?.audioUrl === "",
         }

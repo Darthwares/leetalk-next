@@ -27,6 +27,10 @@ import { publishConversation } from "@/lib/helper/edgedb/getCategoryList";
 import Loading from "@/components/loading";
 import DebateHeader from "../reusableDebateHeader";
 import { handleShare } from "@/lib/helper/handleShare";
+import {
+  getCounterofConversation,
+  incrementViewCount,
+} from "@/lib/helper/edgedb/setConversations"; // import the function
 
 const ShowSingle = ({ params }: { params: { id: string } }) => {
   const [messages, setMessages] = useRecoilState(messagesState);
@@ -38,10 +42,13 @@ const ShowSingle = ({ params }: { params: { id: string } }) => {
   const [currentMusicIndex, setCurrentMusicIndex] = useRecoilState(
     currentAudioIndexState
   );
-  const [playFullAudio, setPlayFullAudio] = useRecoilState(playFullAudioState);
+  const [playFullAudio] = useRecoilState(playFullAudioState);
   const [isGlobalAudioPlaying, setIsGlobalAudioPlaying] = useRecoilState(
     isGlobalAudioPlayingState
   );
+  const [count, setCounter] = useState<number | null>(null); // State for increment value
+
+  const hasMounted = useRef(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -58,6 +65,32 @@ const ShowSingle = ({ params }: { params: { id: string } }) => {
       setIsGlobalAudioPlaying(false);
     };
   }, [session, params.id]);
+
+  useEffect(() => {
+    if (!hasMounted.current) {
+      hasMounted.current = true;
+
+      const viewCounter = async () => {
+        try {
+          await incrementViewCount(params.id);
+        } catch (error) {
+          console.error("Failed to increment view count:", error);
+        }
+      };
+
+      const getCounter = async () => {
+        try {
+          const count = await getCounterofConversation(params.id);
+          setCounter(count !== null ? count : "No views yet");
+        } catch (error) {
+          console.error("Failed to get view count:", error);
+        }
+      };
+
+      getCounter();
+      viewCounter();
+    }
+  }, [params.id, session]);
 
   const handlePublish = async (id: string) => {
     try {
@@ -147,8 +180,9 @@ const ShowSingle = ({ params }: { params: { id: string } }) => {
               )
             }
             category={topic?.category}
+            count={count!}
           />
-          <div className={`flex flex-col py-5 sm:py-10 rounded-lg`}>
+          <div className={`flex flex-col pb-5 sm:pb-10 rounded-lg`}>
             <div className="flex-grow overflow-y-auto py-4 space-y-8">
               {processedMessages.remainingMessages.map((message, index) => (
                 <MessageCard
