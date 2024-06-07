@@ -9,7 +9,6 @@ import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import {
   categoryPage,
-  generateImageUrl,
   navigation,
 } from "@/constants/default";
 import getCategoryList from "@/lib/helper/edgedb/getCategoryList";
@@ -56,7 +55,7 @@ const MobileViewSidebar = ({
       dateAdded: new Date(debate.created_at).toLocaleDateString(),
       id: debate.conversation_id,
       time: new Date(debate.created_at).toLocaleTimeString(),
-      imageUrl: generateImageUrl(debate.topic),
+      imageUrl: debate.imageURL,
     }));
   };
 
@@ -142,6 +141,12 @@ const MobileViewSidebar = ({
                     className="flex items-center cursor-pointer px-5 gap-2 font-semibold"
                   >
                     <SpeechIcon className="h-6 w-6" />
+                    {/* <Image
+                      src={"/logo2.png"}
+                      width={25}
+                      height={25}
+                      alt="debat.ai logo"
+                    /> */}
                     <span>Debate Anything</span>
                   </Link>
                 </div>

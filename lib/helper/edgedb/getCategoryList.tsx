@@ -11,6 +11,7 @@ export default async function getCategoryList(category: string) {
     topic,
     created_at,
     category,
+    imageURL,
     published
   }
   filter .category = <str>$category and .published = true;

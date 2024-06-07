@@ -12,22 +12,25 @@ module default {
     }
   }
   
-type Conversations {
-    required conversation_id -> str;
-    property user_id -> str;
-    property category -> str {
-        default := '';
-    }
-    property published -> bool {
-        default := false;
-    }
-    required topic -> str;
-    property created_at -> datetime {
-        default := datetime_current();
-    }
-}
-
-
+  type Conversations {
+      required conversation_id -> str;
+      property user_id -> str;
+      property imageURL -> str;
+      property viewCount -> int32 {
+              default := 0;
+      }
+      property category -> str {
+          default := '';
+      }
+      property published -> bool {
+          default := false;
+      }
+      required topic -> str;
+      property created_at -> datetime {
+          default := datetime_current();
+      }
+  }
+  
   type Messages {
     required message_id: str;
     required conversation_id: str;

@@ -119,7 +119,7 @@ export function getFormattedDate() {
 }
 
 export const cards: Cards = {
-  "Finance": [
+  Finance: [
     {
       imgUrl:
         "https://images.pexels.com/photos/210600/pexels-photo-210600.jpeg?auto=compress&cs=tinysrgb&w=600",
@@ -285,39 +285,39 @@ export const responsive = {
 
 export const topDebates = [
   {
-    title: 'The Impact of AI on Society',
-    dateAdded: '2024-05-20T07:35:10.960Z',
+    title: "The Impact of AI on Society",
+    dateAdded: "2024-05-20T07:35:10.960Z",
     id: guid(),
-    time: '10:00 AM',
-    imageUrl: 'https://source.unsplash.com/featured/?ai', // AI related image
+    time: "10:00 AM",
+    imageUrl: "https://source.unsplash.com/featured/?ai", // AI related image
   },
   {
-    title: 'Climate Change and Its Effects',
-    dateAdded: '2024-05-20T07:35:10.960Z',
+    title: "Climate Change and Its Effects",
+    dateAdded: "2024-05-20T07:35:10.960Z",
     id: guid(),
-    time: '2:00 PM',
-    imageUrl: 'https://source.unsplash.com/featured/?climate', // Climate change related image
+    time: "2:00 PM",
+    imageUrl: "https://source.unsplash.com/featured/?climate", // Climate change related image
   },
   {
-    title: 'The Future of Education',
-    dateAdded: '2024-05-20T07:35:10.960Z',
+    title: "The Future of Education",
+    dateAdded: "2024-05-20T07:35:10.960Z",
     id: guid(),
-    time: '11:00 AM',
-    imageUrl: 'https://source.unsplash.com/featured/?education', // Education related image
+    time: "11:00 AM",
+    imageUrl: "https://source.unsplash.com/featured/?education", // Education related image
   },
   {
-    title: 'Healthcare Reform',
-    dateAdded: '2024-05-20T07:35:10.960Z',
+    title: "Healthcare Reform",
+    dateAdded: "2024-05-20T07:35:10.960Z",
     id: guid(),
-    time: '3:00 PM',
-    imageUrl: 'https://source.unsplash.com/featured/?healthcare', // Healthcare related image
+    time: "3:00 PM",
+    imageUrl: "https://source.unsplash.com/featured/?healthcare", // Healthcare related image
   },
   {
-    title: 'Economic Policies and Growth',
-    dateAdded: '2024-05-20T07:35:10.960Z',
+    title: "Economic Policies and Growth",
+    dateAdded: "2024-05-20T07:35:10.960Z",
     id: guid(),
-    time: '1:00 PM',
-    imageUrl: 'https://source.unsplash.com/featured/?economics', // Economics related image
+    time: "1:00 PM",
+    imageUrl: "https://source.unsplash.com/featured/?economics", // Economics related image
   },
 ];
 
@@ -378,41 +378,36 @@ export const extractPlaylist = (messages: Message[]) => {
     }));
 };
 
-
 export const comments = [
-  { id: 1, user: 'User 1', comment: 'Great point!', time: '2 hours ago' },
+  { id: 1, user: "User 1", comment: "Great point!", time: "2 hours ago" },
   {
     id: 2,
-    user: 'User 2',
-    comment: 'I disagree with this.',
-    time: '1 day ago',
+    user: "User 2",
+    comment: "I disagree with this.",
+    time: "1 day ago",
   },
   {
     id: 3,
-    user: 'User 3',
-    comment: 'Could you provide more details?',
-    time: '3 days ago',
+    user: "User 3",
+    comment: "Could you provide more details?",
+    time: "3 days ago",
   },
   {
     id: 3,
-    user: 'User 3',
-    comment: 'Could you provide more details?',
-    time: '3 days ago',
+    user: "User 3",
+    comment: "Could you provide more details?",
+    time: "3 days ago",
   },
   {
     id: 3,
-    user: 'User 3',
-    comment: 'Could you provide more details?',
-    time: '3 days ago',
+    user: "User 3",
+    comment: "Could you provide more details?",
+    time: "3 days ago",
   },
   {
     id: 3,
-    user: 'User 3',
-    comment: 'Could you provide more details?',
-    time: '3 days ago',
+    user: "User 3",
+    comment: "Could you provide more details?",
+    time: "3 days ago",
   },
 ];
-
-
-
-

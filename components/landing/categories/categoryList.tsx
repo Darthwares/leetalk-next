@@ -1,23 +1,23 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import Link from 'next/link';
-import { categories, generateImageUrl } from '@/constants/default';
-import { BentoGridItem } from '@/components/ui/bento-grid';
-import { getConversationsByCategory } from '@/lib/helper/edgedb/dbClient';
+import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import Link from "next/link";
+import { categories } from "@/constants/default";
+import { BentoGridItem } from "@/components/ui/bento-grid";
+import { getConversationsByCategory } from "@/lib/helper/edgedb/dbClient";
 
 const CategoryList: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>(
     categories[0].name
   );
   const [conversations, setConversations] = useState<
-    { conversation_id: string; topic: string }[]
+    { conversation_id: string; topic: string; imageURL: string }[]
   >([]);
 
   const handleClick = async (category: string) => {
     setSelectedCategory(category);
-    const data = await getConversationsByCategory(category);
+    const data: any = await getConversationsByCategory(category);
     if (data.length > 0) {
       setConversations(data);
     }
@@ -35,7 +35,7 @@ const CategoryList: React.FC = () => {
       <div className="space-y-3 text-center">
         <div className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl pt-5 pb-10">
           <h2 className="py-4 text-2xl sm:text-4xl font-extrabold">
-            We have a{' '}
+            We have a{" "}
             <span className="text-gray-600 text-2xl sm:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-pink-600">
               debate for you
             </span>
@@ -48,8 +48,8 @@ const CategoryList: React.FC = () => {
             key={index}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg ${
               selectedCategory === category.name
-                ? 'bg-slate-900 font-semibold text-white'
-                : 'bg-white border font-semibold border-slate-900'
+                ? "bg-slate-900 font-semibold text-white"
+                : "bg-white border font-semibold border-slate-900"
             }`}
             onClick={() => handleClick(category.name)}
             whileHover={{ scale: 1.05 }}
@@ -75,8 +75,8 @@ const CategoryList: React.FC = () => {
               <BentoGridItem
                 key={i}
                 title={item.topic}
-                image={generateImageUrl(item.topic)}
-                className={''}
+                image={item.imageURL}
+                className={""}
                 id={item.conversation_id}
               />
             ))}

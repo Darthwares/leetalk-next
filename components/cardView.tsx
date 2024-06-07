@@ -11,7 +11,6 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { generateImageUrl } from "@/constants/default";
 import { useRecoilState, useSetRecoilState } from "recoil";
 import {
   showAudioPlayingState,
@@ -67,10 +66,10 @@ const DebateCarousel: React.FC<{
   }, [debates]);
 
   return (
-    <div className="px-4">
+    <div className="px-4 mt-4">
       <h2 className="text-2xl font-bold pb-2">{title}</h2>
       <Carousel opts={{ align: "start" }} className="relative">
-        <CarouselContent className="w-full flex items-start gap-3">
+        <CarouselContent className="w-full flex items-start gap-3 py-2">
           {debates.map((debate) => {
             return (
               <div
@@ -81,7 +80,7 @@ const DebateCarousel: React.FC<{
                   <CardHeader
                     className="relative flex justify-center items-center h-40 bg-cover bg-center rounded-t-md"
                     style={{
-                      backgroundImage: `url(${generateImageUrl(debate.topic)})`,
+                      backgroundImage: `url(${debate.imageURL})`,
                     }}
                   >
                     {/* work on this part */}
@@ -106,7 +105,7 @@ const DebateCarousel: React.FC<{
                     </Link>
                     <button
                       onClick={() => onPlay(debate)}
-                      className="flex items-center text-white bg-slate-600 p-2 rounded-full shadow-md hover:bg-slate-700"
+                      className="flex items-center text-white bg-slate-600 p-2 rounded-full hover:bg-slate-700"
                     >
                       {currentPlayingId === debate.conversation_id &&
                       isPlaying ? (
@@ -218,6 +217,7 @@ const CardView: React.FC = () => {
               currentPlayingId={currentPlayingId}
               isPlaying={isGlobalAudioPlaying}
             />
+            <TopTenList />
             <DebateCarousel
               title="Sports"
               debates={sportsDebates}

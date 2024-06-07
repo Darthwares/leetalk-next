@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { formatDateAndTime, generateImageUrl } from "@/constants/default";
+import { formatDateAndTime } from "@/constants/default";
 import {
   publishConversation,
   unPublishConversation,
@@ -43,7 +43,7 @@ const MyDebateContainer = () => {
           dateAdded: new Date(debate.created_at).toLocaleDateString(),
           id: debate.conversation_id,
           time: new Date(debate.created_at).toLocaleTimeString(),
-          imageUrl: generateImageUrl(debate.topic),
+          imageUrl: debate.imageURL,
           published: debate.published,
           category: debate.category,
         }));

@@ -19,6 +19,8 @@ export interface Conversations {
   topic: string;
   created_at: string;
   updated_at: string;
+  imageURL: string;
+  viewCount: number;
   category: string;
   published: boolean;
   first_message_text?: boolean;

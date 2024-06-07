@@ -31,6 +31,7 @@ export interface FirstConversation {
   topic: string;
   created_at: string;
   category: string;
+  imageURL: string;
   published: boolean;
   first_message?: FirstMessage[];
   audio_duration?: number;
@@ -72,6 +73,7 @@ export async function getConversationsByCategory(
     `
     SELECT Conversations {
       conversation_id,
+      imageURL,
       topic
     }
     FILTER .category = <str>$category AND .published = true
@@ -80,7 +82,7 @@ export async function getConversationsByCategory(
     { category }
   );
 
-  return conversations as { conversation_id: string; topic: string }[];
+  return conversations as { conversation_id: string; topic: string, imageURL: string }[];
 }
 
 export async function getSelectedCategory(category: string) {
@@ -111,6 +113,7 @@ export async function getDebatesWithCategory(
     created_at,
     category,
     published,
+    imageURL,
     first_message := (
       SELECT Messages {
         message_text,
