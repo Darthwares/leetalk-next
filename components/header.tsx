@@ -57,7 +57,7 @@ const Header = ({ setSidebarOpen }: HeaderProps) => {
   ];
 
   return (
-    <Disclosure as="nav" className="bg-gray-900 sticky top-0 z-40">
+    <Disclosure as="nav" className="sticky top-0 z-40">
       {() => (
         <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
           <div className="relative flex h-16 items-center justify-between">
@@ -75,17 +75,9 @@ const Header = ({ setSidebarOpen }: HeaderProps) => {
             <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start"></div>
 
             <div className="md:flex gap-5 items-center hidden w-full justify-center">
-              {session && (
-                <Link href="/my-debates" className="text-white">
-                  My Debate
-                </Link>
-              )}
-              <button onClick={handleSignIn} className="text-white">
-                Start Debate
-              </button>
-              <Link href="/categories?query=Technology" className="text-white">
-                Categories
-              </Link>
+              {session && <Link className="font-semibold" href="/my-debates">Listen</Link>}
+              <button className="font-semibold" onClick={handleSignIn}>Create</button>
+              <Link className="font-semibold" href="/categories?query=Technology">Capture</Link>
             </div>
 
             {session?.user?.id && (
