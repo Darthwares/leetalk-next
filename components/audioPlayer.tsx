@@ -1,6 +1,5 @@
 "use client";
 import Image from "next/image";
-import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { useRecoilState, useSetRecoilState } from "recoil";
 import { cn } from "@/lib/utils";
@@ -13,10 +12,7 @@ import {
   showCurrentPlayingURL,
 } from "@/state/state";
 import { Message, Conversations } from "@/types/types";
-import { extractPlaylist } from "@/constants/default";
-import { ClaudeIcon, OpenAiIcon } from "./svg";
-import PlayList from "./playList";
-import { XIcon } from "lucide-react";
+import { PauseIcon, PlayIcon, XIcon } from "lucide-react";
 
 export const formatTime = (seconds: number) => {
   const minutes = Math.floor(seconds / 60);
@@ -47,13 +43,11 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
   const [isGlobalAudioPlaying, setIsGlobalAudioPlaying] = useRecoilState(
     isGlobalAudioPlayingState
   );
-  const [currentMusicIndex] = useRecoilState(currentAudioIndexState);
   const setPlayFullAudio = useSetRecoilState(playFullAudioState);
   const [currentPlayingURL, setCurrentPlayingURL] = useRecoilState(
     showCurrentPlayingURL
   );
   const setShowAudioPlayer = useSetRecoilState(showAudioPlayingState);
-
 
   useEffect(() => {
     import("@lottiefiles/lottie-player");
@@ -180,8 +174,6 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
     }
   }, [audio.audioUrl, currentAudioIndex]);
 
-  const playlist = extractPlaylist(messages!);
-
   const handleLoadedMetadata = () => {
     if (audioRef.current) {
       setDuration(audioRef.current.duration);
@@ -190,21 +182,6 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
 
   const handleAudioEnded = () => {
     handleNextAudio();
-  };
-
-  const nextSpeakerIndex = (currentMusicIndex + 1) % playlist.length;
-
-  const handlePlayListClick = (index: number) => {
-    setCurrentPlayingURL(audioURL!);
-    if (currentAudioIndex === index) {
-      setCurrentAudioIndex(index!);
-      setPlayFullAudio(true);
-      setIsPlaying(true);
-      setIsGlobalAudioPlaying(true);
-    } else {
-      setIsPlaying(!isPlaying);
-      setIsGlobalAudioPlaying(!isPlaying);
-    }
   };
 
   useEffect(() => {
@@ -231,10 +208,10 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
       <div ref={progressRef} onClick={handleProgressClick}>
         <Progress
           value={(currentTime / duration) * 100}
-          className="w-full cursor-pointer h-1.5"
+          className="w-full cursor-pointer h-1.5 lg:hidden block"
           max={duration}
         />
-        <div className="flex gap-2 items-center md:hidden w-full justify-between px-3 py-2">
+        <div className="flex gap-2 items-center lg:hidden w-full justify-between px-3 py-2 md:py-0 md:pt-2">
           <h2 className="text-16 font-normal text-white-2">
             {formatTime(currentTime)}
           </h2>
@@ -244,7 +221,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
           </h2>
         </div>
       </div>
-      <section className="glassmorphism-black flex md:h-20 w-full items-center justify-between px-4 max-md:justify-center max-md:gap-5 md:px-12">
+      <section className="glassmorphism-black flex md:h-20 w-full items-center justify-between px-4 max-lg:justify-between max-md:gap-7 lg:px-8">
         <audio
           ref={audioRef}
           src={audio?.audioUrl}
@@ -252,132 +229,36 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
           onLoadedMetadata={handleLoadedMetadata}
           onEnded={handleAudioEnded}
         />
-        <div className="flex items-center gap-4 ">
-          <Link href={`/podcast/${audio?.podcastId}`}>
-            <Image
-              src={audio?.imageUrl! || "/images/player1.png"}
-              width={64}
-              height={64}
-              alt="player1"
-              className="aspect-square rounded-xl"
-            />
-          </Link>
-          <div className="flex w-[160px] md:w-80 flex-col">
-            <h2 className="text-14 truncate font-semibold text-white-1">
+        <div className="flex items-center lg:w-80 gap-4 w-full">
+          <div className="flex w-full lg:w-80 flex-col">
+            <h2 className="font-semibold w-full whitespace-normal md:whitespace-nowrap lg:whitespace-normal lg:w-80 line-clamp-1">
               {audio?.title}
             </h2>
-            <p className="text-12 font-normal text-white-2">{audio?.author}</p>
-          </div>
-        </div>
-        <div className="flex flex-col items-center mt-5 gap-0.5">
-          <div className="flex items-center cursor-pointer gap-3 md:gap-6">
-            <div className="flex items-center gap-1.5">
-              <span role="img" aria-label="rewind" onClick={rewind}>
-                <Image
-                  src={"/rewind.svg"}
-                  width={25}
-                  height={25}
-                  alt="player1"
-                  className="aspect-square rounded-xl"
-                />
-              </span>
-              <h2 className="text-12 font-bold text-white-4 hidden md:block">
-                -5
-              </h2>
-            </div>
-            <span
-              role="img"
-              aria-label={isGlobalAudioPlaying ? "pause" : "play"}
-              onClick={togglePlayPause}
-              style={{ fontSize: 30 }}
-            >
-              {isGlobalAudioPlaying ? (
-                <Image
-                  src={"/stop-icon.svg"}
-                  width={25}
-                  height={25}
-                  alt="player1"
-                  className="aspect-square rounded-xl"
-                />
-              ) : (
-                <Image
-                  src={"/play.svg"}
-                  width={25}
-                  height={25}
-                  alt="player1"
-                  className="aspect-square rounded-xl"
-                />
-              )}
-            </span>
-            <div className="flex items-center gap-1.5">
-              <h2 className="text-12 font-bold text-white-4 hidden md:block">
-                +5
-              </h2>
-              <span role="img" aria-label="forward" onClick={forward}>
-                <Image
-                  src={"/fast-forward-icon.svg"}
-                  width={25}
-                  height={25}
-                  alt="player1"
-                  className="aspect-square rounded-xl"
-                />
-              </span>
-            </div>
-          </div>
-          <div className="hidden sm:flex">
-            <div className="flex items-center">
-              <div>
-                {playlist[currentMusicIndex]?.sender === "openAIDebater" ? (
-                  <div className="inline-flex gap-1 items-center">
-                    <OpenAiIcon className="w-5 h-5" />
-                    <strong>OpenAI</strong>
-                  </div>
-                ) : (
-                  <div className="inline-flex gap-1 items-center">
-                    <ClaudeIcon className="w-5 h-5" />
-                    <strong>Claude</strong>
-                  </div>
-                )}
-              </div>
-              <div className="h-10 pr-5 w-full">
-                <lottie-player
-                  src="/audio-wave2.json"
-                  background=""
-                  speed="1"
-                  loop
-                  autoplay
-                  className="bg-gradient-to-r from-indigo-100 to-pink-200"
-                ></lottie-player>
-              </div>
-            </div>
-            <div className="flex items-center">
-              <div>
-                {playlist[nextSpeakerIndex]?.sender === "openAIDebater" ? (
-                  <div className="inline-flex gap-1 items-center">
-                    <OpenAiIcon className="w-5 h-5" />
-                    <strong>OpenAI</strong>
-                  </div>
-                ) : (
-                  <div className="inline-flex gap-1 items-center">
-                    <ClaudeIcon className="w-5 h-5" />
-                    <strong>Claude</strong>
-                  </div>
-                )}
-              </div>
+            <div className="flex items-center gap-1">
+              <p className="text-12 font-normal text-white-2">
+                {audio?.author}
+              </p>
             </div>
           </div>
         </div>
-        <div className="hidden md:flex items-center gap-6">
+        <h2 className="text-16 font-normal text-white-2">
+          {formatTime(currentTime)}
+        </h2>
+        <Progress
+          value={(currentTime / duration) * 100}
+          className="cursor-pointer w-[38rem] hidden lg:flex"
+          max={duration}
+          ref={progressRef}
+          onClick={handleProgressClick}
+        />
+        <div className="hidden lg:flex items-center">
           <div className="flex gap-2 items-center">
-            <h2 className="text-16 font-normal text-white-2">
-              {formatTime(currentTime)}
-            </h2>
-            {"/"}
+            {/* {"/"} */}
             <h2 className="text-16 font-normal text-white-2 max-md:hidden">
               {formatTime(duration)}
             </h2>
           </div>
-          <div className="flex w-full gap-2">
+          {/* <div className="flex w-full gap-2">
             <span
               role="img"
               aria-label={isMuted ? "unmute" : "mute"}
@@ -387,19 +268,37 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
             >
               {isMuted ? "🔇" : "🔊"}
             </span>
-            <div className="md:flex items-center justify-between gap-5 hidden">
-              <div className="items-center flex w-full justify-between text-gray-700">
-                {playlist.length > 0 && (
-                  <p>{`${currentMusicIndex + 1} of ${playlist.length}`}</p>
-                )}
-              </div>
-              <PlayList
-                topic={topic?.topic!}
-                playlist={messages!}
-                currentMusicIndex={currentMusicIndex}
-                isPlaying={isPlaying}
-                onPlayListClick={handlePlayListClick}
-              />
+          </div> */}
+        </div>
+        <div className="flex flex-col items-center gap-0.5 w-60 md:w-40 ">
+          <div className="flex items-center cursor-pointer gap-3">
+            <div className="flex items-center gap-1.5">
+              <span role="img" aria-label="rewind" onClick={rewind}>
+                <img
+                  src={"/rewind.svg"}
+                  className="aspect-square rounded-xl w-8 h-8"
+                />
+              </span>
+            </div>
+            <span
+              role="img"
+              aria-label={isGlobalAudioPlaying ? "pause" : "play"}
+              onClick={togglePlayPause}
+              style={{ fontSize: 30 }}
+            >
+              {isGlobalAudioPlaying ? (
+                <PauseIcon className="h-8 w-8 flex items-center text-white bg-slate-600 p-2 rounded-full hover:bg-slate-700" />
+              ) : (
+                <PlayIcon className="h-8 w-8 flex items-center text-white bg-slate-600 p-2 rounded-full hover:bg-slate-700" />
+              )}
+            </span>
+            <div className="flex items-center gap-1.5">
+              <span role="img" aria-label="forward" onClick={forward}>
+                <img
+                  src={"/fast-forward-icon.svg"}
+                  className="aspect-square rounded-xl w-8 h-8"
+                />
+              </span>
             </div>
           </div>
         </div>

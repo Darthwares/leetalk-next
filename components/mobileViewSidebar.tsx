@@ -129,7 +129,7 @@ const MobileViewSidebar = ({
                 </div>
               </Transition.Child>
               <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-white ring-1 ring-white/10">
-                <div className="flex h-16 pb-2 sticky top-0 z-20 border-r-2 border-gray-300 -pr-5 text-white bg-slate-900 shrink-0 items-center">
+                <div className="flex h-16 pb-2 sticky top-0 z-20 border-r-2 border-gray-300 -pr-5 shrink-0 items-center">
                   <Link
                     href="/"
                     onClick={() => {
@@ -140,14 +140,14 @@ const MobileViewSidebar = ({
                     }}
                     className="flex items-center cursor-pointer px-5 gap-2 font-semibold"
                   >
-                    <SpeechIcon className="h-6 w-6" />
-                    {/* <Image
+                    {/* <SpeechIcon className="h-6 w-6" /> */}
+                    <Image
                       src={"/logo2.png"}
                       width={25}
                       height={25}
                       alt="debat.ai logo"
-                    /> */}
-                    <span>Debate Anything</span>
+                    />
+                    <span>Debate.ai</span>
                   </Link>
                 </div>
 

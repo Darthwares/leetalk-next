@@ -3,8 +3,8 @@ import React from "react";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "My Debates - Leetalk",
-  description: "My Debates section of Leetalk",
+  title: "Debates - Leetalk",
+  description: "Debates section of Leetalk",
 };
 const MyDebate = () => {
   return <MyDebateContainer />;

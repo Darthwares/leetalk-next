@@ -56,27 +56,26 @@ const DesktopSidebar = () => {
 
   return (
     <div className="hidden xl:fixed xl:inset-y-0 xl:z-50 xl:flex xl:w-72 xl:flex-col">
-      <div className="flex h-16 pb-2 sticky top-0 z-20 border-r-2 border-gray-300 -pr-5 text-white bg-slate-900 shrink-0 items-center">
+      <div className="flex h-16 pb-2 sticky top-0 z-20 border-r-2 border-gray-300 -pr-5 shrink-0 items-center">
         <Link
           href="/"
           onClick={() => {
             setMessagesList([]);
             setSelectedCategory(null);
-            // setAudioPlayer(false);
             setInputValue("");
             setLoader(false);
           }}
           className="flex items-center cursor-pointer px-5 gap-2 font-semibold"
         >
-          <SpeechIcon className="h-6 w-6" />
-          {/* <Image
+          {/* <SpeechIcon className="h-6 w-6" /> */}
+          <Image
             src={"/logo2.png"}
             width={25}
             height={25}
             alt="debat.ai logo"
           />
-          <span>Debat.ai</span> */}
-          <span>Debate Anything</span>
+          <span>Debat.ai</span>
+          {/* <span>Debate Anything</span> */}
         </Link>
       </div>
       <div className="w-full py-5 px-2">

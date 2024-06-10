@@ -36,26 +36,26 @@ export default function Landing() {
           className="flex items-center cursor-pointer  gap-2 font-semibold max-w-fit w-full"
           href="#"
         >
-          <SpeechIcon className="h-6 w-6" />
-          {/* <Image
+          {/* <SpeechIcon className="h-6 w-6" /> */}
+          <Image
             src={"/logo2.png"}
             width={25}
             height={25}
             alt="debat.ai logo"
-          /> */}
-          <span>Debate anything</span>
+          />
+          <span>Debat.ai</span>
         </Link>
         <div className="md:flex gap-5 items-center hidden w-full justify-center ">
           {session && (
             <Link className="font-semibold" href="/my-debates">
-              My Debates
+              Listen
             </Link>
           )}
           <button className="font-semibold" onClick={handleSignIn}>
-            Start Debate
+            Create
           </button>
           <Link href="/categories?query=Technology" className="font-semibold">
-            Categories
+            Capture
           </Link>
         </div>
         <nav className="ml-auto hidden gap-4 sm:gap-6 sm:flex w-full max-w-fit">
@@ -107,7 +107,7 @@ export default function Landing() {
                                 "block px-4 py-2 text-sm text-gray-700"
                               )}
                             >
-                              My Debates
+                              Listen
                             </a>
                           )}
                         </Menu.Item>
@@ -120,7 +120,7 @@ export default function Landing() {
                                 "block px-4 py-2 text-sm text-gray-700"
                               )}
                             >
-                              Categories
+                              Capture
                             </a>
                           )}
                         </Menu.Item>
@@ -165,14 +165,14 @@ export default function Landing() {
                   return router.push("/debate");
                 }}
               >
-                Start Debate
+                Create
               </button>
               {status === "authenticated" && (
                 <Link
                   className="flex w-full items-center py-2 text-lg font-semibold"
                   href="/my-debates"
                 >
-                  My Debates
+                  Listen
                 </Link>
               )}
 
@@ -180,7 +180,7 @@ export default function Landing() {
                 className="flex w-full items-center py-2 text-lg font-semibold"
                 href="/categories?query=Technology"
               >
-                Categories
+                Capture
               </Link>
               <Button
                 className="flex w-full items-center py-2 text-lg font-semibold"

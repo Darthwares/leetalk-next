@@ -67,7 +67,7 @@ const DebateCarousel: React.FC<{
 
   return (
     <div className="px-4 mt-4">
-      <h2 className="text-2xl font-bold pb-2">{title}</h2>
+      <h2 className="text-2xl font-bold pb-2 mt-3">{title}</h2>
       <Carousel opts={{ align: "start" }} className="relative">
         <CarouselContent className="w-full flex items-start gap-3 py-2">
           {debates.map((debate) => {
@@ -120,8 +120,8 @@ const DebateCarousel: React.FC<{
             );
           })}
         </CarouselContent>
-        <CarouselPrevious className="absolute left-0 top-[5.5rem] transform -translate-y-1/2" />
-        <CarouselNext className="absolute right-0 top-[5.5rem] transform -translate-y-1/2" />
+        <CarouselPrevious className="absolute lg:-left-12 left-0 top-[6.5rem] transform -translate-y-1/2" />
+        <CarouselNext className="absolute right-0 lg:-right-12 top-[6.5rem] transform -translate-y-1/2" />
       </Carousel>
     </div>
   );
