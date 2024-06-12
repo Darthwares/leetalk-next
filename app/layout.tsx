@@ -40,14 +40,16 @@ const LayoutWithPlayer = ({ children }: any) => {
       <div className="w-full max-w-7xl xl:max-w-[90rem] mx-auto">
         {pathname !== "/" && (
           <>
-            <Suspense fallback={<Loading />}>
-              <MobileViewSidebar
-                sidebarOpen={sidebarOpen}
-                setSidebarOpen={setSidebarOpen}
-              />
-              <DesktopSidebar />
-            </Suspense>
-            <div className="xl:pl-72">
+            {pathname !== "/debate" && (
+              <Suspense fallback={<Loading />}>
+                <MobileViewSidebar
+                  sidebarOpen={sidebarOpen}
+                  setSidebarOpen={setSidebarOpen}
+                />
+                <DesktopSidebar />
+              </Suspense>
+            )}
+            <div className={cn({ "xl:pl-72": pathname !== "/debate" })}>
               <Header setSidebarOpen={setSidebarOpen} />
               {children}
             </div>

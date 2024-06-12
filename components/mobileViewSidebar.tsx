@@ -190,9 +190,6 @@ const MobileViewSidebar = ({
                           ))}
                         </ul>
                       </li>
-                      <li className="-mx-2">
-                        <TopicList />
-                      </li>
                     </ul>
                   </nav>
                 </div>

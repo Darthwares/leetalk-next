@@ -1,6 +1,7 @@
 import { ChatOpenAI } from "@langchain/openai";
 import { HumanMessage, SystemMessage } from "@langchain/core/messages";
 import { ChatAnthropic } from "@langchain/anthropic";
+import { ChatGroq } from "@langchain/groq";
 import { guid } from "@/constants/default";
 import OpenAI from "openai";
 import { put } from "@vercel/blob";
@@ -52,42 +53,53 @@ const uploadAudioToVercelBlob = async (
 const runDebate = async function* (
   prompt: string,
   key: string,
+  debaters: string[],
   maxIterations: number = 7
 ): AsyncGenerator<DebateResponse | { end: true }, void, unknown> {
   let currentPrompt = prompt;
-  let currentModel = "openAIDebater"; // Start with openAIDebater
+  let currentModelIndex = 0;
   let iterations = 0;
 
-  const systemMessageOpenAIDebater = new SystemMessage(
-    "You are an AI assistant named openAIDebater. Your role is to engage in a debate with another AI assistant named claudeDebater. Analyze the given topic and provide your perspective, while also considering and responding to claudeDebater's arguments. The debate should continue until a satisfactory conclusion is reached. As an engineer, aim to provide technical insights and logical reasoning to support your position."
-  );
-
-  const systemMessageClaudeDebater = new SystemMessage(
-    "You are an AI assistant named claudeDebater. Your role is to engage in a debate with another AI assistant named openAIDebater. Analyze the given topic and provide your perspective, while also considering and responding to openAIDebater's arguments. The debate should continue until a satisfactory conclusion is reached. Aim to provide well-reasoned and insightful arguments to support your position."
-  );
+  const systemMessages = {
+    openAIDebater: new SystemMessage(
+      "You are an AI assistant named GPT. Your role is to engage in a debate with other AI assistants. Analyze the given topic and provide your perspective, while also considering and responding to the other AI assistants' arguments. The debate should continue until a satisfactory conclusion is reached. As an engineer, aim to provide technical insights and logical reasoning to support your position."
+    ),
+    claudeDebater: new SystemMessage(
+      "You are an AI assistant named claude. Your role is to engage in a debate with other AI assistants. Analyze the given topic and provide your perspective, while also considering and responding to the other AI assistants' arguments. The debate should continue until a satisfactory conclusion is reached. Aim to provide well-reasoned and insightful arguments to support your position."
+    ),
+    GroqDebater: new SystemMessage(
+      "You are an AI assistant named Llama. Your role is to engage in a debate with other AI assistants. Analyze the given topic and provide your perspective, while also conshidering and responding to the other AI assistants' arguments. The debate should continue until a satisfactory conclusion is reached. Aim to provide well-reasoned and insightful arguments to support your position."
+    ),
+  };
 
   while (iterations < maxIterations) {
+    const currentDebaterKey = debaters[currentModelIndex];
     let responseStream;
-    let modelIdentifier: string;
-    let voice: string;
+    let modelIdentifier;
+    let voice;
 
-    if (currentModel === "Anthropic") {
+    if (currentDebaterKey === "claudeOpus") {
       responseStream = await runLLMChainAnthropic(
         currentPrompt,
-        systemMessageClaudeDebater
+        systemMessages.claudeDebater
       );
       modelIdentifier = "claudeDebater";
       voice = "nova";
-      currentModel = "openAIDebater";
+    } else if (currentDebaterKey === "llama3") {
+      responseStream = await runLLMChainGroq(
+        currentPrompt,
+        systemMessages.GroqDebater
+      );
+      modelIdentifier = "GroqDebater";
+      voice = "fable";
     } else {
       responseStream = await runLLMChainOpenAI(
         currentPrompt,
         key,
-        systemMessageOpenAIDebater
+        systemMessages.openAIDebater
       );
       modelIdentifier = "openAIDebater";
       voice = "alloy";
-      currentModel = "Anthropic";
     }
 
     let responseText = "";
@@ -96,11 +108,11 @@ const runDebate = async function* (
     }
 
     let addressedResponse = responseText.trim();
-   if (iterations === 0) {
-     addressedResponse = `Hello, ${addressedResponse}`;
-   } else if (iterations === maxIterations - 1) {
-     addressedResponse = `${addressedResponse} Thank you for the debate.`;
-   }
+    if (iterations === 0) {
+      addressedResponse = `Hello, ${addressedResponse}`;
+    } else if (iterations === maxIterations - 1) {
+      addressedResponse = `${addressedResponse} Thank you for the debate.`;
+    }
 
     const audioBuffer = await generateAudioBytes(addressedResponse, voice);
     const blob = await uploadAudioToVercelBlob(
@@ -120,6 +132,8 @@ const runDebate = async function* (
 
     currentPrompt = addressedResponse;
     iterations++;
+
+    currentModelIndex = (currentModelIndex + 1) % debaters.length;
   }
 
   yield {
@@ -160,6 +174,36 @@ const runLLMChainAnthropic = async (
   return stream.readable;
 };
 
+const runLLMChainGroq = async (
+  prompt: string,
+  systemMessage: SystemMessage
+) => {
+  const stream = new TransformStream();
+  const writer = stream.writable.getWriter();
+
+  const model = new ChatGroq({
+    streaming: true,
+    apiKey: process.env.GROQ_API_KEY as string,
+    model: "llama3-8b-8192",
+    callbacks: [
+      {
+        async handleLLMNewToken(token) {
+          await writer.ready;
+          await writer.write(encoder.encode(token));
+        },
+        async handleLLMEnd() {
+          await writer.ready;
+          await writer.close();
+        },
+      },
+    ],
+  });
+
+  model.invoke([systemMessage, new HumanMessage(prompt)]);
+
+  return stream.readable;
+};
+
 const runLLMChainOpenAI = async (
   prompt: string,
   key: string,
@@ -171,6 +215,7 @@ const runLLMChainOpenAI = async (
   const model = new ChatOpenAI({
     streaming: true,
     openAIApiKey: process.env.OPENAI_API_KEY!,
+    model: "gpt-4o",
     callbacks: [
       {
         async handleLLMNewToken(token) {
@@ -202,9 +247,9 @@ const streamToString = async function* (stream: ReadableStream) {
 };
 
 export async function POST(request: Request): Promise<NextResponse> {
-  const { prompt, key } = await request.json();
+  const { prompt, key, debaters } = await request.json();
 
-  const debateStream: any = runDebate(prompt, key);
+  const debateStream: any = runDebate(prompt, key, debaters);
   const stream = new TransformStream();
   const writer = stream.writable.getWriter();
 

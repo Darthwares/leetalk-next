@@ -109,3 +109,47 @@ export const getTopTenConversations = async () => {
     throw new Error("Failed to fetch top conversations");
   }
 };
+
+export const updateDebate = async (
+  conversation_id: string,
+  title?: string,
+  category?: string,
+  imageURL?: string
+) => {
+  console.log("conversation_id in updateDebate", conversation_id);
+
+  let updates = [];
+  if (title) updates.push(`topic := <str>$title`);
+  if (category) updates.push(`category := <str>$category`);
+  if (imageURL) updates.push(`imageURL := <str>$imageURL`);
+
+  if (updates.length === 0) {
+    console.log("No updates to perform");
+    return;
+  }
+
+  const query = `
+    WITH
+      conversation := (
+        SELECT Conversations
+        FILTER .conversation_id = <str>$conversation_id
+      )
+    UPDATE Conversations
+    FILTER .conversation_id = <str>$conversation_id
+    SET {
+      ${updates.join(", ")}
+    }
+  `;
+
+  const params: Record<string, any> = { conversation_id };
+  if (title) params.title = title;
+  if (category) params.category = category;
+  if (imageURL) params.imageURL = imageURL;
+
+  try {
+    await client.query(query, params);
+    console.log(`Updated conversation: ${conversation_id}`);
+  } catch (error) {
+    console.error("Failed to update conversation:", error);
+  }
+};

@@ -1,3 +1,5 @@
+import { Dispatch, SetStateAction } from "react";
+
 // interfaces.ts
 export interface Message {
   message_id: string;
@@ -39,3 +41,14 @@ export type Card = {
 export type Cards = {
   [key: string]: Card[];
 };
+
+export interface AuthenticationModalProps {
+  isOpen: boolean;
+  toggleModal: () => void;
+  setCurrentCategory: Dispatch<SetStateAction<string>>;
+  setCurrentTitle: Dispatch<SetStateAction<string>>;
+  conversationId: string;
+  currentTitle: string;
+  currentCategory: string;
+  onEditSuccess: (updatedDebate: any) => void; 
+}

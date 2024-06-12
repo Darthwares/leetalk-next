@@ -48,6 +48,19 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
     showCurrentPlayingURL
   );
   const setShowAudioPlayer = useSetRecoilState(showAudioPlayingState);
+  const [currentSender, setCurrentSender] = useState<string>("");
+
+  useEffect(() => {
+    if (messages?.[currentAudioIndex]) {
+      if (messages[currentAudioIndex].sender === "openAIDebater") {
+        setCurrentSender("/openai.png");
+      } else if (messages[currentAudioIndex].sender === "claudeDebater") {
+        setCurrentSender("/claude.png");
+      } else if (messages[currentAudioIndex].sender === "GroqDebater") {
+        setCurrentSender("/llama.webp");
+      }
+    }
+  }, [currentAudioIndex, messages]);
 
   useEffect(() => {
     import("@lottiefiles/lottie-player");
@@ -199,7 +212,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
   return (
     <div
       className={cn(
-        "flex size-full flex-col bg-white overflow-visible relative pb-2",
+        "flex size-full flex-col bg-white overflow-visible relative pb-2 shadow-2xl",
         {
           hidden: !audio?.audioUrl || audio?.audioUrl === "",
         }
@@ -216,7 +229,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
             {formatTime(currentTime)}
           </h2>
 
-          <h2 className="text-16 font-normal text-white-2   ">
+          <h2 className="text-16 font-normal text-white-2">
             {formatTime(duration)}
           </h2>
         </div>
@@ -234,30 +247,40 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
             <h2 className="font-semibold w-full whitespace-normal md:whitespace-nowrap lg:whitespace-normal lg:w-80 line-clamp-1">
               {audio?.title}
             </h2>
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-2 py-1">
               <p className="text-12 font-normal text-white-2">
                 {audio?.author}
               </p>
+              <span className="hidden md:flex">&middot;</span>
+              <div className="rounded-full border-4 border-blue-500 bg-blue-500 hidden md:flex">
+                <img
+                  src={currentSender}
+                  alt={currentSender}
+                  className="w-7 h-7 rounded-full bg-contain object-cover"
+                />
+              </div>
             </div>
           </div>
         </div>
-        <h2 className="text-16 font-normal text-white-2">
-          {formatTime(currentTime)}
-        </h2>
-        <Progress
-          value={(currentTime / duration) * 100}
-          className="cursor-pointer w-[38rem] hidden lg:flex"
-          max={duration}
-          ref={progressRef}
-          onClick={handleProgressClick}
-        />
-        <div className="hidden lg:flex items-center">
-          <div className="flex gap-2 items-center">
-            {/* {"/"} */}
-            <h2 className="text-16 font-normal text-white-2 max-md:hidden">
-              {formatTime(duration)}
-            </h2>
-          </div>
+        <div className="hidden lg:flex items-center justify-center gap-5 ">
+          <h2 className="text-16 font-normal text-white-2">
+            {formatTime(currentTime)}
+          </h2>
+          <Progress
+            value={(currentTime / duration) * 100}
+            className="cursor-pointer w-[38rem] hidden lg:flex"
+            max={duration}
+            ref={progressRef}
+            onClick={handleProgressClick}
+          />
+          <h2 className="text-16 font-normal text-white-2 max-md:hidden">
+            {formatTime(duration)}
+          </h2>
+        </div>
+        <div className="flex gap-2 items-center">
+          {/* {"/"} */}
+          {/* <div className="hidden lg:flex items-center">
+          </div> */}
           {/* <div className="flex w-full gap-2">
             <span
               role="img"

@@ -13,6 +13,7 @@ import TestimonialCard from "./landing/testimonial/card";
 import { classNames } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import CardView from "./cardView";
+import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 
 export default function Landing() {
   const { data: session, status } = useSession();
@@ -75,7 +76,14 @@ export default function Landing() {
               {session?.user.id && (
                 <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
                   <Menu as="div" className="relative ml-3">
-                    <div>
+                    <div className="flex items-center gap-4">
+                      <Link
+                        className="font-semibold lg:px-3 lg:py-1.5 lg:border lg:border-gray-200 lg:hover:shadow-md lg:rounded-md"
+                        href="/search"
+                      >
+                        <MagnifyingGlassIcon className="w-5 h-5 text-slate-500 lg:hidden block" />
+                        <span className="hidden lg:block">Search</span>
+                      </Link>
                       <Menu.Button className="relative flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
                         <span className="absolute -inset-1.5" />
                         <span className="sr-only">Open user menu</span>

@@ -167,7 +167,7 @@ const ShowSingle = ({ params }: { params: { id: string } }) => {
   return (
     <div className="bg-white w-full">
       {processedMessages.remainingMessages && !loading && (
-        <div className="flex flex-col w-full mx-auto p-4 md:p-6 bg-white shadow rounded-lg rounded-t-none">
+        <div className="flex flex-col w-full mx-auto ps-4 pb-4 md:px-6 md:pb-6 bg-white shadow rounded-lg rounded-t-none">
           <DebateHeader
             topic={topic?.topic}
             path={"/debate"}
@@ -181,6 +181,7 @@ const ShowSingle = ({ params }: { params: { id: string } }) => {
             }
             category={topic?.category}
             count={count!}
+            createdAt={topic?.created_at}
           />
           <div className={`flex flex-col pb-5 sm:pb-10 rounded-lg`}>
             <div className="flex-grow overflow-y-auto py-4 space-y-8">

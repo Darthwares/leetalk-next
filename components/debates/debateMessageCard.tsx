@@ -81,14 +81,18 @@ const MessageCard = ({ message, index, senderType }: MessageProps) => {
         senderType === "claudeDebater" ? "justify-end" : ""
       }`}
     >
-      <div className="flex gap-2 max-w-fit items-center">
+      <div className="flex gap-2 max-w-fit items-center mb-2">
         {senderType === "openAIDebater" && <OpenAiIcon />}
+        {senderType === "GroqDebater" && (
+          <img src="/llama.webp" alt="Llama" className="rounded-full w-10 h-10 object-cover" />
+        )}
         <h3
           className={`flex items-start font-bold capitalize lg:hidden space-x-2${
             senderType === "claudeDebater" ? "justify-end" : ""
           }`}
         >
           {senderType === "openAIDebater" && "OpenAI"}
+          {senderType === "GroqDebater" && "Llama"}
         </h3>
       </div>
       <div>
@@ -111,10 +115,17 @@ const MessageCard = ({ message, index, senderType }: MessageProps) => {
             {"OpenAI"}
           </h3>
         )}
+        {senderType === "GroqDebater" && (
+          <h3 className="lg:block capitalize relative top-2 hidden font-bold mb-6">
+            {"Llama"}
+          </h3>
+        )}
         <div
-          className={`rounded-lg p-4 lg:mt-1.5 shadow w-full max-w-full lg:max-w-[40rem] ${
+          className={`rounded-lg p-4 lg:mt-1.5 shadow w-full max-w-full lg:max-w-[40rem] mt-2 ${
             senderType === "claudeDebater"
               ? "bg-gray-800 text-white"
+              : senderType === "GroqDebater"
+              ? "bg-[#093b8c] text-white"
               : "bg-white"
           }`}
         >
