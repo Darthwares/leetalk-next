@@ -79,11 +79,11 @@ const DesktopSidebar = () => {
         </Link>
       </div>
       <div className="w-full py-5 px-2">
-        <h2 className="bg-gray-800 text-white text-center rounded-md py-2">
+        <h2 className="bg-gray-100 text-center rounded-md py-2 font-semibold">
           All Categories
         </h2>
       </div>
-      <div className="flex grow pt-5 flex-col gap-y-5 overflow-y-auto bg-gray-100 px-4 ring-1 ring-white/5">
+      <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-gray-100 px-4 ring-1 ring-white/5">
         <nav className="flex flex-1 flex-col">
           <div className="flex flex-1 flex-col gap-y-7">
             <div>
@@ -117,9 +117,6 @@ const DesktopSidebar = () => {
                 ))}
               </ul>
             </div>
-            <ul className="-mx-2">
-              <TopicList />
-            </ul>
           </div>
         </nav>
       </div>

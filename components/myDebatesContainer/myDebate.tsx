@@ -7,32 +7,42 @@ import {
   unPublishConversation,
 } from "@/lib/helper/edgedb/getCategoryList";
 import getUserDebates from "@/lib/helper/edgedb/myDebates";
-import { topicListState } from "@/state/state";
+import { setDebatesState, topicListState } from "@/state/state";
 import { signIn, useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { useSetRecoilState } from "recoil";
+import { useRecoilState, useSetRecoilState } from "recoil";
 import { useToast } from "@/components/ui/use-toast";
 import { EyeIcon } from "@heroicons/react/24/outline";
+import { PencilSquareIcon } from "@heroicons/react/24/solid";
 import SuccessToast from "@/components/successToast";
 import { SpinnerIcon, UnPublishIcon } from "@/components/svg";
 import Loading from "@/components/loading";
 import { motion, AnimatePresence } from "framer-motion";
 import { TagIcon } from "lucide-react";
-import { useRouter } from "next/navigation";
 import ReusablePlaceholder from "../reusablePlaceholder";
+import EditModal from "../editModal";
 
 const MyDebateContainer = () => {
   const { data: session, status } = useSession();
-  const router = useRouter();
   const [filter, setFilter] = useState("all");
-  const [debates, setDebates] = useState<any[]>([]);
+  const [debates, setDebates] = useRecoilState<any[]>(setDebatesState);
   const [loadingStates, setLoadingStates] = useState<{
     [key: string]: boolean;
   }>({});
   const setTopics = useSetRecoilState<any>(topicListState);
   const { toast } = useToast();
+  const [isOpen, setIsOpen] = useState(false);
+  const [currentTitle, setCurrentTitle] = useState("");
+  const [currentCategory, setCurrentCategory] = useState("");
+  const [conversationId, setConversationID] = useState("");
+
+  const toggleModal = () => {
+    setIsOpen(!isOpen);
+    setCurrentCategory("");
+    setCurrentTitle("");
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -155,49 +165,29 @@ const MyDebateContainer = () => {
     }
   };
 
+  const handleEditSuccess = (updatedDebate: any) => {
+    if (updatedDebate?.id) {
+      setDebates((prevDebates) =>
+        prevDebates.map((debate) =>
+          debate.id === updatedDebate.id ? updatedDebate : debate
+        )
+      );
+    }
+  };
+
   if (status === "loading") {
     return <Loading />;
   }
+
   if (!session) {
     return (
-      <>
-        <ReusablePlaceholder
-          desctiption="You must be logged in to view this section, ensuring secure
-                    access for authenticated users only"
-          src="/user-login.json"
-          text="You must be logged in to view this section"
-          content={<Button onClick={() => signIn()}>Login</Button>}
-        />
-        {/* <div className="flex flex-col items-center justify-center md:mt-12 p-4">
-          <div className="text-center">
-            {
-              <div className="mt-4">
-                <div className="h-64 w-full">
-                  <lottie-player
-                    src="/user-login.json"
-                    background=""
-                    speed="1"
-                    autoplay
-                    className="bg-gradient-to-r from-slate-100 to-pink-200"
-                  />
-                </div>
-                {
-                  <div className="flex flex-col items-center justify-center gap-7">
-                    <h2 className="text-2xl font-semibold text-gray-800">
-                      You must be logged in to view this section
-                    </h2>
-                    <p className={`text-gray-600 md:w-[30rem] w-full`}>
-                      You must be logged in to view this section, ensuring
-                      secure access for authenticated users only
-                    </p>
-                    <Button onClick={() => signIn()}>Login</Button>
-                  </div>
-                }
-              </div>
-            }
-          </div>
-        </div> */}
-      </>
+      <ReusablePlaceholder
+        desctiption="You must be logged in to view this section, ensuring secure
+              access for authenticated users only"
+        src="/user-login.json"
+        text="You must be logged in to view this section"
+        content={<Button onClick={() => signIn()}>Login</Button>}
+      />
     );
   }
 
@@ -222,15 +212,15 @@ const MyDebateContainer = () => {
             Exclusively customized for you
           </p>
         </div>
-        {filteredDebates.length > 0 && 
-        <div className="flex justify-center mb-4">
-          <a href="/debate">
-            <Button className="max-w-fit flex gap-2 py-3">
-              Start new debate
-            </Button>
-          </a>
-        </div>
-        }
+        {filteredDebates.length > 0 && (
+          <div className="flex justify-center mb-4">
+            <a href="/debate">
+              <Button className="max-w-fit flex gap-2 py-3">
+                Start new debate
+              </Button>
+            </a>
+          </div>
+        )}
 
         {filteredDebates.length > 0 && (
           <div className="flex sm:flex-row flex-col gap-y-5 justify-between items-center py-4">
@@ -278,16 +268,23 @@ const MyDebateContainer = () => {
                     transition={{ duration: 0.3 }}
                     key={index}
                   >
-                    <div className="row-span-1 rounded-xl h-full group/bento hover:shadow-xl transition duration-200 shadow-input dark:shadow-none dark:bg-black dark:border-white/[0.2] bg-white border border-gray-300 gap-2 p-4 flex flex-col space-y-4">
-                      <Link href={`/chat/${debate.id}`}>
-                        <Image
-                          src={debate.imageUrl}
-                          alt="debate image"
-                          width={200}
-                          height={200}
-                          className="w-full aspect-square h-44 object-cover cursor-pointer rounded-xl bg-gradient-to-br from-neutral-200 dark:from-neutral-900 dark:to-neutral-800 to-neutral-100"
-                        />
-                      </Link>
+                    <div className="row-span-1 rounded-xl h-full group/bento hover:shadow-xl transition duration-200 shadow-input dark:shadow-none dark:bg-black dark:border-white/[0.2] bg-white border border-gray-300 gap-2 p-4 flex flex-col space-y-4 relative">
+                      <Image
+                        src={debate.imageUrl}
+                        alt="debate image"
+                        width={200}
+                        height={200}
+                        className="w-full aspect-square h-44 object-cover rounded-xl bg-gradient-to-br from-neutral-200 dark:from-neutral-900 dark:to-neutral-800 to-neutral-100 "
+                      />
+                      <PencilSquareIcon
+                        onClick={() => {
+                          toggleModal();
+                          setConversationID(debate.id);
+                          setCurrentTitle(debate.title);
+                          setCurrentCategory(debate.category);
+                        }}
+                        className="w-5 h-5 absolute top-3 right-6 cursor-pointer bg-slate-800 m-2 text-white rounded-md"
+                      />
                       <div className="group-hover/bento:translate-x-2 space-y-2 transition duration-200">
                         <Link
                           href={`/chat/${debate.id}`}
@@ -302,61 +299,63 @@ const MyDebateContainer = () => {
                         <p className="text-sm text-gray-500">
                           Published: {debate.published ? "Yes" : "No"}
                         </p>
-                        <div className="flex gap-2 items-center">
-                          <TagIcon className="w-5 h-5 text-gray-500" />{" "}
-                          <span className="text-gray-500">
-                            {debate.category}
-                          </span>
+                        <div className="flex justify-between items-center w-full">
+                          <div className="flex gap-2 items-center">
+                            <TagIcon className="w-5 h-5 text-gray-500" />{" "}
+                            <span className="text-gray-500">
+                              {debate.category}
+                            </span>
+                          </div>
+                          {debate.published ? (
+                            <div className="flex justify-end">
+                              <Button
+                                onClick={() => handleUnPublish(debate.id)}
+                                disabled={loadingStates[debate.id]}
+                                className="mt-2 text-white flex items-center cursor-pointer space-x-1 hover:bg-slate-700"
+                              >
+                                <span className="flex gap-1">
+                                  <span className="text-sm">
+                                    {loadingStates[debate.id] ? (
+                                      <span className="flex items-center space-x-1">
+                                        <SpinnerIcon className="inline w-4 h-4 me-3 text-gray-200 animate-spin dark:text-gray-600" />
+                                        Wait...
+                                      </span>
+                                    ) : (
+                                      <span className="flex gap-1 items-center space-x-1">
+                                        <UnPublishIcon className="h-5 w-5 text-white" />
+                                        Unpublish
+                                      </span>
+                                    )}
+                                  </span>
+                                </span>
+                              </Button>
+                            </div>
+                          ) : (
+                            <div className="flex justify-end">
+                              <Button
+                                onClick={() => handlePublish(debate.id)}
+                                disabled={loadingStates[debate.id]}
+                                className="mt-2 text-white flex items-center cursor-pointer space-x-1 hover:bg-slate-700"
+                              >
+                                <span className="flex gap-1">
+                                  <span className="text-sm">
+                                    {loadingStates[debate.id] ? (
+                                      <span className="flex items-center space-x-1">
+                                        <SpinnerIcon className="inline w-4 h-4 me-3 text-gray-200 animate-spin dark:text-gray-600" />
+                                        Wait...
+                                      </span>
+                                    ) : (
+                                      <span className="flex gap-1 items-center space-x-1">
+                                        <EyeIcon className="h-5 w-5 text-white" />
+                                        Publish
+                                      </span>
+                                    )}
+                                  </span>
+                                </span>
+                              </Button>
+                            </div>
+                          )}
                         </div>
-                        {debate.published ? (
-                          <div className="flex justify-end">
-                            <Button
-                              onClick={() => handleUnPublish(debate.id)}
-                              disabled={loadingStates[debate.id]}
-                              className="mt-2 text-white flex items-center cursor-pointer space-x-1 hover:bg-slate-700"
-                            >
-                              <span className="flex gap-1">
-                                <span className="text-sm">
-                                  {loadingStates[debate.id] ? (
-                                    <span className="flex items-center space-x-1">
-                                      <SpinnerIcon className="inline w-4 h-4 me-3 text-gray-200 animate-spin dark:text-gray-600" />
-                                      Wait...
-                                    </span>
-                                  ) : (
-                                    <span className="flex gap-1 items-center space-x-1">
-                                      <UnPublishIcon className="h-5 w-5 text-white" />
-                                      Unpublish
-                                    </span>
-                                  )}
-                                </span>
-                              </span>
-                            </Button>
-                          </div>
-                        ) : (
-                          <div className="flex justify-end">
-                            <Button
-                              onClick={() => handlePublish(debate.id)}
-                              disabled={loadingStates[debate.id]}
-                              className="mt-2 text-white flex items-center cursor-pointer space-x-1 hover:bg-slate-700"
-                            >
-                              <span className="flex gap-1">
-                                <span className="text-sm">
-                                  {loadingStates[debate.id] ? (
-                                    <span className="flex items-center space-x-1">
-                                      <SpinnerIcon className="inline w-4 h-4 me-3 text-gray-200 animate-spin dark:text-gray-600" />
-                                      Wait...
-                                    </span>
-                                  ) : (
-                                    <span className="flex gap-1 items-center space-x-1">
-                                      <EyeIcon className="h-5 w-5 text-white" />
-                                      Publish
-                                    </span>
-                                  )}
-                                </span>
-                              </span>
-                            </Button>
-                          </div>
-                        )}
                       </div>
                     </div>
                   </motion.div>
@@ -380,6 +379,16 @@ const MyDebateContainer = () => {
             />
           )}
         </div>
+        <EditModal
+          isOpen={isOpen}
+          toggleModal={toggleModal}
+          conversationId={conversationId}
+          currentTitle={currentTitle}
+          currentCategory={currentCategory}
+          setCurrentCategory={setCurrentCategory}
+          setCurrentTitle={setCurrentTitle}
+          onEditSuccess={handleEditSuccess} // Pass the callback here
+        />
       </div>
     </>
   );

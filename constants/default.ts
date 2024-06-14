@@ -2,26 +2,15 @@ import { Cards, Category, Message } from "@/types/types";
 import {
   UserGroupIcon,
   NewspaperIcon,
-  ChartBarIcon,
   CodeBracketIcon,
   UsersIcon,
 } from "@heroicons/react/24/outline";
 import {
   Code,
-  Leaf,
-  Globe,
   Book,
   Heart,
-  Microscope,
   Gamepad2,
   DollarSign,
-  Film,
-  Shield,
-  Newspaper,
-  Gavel,
-  Users,
-  Clock,
-  AlertCircle,
   OctagonIcon,
 } from "lucide-react";
 import {
@@ -410,4 +399,39 @@ export const comments = [
     comment: "Could you provide more details?",
     time: "3 days ago",
   },
+];
+
+export const debaterOptions = [
+  { name: "GPT 4o", key: "gpt4o" },
+  { name: "Claude Opus", key: "claudeOpus" },
+  { name: "Llama 3", key: "llama3" },
+];
+
+export const debaterDetails: any = {
+  gpt4o: {
+    name: "OpenAI",
+    description: "Things I'm good at and qualities I have to offer...",
+    image: "/openai.png",
+  },
+  claudeOpus: {
+    name: "Claude",
+    description: "I excel at understanding and generating human-like text.",
+    image: "/claude.png",
+  },
+  llama3: {
+    name: "Llama",
+    description: "I specialize in language understanding and generation.",
+    image: "/llama.webp",
+  },
+};
+
+export const allCategories = [
+  'Technology',
+  'Historical',
+  'Education',
+  'Health',
+  'Sports',
+  'Economics',
+  'Social',
+  'Others',
 ];

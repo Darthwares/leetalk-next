@@ -88,6 +88,10 @@ const showCurrentPlayingURL = atom<string>({
   key: "showCurrentPlayingURL",
   default: "",
 });
+const setDebatesState = atom<Conversations[]>({
+  key: "setDebatesState",
+  default: [],
+});
 
 export {
   conversationIdState,
@@ -108,4 +112,5 @@ export {
   isGlobalAudioPlayingState,
   showAudioPlayingState,
   showCurrentPlayingURL,
+  setDebatesState
 };

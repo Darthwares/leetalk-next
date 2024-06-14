@@ -17,6 +17,7 @@ export default async function getSingleMessages(conversationId: string) {
   `;
 
   const message = await client.query(query, { conversationId });
+  console.log('message', message)
 
   return message;
 }

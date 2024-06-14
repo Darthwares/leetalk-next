@@ -10,7 +10,8 @@ export default async function getList() {
       topic,
       created_at,
       category,
-      published
+      published,
+      imageURL
     }
     FILTER .published = true
     ORDER BY .created_at DESC;

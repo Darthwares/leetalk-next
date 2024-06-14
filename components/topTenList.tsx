@@ -45,7 +45,7 @@ const TopTenList: React.FC = () => {
       <h2 className="text-2xl font-bold mb-4">Top 10 Debates - Today</h2>
       <div className="relative">
         <Carousel opts={{ align: "start" }} className="relative w-full">
-          <CarouselPrevious className="absolute left-0 top-1/2 transform -translate-y-1/2 z-10 bg-white p-2 rounded-full shadow-md cursor-pointer " />
+          <CarouselPrevious className="absolute lg:-left-12 left-0 top-[6.5rem] transform -translate-y-1/2" />
           <CarouselContent className="flex items-start gap-3 py-2 px-2">
             {topConversations.map((item, index) => (
               <div
@@ -78,7 +78,7 @@ const TopTenList: React.FC = () => {
               </div>
             ))}
           </CarouselContent>
-          <CarouselNext className="absolute right-0 top-1/2 transform -translate-y-1/2 z-10 bg-white p-2 rounded-full shadow-md cursor-pointer" />
+          <CarouselNext className="absolute right-0 lg:-right-12 top-[6.5rem] transform -translate-y-1/2" />
         </Carousel>
       </div>
     </div>

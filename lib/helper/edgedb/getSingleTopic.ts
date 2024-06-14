@@ -10,6 +10,7 @@ export default async function getSingleTopic(conversationId: string) {
       topic,
       created_at,
       category,
+      imageURL,
       published
     }
     filter .conversation_id = <str>$conversationId; 
