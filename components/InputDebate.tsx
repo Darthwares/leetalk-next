@@ -85,8 +85,10 @@ export function InputDebate() {
       setSelectedDebaters((prevSelectedDebaters) => {
         if (prevSelectedDebaters.includes(debaterKey)) {
           return prevSelectedDebaters.filter((key) => key !== debaterKey);
-        } else {
+        } else if (prevSelectedDebaters.length < 2) {
           return [...prevSelectedDebaters, debaterKey];
+        } else {
+          return prevSelectedDebaters;
         }
       });
     }
@@ -359,18 +361,19 @@ export function InputDebate() {
                     <CardTitle className="w-full md:text-center text-3xl font-semiboldxl text-left md:mb-5 mt-3">
                       Create new debate
                     </CardTitle>
-                    <CardDescription className="flex gap-3 flex-col sm:flex-row">
-                      <span className="hidden md:block">Your Caterory:</span>{" "}
-                      <div className="mt-3 md:mt-0">
-                        <button
-                          className="text-slate-900 font-medium"
-                          onClick={() => setSelectedCategory(null)}
-                        >
+                    <CardDescription className="flex gap-3 flex-col sm:flex-row items-center">
+                      <span className="hidden md:block w-full max-w-fit">
+                        Your Caterory:
+                      </span>{" "}
+                      <div className="mt-3 md:mt-0 flex items-center w-full justify-start">
+                        <p className="text-slate-900 font-medium">
                           Change Category
-                        </button>
+                        </p>
                         <span className="text-slate-900 font-bold">
                           <span className="px-1.5">{`>`}</span>
-                          {selectedCategory}
+                          <button className="underline"  onClick={() => setSelectedCategory(null)}>
+                            {selectedCategory}
+                          </button>
                         </span>
                       </div>
                     </CardDescription>
@@ -429,7 +432,7 @@ export function InputDebate() {
                               // onClick={handleStartDebate}
                               disabled={
                                 inputValue.length === 0 ||
-                                selectedDebaters.length < 2||
+                                selectedDebaters.length < 2 ||
                                 loader
                               }
                             >
