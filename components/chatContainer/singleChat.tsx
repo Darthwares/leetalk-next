@@ -165,7 +165,7 @@ const ShowSingle = ({ params }: { params: { id: string } }) => {
   }
 
   return (
-    <div className="bg-white w-full">
+    <div className="bg-white max-w-7xl mx-auto w-full">
       {processedMessages.remainingMessages && !loading && (
         <div className="flex flex-col w-full mx-auto ps-4 pb-4 md:px-6 md:pb-6 bg-white shadow rounded-lg rounded-t-none">
           <DebateHeader
