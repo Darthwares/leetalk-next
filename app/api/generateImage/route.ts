@@ -1,6 +1,10 @@
 import OpenAI from "openai";
 import { put } from "@vercel/blob";
 
+export const maxDuration = 300; // This function can run for a maximum of 5 minutes
+export const dynamic = 'force-dynamic';
+
+
 export async function POST(req: Request) {
   const { text: input } = await req.json();
 
