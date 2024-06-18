@@ -263,7 +263,7 @@ export function InputDebate() {
         });
       }
     } catch (error) {
-      await deleteConversation(idx);
+      // await deleteConversation(idx);
       toast({
         className: "toastClass",
         action: (
