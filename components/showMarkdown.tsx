@@ -20,7 +20,7 @@ const CustomList = ({ children }: ChildNodeProps) => {
 
 const CustomStrong = ({ children }: ChildNodeProps) => {
   return (
-    <strong className="cursor-cell font-medium text-gray-800 rounded-xl">
+    <strong className="cursor-cell font-extrabold rounded-xl">
       {children}
     </strong>
   );

@@ -4,11 +4,11 @@ import React from "react";
 
 const Testimonials: React.FC = () => {
   return (
-    <div className="bg-white text-gray-800 md:py-20 py-12">
-      <h2 className="text-center text-2xl font-bold mb-8 py-4 sm:text-4xl">
-        Discover why users love{' '}
+    <div className="bg-white text-gray-800 md:py-20 py-12 max-w-7xl w-full mx-auto">
+      <h2 className="text-center text-2xl font-bold mb-8 py-4 sm:text-4xl flex flex-col items-center justify-center gap-3">
+        <span>Discover why users</span>{' '} 
         <span className="text-gray-600 text-2xl sm:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-pink-600">
-          LeetTalk
+        <span className="text-gray-800">love</span> LeetTalk
         </span>
       </h2>
       <div className="mx-auto sm:px-8 px-2 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
